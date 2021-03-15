@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="自己网站的nginx配置，减少重复编译nginx查找资料耗费的时间。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的nginx配置">
+<meta property="og:url" content="http://lixingcong.github.io/2016/10/05/my-nginx-conf/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="自己网站的nginx配置，减少重复编译nginx查找资料耗费的时间。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2016-10-05T12:38:55.000Z">
+<meta property="article:modified_time" content="2016-10-05T12:38:55.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="html">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/10/05/my-nginx-conf/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+<title>我的nginx配置 | Lixingcong</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-66672466-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Lixingcong</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97"><span class="nav-number">2.1.</span> <span class="nav-text">各个模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx"><span class="nav-number">2.2.</span> <span class="nav-text">nginx</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">反向代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E7%BD%91%E9%A1%B5"><span class="nav-number">3.2.</span> <span class="nav-text">压缩网页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E5%8D%87ssl%E5%AE%89%E5%85%A8%E7%AD%89%E7%BA%A7"><span class="nav-number">3.3.</span> <span class="nav-text">提升ssl安全等级</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/10/05/my-nginx-conf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我的nginx配置<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/my-nginx-conf.md" class="post-edit-link" title="Edit this post" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016年10月5日 20:38:55" itemprop="dateCreated datePublished" datetime="2016-10-05T20:38:55+08:00">2016年10月5日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>自己网站的nginx配置，减少重复编译nginx查找资料耗费的时间。</p>
+<span id="more"></span>
+<p>更新日期：2021年3月15日</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>较高的压缩率，加快网页传输</li>
+<li>https安全性提高</li>
+</ul>
+<p>最终选用了以下nginx模块</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/yaoweibin/ngx_http_substitutions_filter_module">ngx_http_substitutions_filter_module</a></td>
+<td>正则表达式</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/google/ngx_brotli">ngx_brotli</a></td>
+<td>谷歌开源压缩brotli库</td>
+</tr>
+</tbody></table>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>在这个目录下工作：</p>
+<pre><code>mkdir ~/nginx_my &amp;&amp; cd nginx_my
+</code></pre>
+<h3 id="各个模块"><a href="#各个模块" class="headerlink" title="各个模块"></a>各个模块</h3><pre><code>cd ~/nginx_my
+git clone https://github.com/google/ngx_brotli
+cd ngx_brotli
+git submodule update --init
+
+cd ~/nginx_my
+git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+</code></pre>
+<h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>编译</p>
+<pre><code>cd ~/nginx_my
+
+# nginx
+NGINX_VER=1.19.8
+wget http://nginx.org/download/nginx-$NGINX_VER.tar.gz
+tar xf nginx-$NGINX_VER.tar.gz
+</code></pre>
+<p>打patch，目的是让nginx优先chacha</p>
+<pre><code># 参考 https://gist.github.com/DimsKyu/c3f3e7f8ef41ded430beefe0690b7b2d 这个代码，大致就是这样改
+cd nginx-$NGINX_VER
+vi src/event/ngx_event_openssl.c
+
+# 找到ngx_ssl_create函数，在#ifdef SSL_OP_NO_COMPRESSION这行上面直接加上
+SSL_CTX_set_options(ssl-&gt;ctx, SSL_OP_PRIORITIZE_CHACHA);
+</code></pre>
+<p>openssl取最新版</p>
+<pre><code>OPENSSL_VER=1.1.1j
+wget https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz
+tar xf openssl-$OPENSSL_VER.tar.gz
+</code></pre>
+<p>打patch，目的是让nginx可以配置TLS 1.3加密算法套件（截止nginx 1.19.8这个版本，仍不能在nginx.conf中的ssl_ciphers属性配置TLS1.3的加密套件优先顺序，相关讨论如：<a target="_blank" rel="noopener" href="https://www.v2ex.com/t/547650">https://www.v2ex.com/t/547650</a> ）</p>
+<pre><code>cd openssl-$OPENSSL_VER
+wget https://github.com/hakasenyang/openssl-patch/raw/master/openssl-equal-1.1.1e-dev.patch
+patch -p 1 &lt; *.patch
+</code></pre>
+<p>安装依赖。至于依赖什么，取决于编译nginx开启的模块。即下文的configure参数。</p>
+<pre><code>apt install -y \
+  libgeoip-dev \
+  libgd-dev \
+  libxslt1-dev \
+  zlib1g-dev \
+  libpcre3-dev
+</code></pre>
+<p>configure参数控制要编译哪些模块</p>
+<pre><code># 切换到Nginx源码目录
+cd ~/nginx_my/nginx-$NGINX_VER
+
+./configure \
+--with-cc-opt=&#39;-O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2&#39; --with-ld-opt=&#39;-Wl,-Bsymbolic-functions -Wl,-z,relro&#39; \
+--conf-path=/etc/nginx/nginx.conf \
+--with-debug \
+--with-pcre-jit \
+--with-http_ssl_module \
+--with-http_stub_status_module \
+--with-http_realip_module \
+--with-http_auth_request_module \
+--with-http_addition_module \
+--with-http_dav_module \
+--with-http_geoip_module \
+--with-http_gunzip_module \
+--with-http_gzip_static_module \
+--with-http_image_filter_module \
+--with-http_v2_module \
+--with-http_sub_module \
+--with-http_xslt_module \
+--with-stream \
+--with-stream_ssl_module \
+--with-stream_ssl_preread_module \
+--with-threads \
+--without-mail_pop3_module \
+--without-mail_imap_module \
+--without-mail_smtp_module \
+--with-openssl=../openssl-$OPENSSL_VER \
+--with-openssl-opt=&#39;enable-tls1_3 enable-ec_nistp_64_gcc_128 enable-weak-ssl-ciphers&#39; \
+--add-module=../ngx_http_substitutions_filter_module \
+--add-module=../ngx_brotli
+</code></pre>
+<p>以上的configure意义是</p>
+<ul>
+<li>没有指定prefix，采用系统默认的前缀目录，如/usr/local/</li>
+<li>指定配置文件路径为/etc/nginx/nginx.conf</li>
+<li>开启basic_auth等模块，关闭邮件模块</li>
+<li>指定好openssl源码目录，开启TLS1.3加密套件</li>
+<li>添加几个额外的模块</li>
+</ul>
+<p>直接编译即可</p>
+<pre><code>make &amp;&amp; make install
+</code></pre>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>参考<a href="/2016/07/31/nginx-reverse-proxy-for-google/">这篇文章</a>，可以非常傻瓜化的部署反代。</p>
+<h3 id="压缩网页"><a href="#压缩网页" class="headerlink" title="压缩网页"></a>压缩网页</h3><p>修改/etc/nginx/nginx.conf达到基本的gzip效果</p>
+<pre><code>gzip  on;
+gzip_vary          on;
+gzip_comp_level    6;
+gzip_buffers       16 8k;
+gzip_min_length    1k;
+gzip_proxied       any;
+gzip_disable       &quot;msie6&quot;;
+gzip_http_version  1.0;
+gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+</code></pre>
+<p>再加上谷歌的黑科技brotli压缩</p>
+<pre><code>brotli             on;
+brotli_comp_level  6;
+brotli_types       text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
+</code></pre>
+<h3 id="提升ssl安全等级"><a href="#提升ssl安全等级" class="headerlink" title="提升ssl安全等级"></a>提升ssl安全等级</h3><p>前提是网站有HTTPS部署，且对相关概念有基本了解。可以自行参考<a target="_blank" rel="noopener" href="https://imququ.com/">imququ大神博客</a>，学习基本的https部署方法！</p>
+<p>一、自定义生成密钥交换，取代nginx默认的weak exchange</p>
+<p>这个diffie-hellman算法是用来干啥的：作用就是让访问的者浏览器和你的服务器能安全的交换密钥，具体原理就自行谷歌吧，你不能强迫数学渣渣来给你解释密码学的东西是不是？总之nginx默认采用1024位的diffie-hellman，强度太低太危险，容易被别有用心的黑客叔叔破解，自己生成一个4096位的去替换掉就好啦。</p>
+<pre><code># 如果你的机器cpu性能不够强大，耗时很长，可以用 2048 位
+# 我的笔记本（i5 3317u）跑4096位，跑了二十分钟。。。直接拖到VPS上面/root/
+openssl dhparam -out dhparam.pem 4096
+</code></pre>
+<p>nginx.conf中的server标签中添加</p>
+<pre><code>ssl_dhparam /root/dhparam.pem;
+</code></pre>
+<p>二、手动指定优先的加密算法</p>
+<p>(对TLS 1.2有效。原版nginx对TLS1.3的ciphers暂未支持，因此若没有patch，无论ssl_ciphers设置什么值都是AES-256-GCM-SHA384）</p>
+<p>推荐的加密套件设置，详见CloudFlare的仓库 <a target="_blank" rel="noopener" href="https://github.com/cloudflare/sslconfig/blob/master/conf">https://github.com/cloudflare/sslconfig/blob/master/conf</a></p>
+<pre><code>ssl_ciphers                TLS-CHACHA20-POLY1305-SHA256:ECDHE-RSA-CHACHA20-POLY1305:ECDHE+AES128:RSA+AES128:ECDHE+AES256:RSA+AES256:ECDHE+3DES:RSA+3DES;
+ssl_prefer_server_ciphers  on;
+ssl_protocols              TLSv1.2 TLSv1.3;
+</code></pre>
+<p>验证cipher是否生效</p>
+<pre><code>curl https://example.com -v
+</code></pre>
+<p>输出结果中的cipher suite可以看到TLS-CHACHA20-POLY1305-SHA256等字样</p>
+<p>三、设置跨站response header</p>
+<pre><code>add_header X-Frame-Options SAMEORIGIN;
+add_header X-Content-Type-Options nosniff;
+add_header X-XSS-Protection 1;
+</code></pre>
+<p>四、强制HSTS</p>
+<p>新建一个http服务器，强制跳转到https:</p>
+<pre><code>server_name xxx.com
+listen 80;
+location / &#123;
+    rewrite ^(.*)$  https://$host$1 permanent;
+&#125;
+</code></pre>
+<p>在https服务器中添加</p>
+<pre><code>add_header Strict-Transport-Security &quot;max-age=31536000;&quot; always;
+</code></pre>
+<p>有兴趣可以加入google chrome的Preload List里面，将从浏览器自动强制使用https。需要申请，审批需要几天。但是加进去preload list后很难从其中移除，需要发邮件移除。。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/html/" rel="tag"># html</a>
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/03/openwrt-port-forward/" rel="prev" title="NAT穿透和内网访问">
+                  <i class="fa fa-chevron-left"></i> NAT穿透和内网访问
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/11/15/anki-doc/" rel="next" title="Anki理解笔记">
+                  Anki理解笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="lixingcong/lixingcong.github.io" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+</body>
+</html>

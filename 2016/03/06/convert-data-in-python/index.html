@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="数据解析时，python可以相互转换各种数据类型。最近在斯坦福公开课《密码学》网站上面做题发现，我对数据转换很不熟悉，写下日志记下用法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python整数、字符串、字节串相互转换">
+<meta property="og:url" content="http://lixingcong.github.io/2016/03/06/convert-data-in-python/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="数据解析时，python可以相互转换各种数据类型。最近在斯坦福公开课《密码学》网站上面做题发现，我对数据转换很不熟悉，写下日志记下用法。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2016-03-06T11:52:25.000Z">
+<meta property="article:modified_time" content="2016-03-06T11:52:25.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/03/06/convert-data-in-python/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+<title>python整数、字符串、字节串相互转换 | Lixingcong</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-66672466-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Lixingcong</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.</span> <span class="nav-text">进制转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6to%E6%95%B4%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">字符to整数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E4%B8%B2to%E6%95%B4%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">字节串to整数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E6%95%B0to%E5%AD%97%E8%8A%82%E4%B8%B2"><span class="nav-number">4.</span> <span class="nav-text">整数to字节串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E6%95%B0to%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">5.</span> <span class="nav-text">整数to字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2to%E5%AD%97%E8%8A%82%E4%B8%B2"><span class="nav-number">6.</span> <span class="nav-text">字符串to字节串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E4%B8%B2to%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">7.</span> <span class="nav-text">字节串to字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPP%E5%AE%9E%E7%8E%B0encode"><span class="nav-number">8.</span> <span class="nav-text">CPP实现encode</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/03/06/convert-data-in-python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python整数、字符串、字节串相互转换<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/convert-data-in-python.md" class="post-edit-link" title="Edit this post" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016年3月6日 19:52:25" itemprop="dateCreated datePublished" datetime="2016-03-06T19:52:25+08:00">2016年3月6日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>数据解析时，python可以相互转换各种数据类型。最近在斯坦福公开课《密码学》网站上面做题发现，我对数据转换很不熟悉，写下日志记下用法。</p>
+<span id="more"></span>
+
+<p>导航</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>数字</th>
+<th>字符串</th>
+<th>字节码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>到数字</td>
+<td><a href="#%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2">进制转换</a></td>
+<td><a href="#%E5%AD%97%E7%AC%A6to%E6%95%B4%E6%95%B0">字符转整数</a></td>
+<td><a href="#%E5%AD%97%E8%8A%82%E4%B8%B2to%E6%95%B4%E6%95%B0">字节串转整数</a></td>
+</tr>
+<tr>
+<td>到字符串</td>
+<td>str()</td>
+<td><a href="#%E5%AD%97%E8%8A%82%E4%B8%B2to%E5%AD%97%E7%AC%A6%E4%B8%B2">字符串编码解码</a></td>
+<td>decode(&#39;hex&#39;)</td>
+</tr>
+<tr>
+<td>到字节码</td>
+<td><a href="#%E6%95%B4%E6%95%B0to%E5%AD%97%E8%8A%82%E4%B8%B2">数字转字符串</a></td>
+<td><a href="#%E5%AD%97%E7%AC%A6%E4%B8%B2to%E5%AD%97%E8%8A%82%E4%B8%B2">字符串转字节串</a></td>
+<td>🈚</td>
+</tr>
+</tbody></table>
+<p>还有常见的单个字符转换</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+<th>记忆口诀</th>
+<th>例子</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>chr</td>
+<td>数字转成对应的ascii字符</td>
+<td>chr长得很像char，因此转成char</td>
+<td><code>chr(65) ==&gt; A</code></td>
+<td>输入参数有效范围为0~255</td>
+</tr>
+<tr>
+<td>ord</td>
+<td>单个字符转对应ascii序号</td>
+<td>d为digit最后一个字母，因此转成数字</td>
+<td><code>ord(&#39;A&#39;) ==&gt; 65</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="进制转换"><a href="#进制转换" class="headerlink" title="进制转换"></a>进制转换</h3><p>10进制转16进制: </p>
+<pre><code>hex(16)  ==&gt;  0x10
+</code></pre>
+<p>16进制转10进制: </p>
+<p>int(STRING,BASE)将字符串STRING转成十进制int，其中STRING的基是base。该函数的第一个参数是字符串</p>
+<pre><code>int(&#39;0x10&#39;, 16)  ==&gt;  16
+</code></pre>
+<p>类似的还有八进制oct()， 二进制bin()</p>
+<p>16进制字符串转成二进制</p>
+<pre><code>hex_str=&#39;00fe&#39;
+bin(int(&#39;1&#39;+hex_str, 16))[3:]  #含有前导0
+# 结果 &#39;0000000011111110&#39;
+bin(int(hex_str, 16))[2:]   #忽略前导0
+# 结果 &#39;11111110&#39;
+</code></pre>
+<p>二进制字符串转成16进制字符串</p>
+<pre><code>bin_str=&#39;0b0111000011001100&#39;
+hex(int(bin_str,2))
+# 结果 &#39;0x70cc&#39;
+</code></pre>
+<h3 id="字符to整数"><a href="#字符to整数" class="headerlink" title="字符to整数"></a>字符to整数</h3><p>10进制字符串: </p>
+<pre><code>int(&#39;10&#39;)  ==&gt;  10
+</code></pre>
+<p>16进制字符串: </p>
+<pre><code>int(&#39;10&#39;, 16)  ==&gt;  16
+# 或者
+int(&#39;0x10&#39;, 16)  ==&gt;  16
+</code></pre>
+<h3 id="字节串to整数"><a href="#字节串to整数" class="headerlink" title="字节串to整数"></a>字节串to整数</h3><p>使用网络数据包常用的struct，兼容C语言的数据结构<br>struct中支持的格式如下表</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>C-Type</th>
+<th>Python-Type</th>
+<th>字节数</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>x</td>
+<td>pad byte</td>
+<td>no value</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>c</td>
+<td>char</td>
+<td>string of length 1</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>b</td>
+<td>signed char</td>
+<td>integer</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>B</td>
+<td>unsigned char</td>
+<td>integer</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>?</td>
+<td>_Bool</td>
+<td>bool</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>h</td>
+<td>short</td>
+<td>integer</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>H</td>
+<td>unsigned short</td>
+<td>integer</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>i</td>
+<td>int</td>
+<td>integer</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>I</td>
+<td>unsigned int</td>
+<td>integer or long</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>l</td>
+<td>long</td>
+<td>integer</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>L</td>
+<td>unsigned long</td>
+<td>long</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>q</td>
+<td>long long</td>
+<td>long</td>
+<td>8</td>
+<td>仅支持64bit机器</td>
+</tr>
+<tr>
+<td>Q</td>
+<td>unsigned long long</td>
+<td>long</td>
+<td>8</td>
+<td>仅支持64bit机器</td>
+</tr>
+<tr>
+<td>f</td>
+<td>float</td>
+<td>float</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>d</td>
+<td>double</td>
+<td>float</td>
+<td>8</td>
+<td></td>
+</tr>
+<tr>
+<td>s</td>
+<td>char[]</td>
+<td>string</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>p</td>
+<td>char[]</td>
+<td>string</td>
+<td>1(与机器有关)</td>
+<td>作为指针</td>
+</tr>
+<tr>
+<td>P</td>
+<td>void *</td>
+<td>long</td>
+<td>4</td>
+<td>作为指针</td>
+</tr>
+</tbody></table>
+<p>对齐方式：放在第一个fmt位置</p>
+<table>
+<thead>
+<tr>
+<th>CHARACTER</th>
+<th>BYTE ORDER</th>
+<th>SIZE</th>
+<th>ALIGNMENT</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@</td>
+<td>native</td>
+<td>native</td>
+<td>native</td>
+</tr>
+<tr>
+<td>=</td>
+<td>native</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>little-endian</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>big-endian</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+<tr>
+<td>!</td>
+<td>network (= big-endian)</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+</tbody></table>
+<p>转义为short型整数:</p>
+<pre><code>struct.unpack(&#39;&lt;hh&#39;, bytes(b&#39;\x01\x00\x00\x00&#39;))  ==&gt;  (1, 0)
+</code></pre>
+<p>转义为long型整数: </p>
+<pre><code>struct.unpack(&#39;&lt;L&#39;, bytes(b&#39;\x01\x00\x00\x00&#39;))  ==&gt;  (1,)
+</code></pre>
+<h3 id="整数to字节串"><a href="#整数to字节串" class="headerlink" title="整数to字节串"></a>整数to字节串</h3><p>转为两个字节: </p>
+<pre><code>struct.pack(&#39;&lt;HH&#39;, 1,2)  ==&gt;  b&#39;\x01\x00\x02\x00&#39;
+</code></pre>
+<p>转为四个字节: </p>
+<pre><code>struct.pack(&#39;&lt;LL&#39;, 1,2)  ==&gt;  b&#39;\x01\x00\x00\x00\x02\x00\x00\x00&#39;
+</code></pre>
+<h3 id="整数to字符串"><a href="#整数to字符串" class="headerlink" title="整数to字符串"></a>整数to字符串</h3><p>直接用函数</p>
+<pre><code>str(100)
+</code></pre>
+<h3 id="字符串to字节串"><a href="#字符串to字节串" class="headerlink" title="字符串to字节串"></a>字符串to字节串</h3><p><a href="#CPP%E5%AE%9E%E7%8E%B0encode">我用c++实现的encode(hex)和decode(hex)</a></p>
+<p><strong>decode和encode区别</strong></p>
+<p>decode函数是重新解码，把CT字符串所显示的69dda8455c7dd425【每隔两个字符】解码成十六进制字符\x69\xdd\xa8\x45\x5c\x7d\xd4\x25</p>
+<pre><code>CT=&#39;69dda8455c7dd425&#39;
+print &quot;%r&quot;%CT.decode(&#39;hex&#39;)
+# 输出结果
+&#39;i\xdd\xa8E\\&#125;\xd4%&#39;
+</code></pre>
+<p>encode函数是重新编码，把CT字符串所显示的69dda8455c7dd425【每个字符】编码成acsii值，ascii值为十六进制显示，占两位。执行下列结果显示36396464613834353563376464343235等价于将CT第一个字符&#39;6&#39;编码为0x36h 第二个字符&#39;9&#39;编码为0x39h</p>
+<pre><code>CT=&#39;69dda8455c7dd425&#39;
+print &quot;%r&quot;%CT.encode(&#39;hex&#39;)
+# 输出结果
+&#39;36396464613834353563376464343235&#39;
+</code></pre>
+<blockquote>
+<p>可以理解为：decode解码，字符串变短一半，encode编码，字符串变为两倍长度</p>
+</blockquote>
+<p>decode(&#39;ascii&#39;)解码为字符串Unicode格式。输出带有&#39;u&#39;<br>encode(&#39;ascii&#39;)，编码为Unicode格式，其实python默认处理字符串存储就是Unicode，输出结果估计和原来的字符串一样。</p>
+<p>字符串编码为字节码: </p>
+<pre><code>&#39;12abc&#39;.encode(&#39;ascii&#39;)  ==&gt;  b&#39;12abc&#39;
+</code></pre>
+<p>数字或字符数组: </p>
+<pre><code>bytes([1,2, ord(&#39;1&#39;),ord(&#39;2&#39;)])  ==&gt;  b&#39;\x01\x0212&#39;
+</code></pre>
+<p>16进制字符串:</p>
+<pre><code>bytes().fromhex(&#39;010210&#39;)  ==&gt;  b&#39;\x01\x02\x10&#39;
+</code></pre>
+<p>16进制字符串: </p>
+<pre><code>bytes(map(ord, &#39;\x01\x02\x31\x32&#39;))  ==&gt;  b&#39;\x01\x0212&#39;
+</code></pre>
+<p>16进制数组: </p>
+<pre><code>bytes([0x01,0x02,0x31,0x32])  ==&gt;  b&#39;\x01\x0212&#39;
+</code></pre>
+<h3 id="字节串to字符串"><a href="#字节串to字符串" class="headerlink" title="字节串to字符串"></a>字节串to字符串</h3><p>字节码解码为字符串: </p>
+<pre><code>bytes(b&#39;\x31\x32\x61\x62&#39;).decode(&#39;ascii&#39;)  ==&gt;  12ab
+</code></pre>
+<p>字节串转16进制表示,夹带ascii: </p>
+<pre><code>str(bytes(b&#39;\x01\x0212&#39;))[2:-1]  ==&gt;  \x01\x0212
+</code></pre>
+<p>字节串转16进制表示,固定两个字符表示: </p>
+<pre><code>str(binascii.b2a_hex(b&#39;\x01\x0212&#39;))[2:-1]  ==&gt;  01023132
+</code></pre>
+<p>字节串转16进制数组: </p>
+<pre><code>[hex(x) for x in bytes(b&#39;\x01\x0212&#39;)]  ==&gt;  [&#39;0x1&#39;, &#39;0x2&#39;, &#39;0x31&#39;, &#39;0x32&#39;]
+</code></pre>
+<p>问题：什么时候字符串前面加上&#39;r&#39;、&#39;b&#39;、&#39;r&#39;，其实官方文档有写。我认为在Python2中，r和b是等效的。</p>
+<p>The Python 2.x documentation:</p>
+<blockquote>
+<p>A prefix of &#39;b&#39; or &#39;B&#39; is ignored in Python 2; it indicates that the literal should become a bytes literal in Python 3 (e.g. when code is automatically converted with 2to3). A &#39;u&#39; or &#39;b&#39; prefix may be followed by an &#39;r&#39; prefix.<br>&#39;b&#39;字符加在字符串前面，对于python2会被忽略。加上&#39;b&#39;目的仅仅为了兼容python3，让python3以bytes数据类型(0~255)存放这个字符、字符串。</p>
+</blockquote>
+<p>The Python 3.3 documentation states:</p>
+<blockquote>
+<p>Bytes literals are always prefixed with &#39;b&#39; or &#39;B&#39;; they produce an instance of the bytes type instead of the str type. They may only contain ASCII characters; bytes with a numeric value of 128 or greater must be expressed with escapes.<br>数据类型byte总是以&#39;b&#39;为前缀，该数据类型仅为ascii。</p>
+</blockquote>
+<p>下面是stackflow上面一个回答。我觉得不错，拿出来跟大家分享</p>
+<p>In Python 2.x</p>
+<blockquote>
+<p>Pre-3.0 versions of Python lacked this kind of distinction between text and binary data. Instead, there was:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>unicode = u&#39;...&#39; literals = sequence of Unicode characters = 3.x str</li>
+<li>str = &#39;...&#39; literals = sequences of confounded bytes/characters<br>Usually text, encoded in some unspecified encoding.<br>But also used to represent binary data like struct.pack output.</li>
+</ul>
+</blockquote>
+<p>Python 3.x makes a clear distinction between the types:</p>
+<blockquote>
+<ul>
+<li>str = &#39;...&#39; literals = a sequence of Unicode characters (UTF-16 or UTF-32, depending on how Python was compiled)</li>
+<li>bytes = b&#39;...&#39; literals = a sequence of octets (integers between 0 and 255)</li>
+</ul>
+</blockquote>
+<h3 id="CPP实现encode"><a href="#CPP实现encode" class="headerlink" title="CPP实现encode"></a>CPP实现encode</h3><p>就是做个笔记，毕竟在做题Cryptography时候用c++写字符串的处理很蛋疼！为了防止再次造轮子，记下来。</p>
+<pre><code>#include &lt;cstring&gt; //用到strlen函数
+static unsigned char ByteMap[] = &#123; &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;,&#39;9&#39;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39; &#125;;
+
+unsigned char hex_2_dec(unsigned char c)&#123;
+    if(c &gt;= &#39;0&#39; &amp;&amp; c &lt;= &#39;9&#39;) return c - &#39;0&#39;;
+    if(c &gt;= &#39;a&#39; &amp;&amp; c &lt;= &#39;f&#39;) return c - &#39;a&#39; + 10;
+&#125;
+
+void str_encode(unsigned char *src, unsigned char *dest, int len_of_src) &#123;
+    // 使用注意：dest_len &gt;= 2*len_src +1，最后一位是存放&#39;\0&#39;。
+    int t1;
+    for (int i = 0; i &lt; len_of_src; ++i) &#123;
+        t1 = (int) src[i];
+        dest[2 * i] = ByteMap[t1 / 16];
+        dest[2 * i + 1] = ByteMap[t1 % 16];
+    &#125;
+    dest[2 * len_of_src] = 0; //必须填充最后一个为&#39;\0&#39;
+&#125;
+
+void str_decode(unsigned char *src,unsigned char *dest)&#123;
+    int len_of_src=strlen((char *)src);
+    unsigned char t1;
+    for(int i=1;i&lt;=len_of_src;i+=2)&#123;
+        t1=hex_2_dec(src[i-1]);
+        t1= 16*t1 + hex_2_dec(src[i]);
+        dest[i/2]=t1;
+    &#125;
+&#125;
+</code></pre>
+<p>鸣谢<br>本文转载自csdn博客的<a target="_blank" rel="noopener" href="http://blog.csdn.net/crylearner/article/details/38521685">《python常用的十进制、16进制、字符串、字节串之间的转换》</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/01/31/Cryptography-I-week-1/" rel="prev" title="Cryptography解题报告：Two time pad">
+                  <i class="fa fa-chevron-left"></i> Cryptography解题报告：Two time pad
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/03/06/Cryptography-I-week-2/" rel="next" title="Cryptography解题报告：Use Block Ciphers">
+                  Cryptography解题报告：Use Block Ciphers <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="lixingcong/lixingcong.github.io" issue-term="title" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+</body>
+</html>

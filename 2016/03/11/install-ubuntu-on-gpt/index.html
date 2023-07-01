@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GPT分区表上硬盘安装ubuntu">
+<meta property="og:url" content="http://lixingcong.github.io/2016/03/11/install-ubuntu-on-gpt/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/install_ubuntu_on_gpt/bootice.jpeg">
+<meta property="og:image" content="http://lixingcong.github.io/images/install_ubuntu_on_gpt/grub_4.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/install_ubuntu_on_gpt/grub_1.jpg">
+<meta property="og:image" content="http://lixingcong.github.io/images/install_ubuntu_on_gpt/grub_2.jpg">
+<meta property="og:image" content="http://lixingcong.github.io/images/install_ubuntu_on_gpt/grub_3.jpg">
+<meta property="article:published_time" content="2016-03-11T16:21:14.000Z">
+<meta property="article:modified_time" content="2016-03-11T16:21:14.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/install_ubuntu_on_gpt/bootice.jpeg">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/03/11/install-ubuntu-on-gpt/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/03/11/install-ubuntu-on-gpt/","path":"2016/03/11/install-ubuntu-on-gpt/","title":"GPT分区表上硬盘安装ubuntu"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GPT分区表上硬盘安装ubuntu | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%88%8F"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9grub-cfg%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">修改grub.cfg配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0EFI%E7%9A%84GRUB%E5%BC%95%E5%AF%BC%E9%A1%B9"><span class="nav-number">3.</span> <span class="nav-text">添加EFI的GRUB引导项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AELiveCD%E7%9A%84iso%E6%89%80%E5%9C%A8%E5%88%86%E5%8C%BA"><span class="nav-number">4.</span> <span class="nav-text">设置LiveCD的iso所在分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">5.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%AF%BC%E5%A4%B1%E8%B4%A5%E5%A4%84%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">引导失败处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%BE%E4%B8%8D%E5%88%B0grub-cfg"><span class="nav-number">6.1.</span> <span class="nav-text">找不到grub.cfg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E6%B3%95%E5%8A%A0%E8%BD%BDgrub%E6%A8%A1%E5%9D%97"><span class="nav-number">6.2.</span> <span class="nav-text">无法加载grub模块</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/03/11/install-ubuntu-on-gpt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GPT分区表上硬盘安装ubuntu | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GPT分区表上硬盘安装ubuntu<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/install-ubuntu-on-gpt.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年3月12日 00:21:14" itemprop="dateCreated datePublished" datetime="2016-03-12T00:21:14+08:00">2016年3月12日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。</p>
+<span id="more"></span>
+
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><p>我要将iso和grub.cfg放置到某个盘的根目录下</p>
+<p>1.复制ubuntu-20.04-desktop-amd64.iso到该分区根目录下<br>2.打开iso中的&#x2F;boot&#x2F;grub&#x2F;grub.cfg，另存为该分区根目录下</p>
+<h2 id="修改grub-cfg配置"><a href="#修改grub-cfg配置" class="headerlink" title="修改grub.cfg配置"></a>修改grub.cfg配置</h2><p>使用Notepad++或者类似的第三方记事本应用程序修改U盘根目录下grub.cfg<br><em>不使用系统自带记事本，因记事本这个坑爹货无法保存为Unix换行符格式+UTF8</em></p>
+<p>文件中部找到以 menuentry 开头的四段，把它们都删除了，换成下面的menuentry内容，</p>
+<pre><code>menuentry &quot;Install Ubuntu&quot; &#123;
+    set root=(hd1,gpt3)
+    set isofile=&quot;/ubuntu-20.04-desktop-amd64.iso&quot;
+    
+    loopback loop $isofile
+    linux (loop)/casper/vmlinuz persistent boot=casper iso-scan/filename=$isofile quiet splash ro locale=zh_CN.UTF-8 noprompt --
+    initrd (loop)/casper/initrd
+&#125;
+</code></pre>
+<p>以上内容，根据每个人电脑实际情况，要修改的地方有：</p>
+<ul>
+<li>set root&#x3D;(hd1,gpt3) 这个值随意写，反正都是错误的，后面步骤会改成正确的</li>
+<li>ubuntu-20.04-desktop-amd64.iso 镜像文件名，需要修改，注意放在根目录下时，要带上斜杠&quot;&#x2F;&quot;</li>
+<li>initrd 和 vmlinuz 根据iso中的casper文件夹下对应名称改动，有的可能是带efi后缀，有的可能压缩成lz文件</li>
+</ul>
+<h2 id="添加EFI的GRUB引导项"><a href="#添加EFI的GRUB引导项" class="headerlink" title="添加EFI的GRUB引导项"></a>添加EFI的GRUB引导项</h2><p>总之，先要EFI启动到GRUB2，才能进行下一步的安装，如果是MBR启动到GRUB2，是无法安装EFI的启动器的。</p>
+<p>在Win10下，使用DiskGenius等工具，挂载系统的ESP分区</p>
+<p>WinRAR打开ubuntu的iso镜像文件，提取grubx64.efi解压到系统ESP分区中</p>
+<ul>
+<li>&#x2F;EFI&#x2F;Boot&#x2F;grubx64.efi</li>
+</ul>
+<p>最后使用 bootice x64 1.3.3 以上的版本:<br><img src="/images/install_ubuntu_on_gpt/bootice.jpeg"></p>
+<p>在UEFI选项卡中添加EFI引导项，引导文件位置：</p>
+<pre><code>\EFI\BOOT\grubx64.efi
+</code></pre>
+<p>该引导项起个名字，例如 my-grub<br>顺便勾选“下次从该引导项启动”，重启。</p>
+<p>记得插着U盘。</p>
+<p>注意：Win10如果直接重启无法进入LiveCD。正确做法：开始菜单-&gt; “设置”-&gt; “恢复”-&gt; “使用高级启动”-&gt; 选择“ubuntu_install”。</p>
+<h2 id="设置LiveCD的iso所在分区"><a href="#设置LiveCD的iso所在分区" class="headerlink" title="设置LiveCD的iso所在分区"></a>设置LiveCD的iso所在分区</h2><p>启动到grub2后，进入GRUB command line，这时候可以查看当前的所有分区</p>
+<pre><code>ls 或者 ls -l
+</code></pre>
+<p><img src="/images/install_ubuntu_on_gpt/grub_4.png"></p>
+<p>记下U盘所在正确的分区号，比如我的U盘是(hd1,gpt4)，输入加载grub.cfg内容如下</p>
+<pre><code>configfile (hd1,gpt4)/grub.cfg
+</code></pre>
+<p>屏幕会出现&quot;Install Ubuntu&quot;启动项。按e编辑&quot;Install Ubuntu&quot;启动项参数，修改</p>
+<pre><code>set root=(hd1,gpt4)
+</code></pre>
+<p>修改后直接按F10启动系统，进入LiveCD。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>点击安装系统前，先卸载isodevice卷：少了这一步会分区失败</p>
+<pre><code>sudo umount -l /isodevice
+</code></pre>
+<p>最后到分区那一个步骤时候，选择安装grub2引导器到整个硬盘</p>
+<h2 id="引导失败处理"><a href="#引导失败处理" class="headerlink" title="引导失败处理"></a>引导失败处理</h2><p>现有win8 + ubuntu共存，GPT分区。</p>
+<p>正常启动界面应该是这样的</p>
+<p><img src="/images/install_ubuntu_on_gpt/grub_1.jpg"></p>
+<p>出<strong>大事</strong>了：无法引导ubuntu。一般分两种情况</p>
+<h3 id="找不到grub-cfg"><a href="#找不到grub-cfg" class="headerlink" title="找不到grub.cfg"></a>找不到grub.cfg</h3><p>这种情形最容易解决，错误图如下</p>
+<p><img src="/images/install_ubuntu_on_gpt/grub_2.jpg"></p>
+<p>输入看看所有盘</p>
+<pre><code>ls -l
+</code></pre>
+<p>查找&#x2F;boot分区（不是EFI引导分区），记下来，比如我是(hd1,gpt5)。提示：如果&#x2F;boot没有单独分区，一般是&#x2F;分区</p>
+<p>按c进入命令行，在grub2命令行执行下列命令，根据实际情况修改root的值为&#x2F;boot分区</p>
+<pre><code>set root=(hd1,gpt5)
+configfile /boot/grub/grub.cfg
+</code></pre>
+<p>可以顺利引导原来硬盘的ubuntu，说明grub.cfg是正常的。</p>
+<p>进入ubuntu后。先挂载EFI分区 我的EFI分区设备文件是&#x2F;dev&#x2F;sda1</p>
+<pre><code>sudo umount /boot/efi
+sudo mkdir /tmp/efi
+sudo mount /dev/sda1 /tmp/efi
+</code></pre>
+<p>运行以下命令获取UUID</p>
+<pre><code>sudo blkid
+</code></pre>
+<p>从输出结果找到&#x2F;boot分区，比如我是这一行</p>
+<pre><code>/dev/sda3: UUID=&quot;78dfa873-8779-48eb-9323-1a0400749a48&quot; TYPE=&quot;ext4&quot; PARTUUID=&quot;de862c9f-8f69-4a36-8b85-8e2df635c802&quot;
+</code></pre>
+<p>那么我的UUID是</p>
+<pre><code>78dfa873-8779-48eb-9323-1a0400749a48
+</code></pre>
+<p>留意&#x2F;dev&#x2F;sda3（root的值），对应第一块硬盘的第三个分区。gpt表示法是硬盘从0开始下标，分区号从1开始。转成gpt表示法即</p>
+<pre><code>hd0,gpt3
+</code></pre>
+<p>修改EFI分区的grub.cfg</p>
+<pre><code>sudo vi /tmp/efi/EFI/ubuntu/grub.cfg
+</code></pre>
+<p>将search.fs_uuid修改为正确的&#x2F;boot所在的分区的UUID，将root改为gpt分区。</p>
+<p>最终的grub.cfg内容如下</p>
+<pre><code>search.fs_uuid 78dfa873-8779-48eb-9323-1a0400749a48 root hd0,gpt3
+set prefix=($root)&#39;/boot/grub&#39;
+configfile $prefix/grub.cfg
+</code></pre>
+<p>重启应该可以进入ubuntu了。</p>
+<h3 id="无法加载grub模块"><a href="#无法加载grub模块" class="headerlink" title="无法加载grub模块"></a>无法加载grub模块</h3><p>这种情况略麻烦一点，没有完整地加载grub的模块驱动，此时的grub称为rescue模式（阉割版？）</p>
+<p>现象如下图，不过这个图我是从网上随便找到的，实际上看到grub rescue差不多就是这个情况了。</p>
+<p><img src="/images/install_ubuntu_on_gpt/grub_3.jpg"></p>
+<p>原因我猜是GRUB版安装错误？引导器安装到不兼容的CPU架构？</p>
+<p>重启，进入LiveCD</p>
+<p>安装正确系统版本GRUB-EFI二进制文件</p>
+<pre><code>sudo apt update
+sudo apt install grub-efi -y
+</code></pre>
+<p>此时确保新安装grub二进制文件夹下有normal.mod模块，比如我的的64位系统，架构是x86_x64-efi。</p>
+<pre><code>ls /usr/lib/grub/x86_x64-efi | grep normal.mod
+</code></pre>
+<p>挂载<em>已经安装好系统的根分区</em>，比如为&#x2F;dev&#x2F;sda3，那么命令如下</p>
+<pre><code>sudo mkdir /media/my-ubuntu
+sudo mount /dev/sda3 /media/my-ubuntu
+</code></pre>
+<p>将新的x86_64-efi文件夹复制到&#x2F;boot&#x2F;grub目录</p>
+<pre><code>sudo cp -R /usr/lib/grub/x86_x64-efi /media/my-ubuntu/boot/grub/
+</code></pre>
+<p>这样就完成了缺失grub模块的修复。重启，继续。一般可以直接进入系统。</p>
+<p>如果能进入ubuntu，就继续更新grub，确保将来能引导Windows Boot Manager。</p>
+<pre><code>sudo update-grub
+</code></pre>
+<p>如果无法进入ubutnu，依然是出现错误，需要手工加载grub的normal模块</p>
+<p>使用ls命令查看所有分区序号</p>
+<pre><code>ls 或者 ls -l
+</code></pre>
+<p>查找&#x2F;boot分区（不是EFI引导分区），记下来，比如我是(hd0,gpt3)。下一步将绑定root分区，在grub rescue命令行中输入</p>
+<pre><code>set root=(hd0,gpt3)
+set prefix=/boot/grub
+insmod normal
+normal
+</code></pre>
+<p>即可进入加载好驱动的GRUB2完整版。如果点击&quot;Ubuntu&quot;启动项错误，可以参考第一种情况修改正确的&#x2F;boot分区，或者指定内核文件。</p>
+<p>启动进入Ubuntu，使用boot-repair修复（需要联网）</p>
+<pre><code>sudo apt-add-repository ppa:yannubuntu/boot-repair
+sudo apt-get update
+sudo apt-get install -y boot-repair
+boot-repair
+</code></pre>
+<p>点击高级选项</p>
+<ul>
+<li>GRUB位置&quot; -&gt; 单独的&#x2F;boot&#x2F;efi&quot;选择当前引导的ESP分区(&#x2F;sda1)，一般是第一个分区。</li>
+<li>GRUB选项&quot; -&gt; 取消勾选&quot;Secure Boot&quot;</li>
+<li>GRUB选项&quot; -&gt; 勾选&quot;重装GRUB前先移除它</li>
+</ul>
+<p>直接修复，修复时间可能较长，而且屏幕上会出现一定的指示去下载一定的软件包。我花了十分钟boot-repair才弄好。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/03/11/Cryptography-I-week-3/" rel="prev" title="Cryptography解题报告：Message Integrity">
+                  <i class="fa fa-chevron-left"></i> Cryptography解题报告：Message Integrity
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/03/13/Cryptography-I-week-4/" rel="next" title="Cryptography解题报告：Padding Oracle Attack">
+                  Cryptography解题报告：Padding Oracle Attack <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

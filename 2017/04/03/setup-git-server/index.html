@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建git服务器">
+<meta property="og:url" content="http://lixingcong.github.io/2017/04/03/setup-git-server/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/setup_git_server/git-topo.png">
+<meta property="article:published_time" content="2017-04-03T05:39:02.000Z">
+<meta property="article:modified_time" content="2017-04-03T05:39:02.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/setup_git_server/git-topo.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2017/04/03/setup-git-server/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2017/04/03/setup-git-server/","path":"2017/04/03/setup-git-server/","title":"搭建git服务器"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>搭建git服务器 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">搭建服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Alice%E7%AB%AF"><span class="nav-number">1.1.</span> <span class="nav-text">Alice端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server%E7%AB%AF"><span class="nav-number">1.2.</span> <span class="nav-text">Server端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%93%E5%BA%93%E5%88%9B%E5%BB%BA%E4%B8%8E%E6%9D%83%E9%99%90"><span class="nav-number">2.</span> <span class="nav-text">仓库创建与权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bob%E8%8A%82%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">Bob节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Carl%E8%8A%82%E7%82%B9"><span class="nav-number">3.2.</span> <span class="nav-text">Carl节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E8%AE%BE%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">其它设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E9%A1%B9"><span class="nav-number">4.1.</span> <span class="nav-text">安全项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%AD%E8%A8%80%E9%A1%B9"><span class="nav-number">4.2.</span> <span class="nav-text">语言项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#git-hooks"><span class="nav-number">4.3.</span> <span class="nav-text">git-hooks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2017/04/03/setup-git-server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="搭建git服务器 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          搭建git服务器<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/setup-git-server.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017年4月3日 13:39:02" itemprop="dateCreated datePublished" datetime="2017-04-03T13:39:02+08:00">2017年4月3日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。</p>
+<span id="more"></span>
+<p>我搭建的服务器框架大致如下图：</p>
+<p><img src="/images/setup_git_server/git-topo.png"></p>
+<p>那么以下的搭建操作就是基于这个图进行配置。每个节点都是ubuntu 20.04发行版，图示有4个节点</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Server</td>
+<td>中心化的git仓库，本文假设IP为192.168.100.100</td>
+</tr>
+<tr>
+<td>Alice</td>
+<td>网管，负责创建仓库或者各种访问权限</td>
+</tr>
+<tr>
+<td>Bob</td>
+<td>项目组长，负责Code-Review和Merge分支到master,拥有修改仓库权限</td>
+</tr>
+<tr>
+<td>Carl</td>
+<td>项目开发者，只能在自己分支上面修改</td>
+</tr>
+</tbody></table>
+<h2 id="搭建服务器"><a href="#搭建服务器" class="headerlink" title="搭建服务器"></a>搭建服务器</h2><p>搭建服务器操作在Server和Alice节点进行</p>
+<h3 id="Alice端"><a href="#Alice端" class="headerlink" title="Alice端"></a>Alice端</h3><p>生成一个rsa密钥对</p>
+<pre><code>cd /tmp
+ssh-keygen -t rsa -b 4096 -C &quot;alice&quot;
+</code></pre>
+<p>假设生成的公私钥为</p>
+<pre><code># 私钥
+~/.ssh/alice
+# 公钥
+~/.ssh/alice.pub
+</code></pre>
+<p>将私钥写入当前用户ssh配置文件中</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host server
+  User git
+  Hostname 192.168.100.100
+  Port 22
+  ServerAliveInterval 30
+  IdentityFile ~/.ssh/alice
+</code></pre>
+<p>将公钥上传到Server备用</p>
+<pre><code>scp ~/.ssh/alice.pub root@server:/tmp/
+</code></pre>
+<h3 id="Server端"><a href="#Server端" class="headerlink" title="Server端"></a>Server端</h3><p>留意gitolite的README，提到依赖的软件，有最低版本的要求</p>
+<ul>
+<li>git 1.6.6 or later</li>
+<li>perl 5.8.8 or later</li>
+<li>openssh 5.0 or later</li>
+</ul>
+<p>创建git账户并切换到新帐户</p>
+<pre><code>adduser git
+su git
+cd ~
+</code></pre>
+<p>创建空的ssh配置目录</p>
+<pre><code>mkdir -p ~/.ssh
+</code></pre>
+<p>克隆gitolite仓库</p>
+<pre><code>git clone https://github.com/sitaramc/gitolite
+cd gitolite
+</code></pre>
+<p>创建一个目录存放gitolite二进制文件,然后安装</p>
+<pre><code>mkdir -p ~/bin
+./install -to ~/bin
+</code></pre>
+<p>设置Alice的公钥，这样Alice就成为了gitolite管理员</p>
+<pre><code>~/bin/gitolite setup -pk /tmp/alice.pub
+</code></pre>
+<p>执行上面一条命令后，&#x2F;tmp&#x2F;alice.pub 被拷贝到~&#x2F;.gitolite&#x2F;keydir目录下，并且仓库gitolite-admin克隆到本地后，keydir目录也有一份alice.pub。</p>
+<p>所有仓库存放在<code>~/repositories</code>下，gitolite会自动修改<code>~/.ssh/authorized_keys</code>实现不同用户的访问。</p>
+<p>因此单独使用一个git用户的目的是，不希望用户手动修改authorized_keys里面的内容，而是通过gitolite来间接修改它。</p>
+<h2 id="仓库创建与权限"><a href="#仓库创建与权限" class="headerlink" title="仓库创建与权限"></a>仓库创建与权限</h2><p>修改访问权限在Alice节点进行</p>
+<p>克隆admin仓库，因为服务器只有Alice的公钥，其它用户无权访问。</p>
+<pre><code>cd ~
+git clone git@server:gitolite-admin
+cd gitolite-admin
+</code></pre>
+<p>直接编辑这个conf文件实现权限管理</p>
+<pre><code>conf/gitolite.conf
+</code></pre>
+<p>详细的权限和仓库创建可以参考官方README:</p>
+<pre><code>http://gitolite.com/gitolite/conf
+https://github.com/sitaramc/gitolite#adding-users-and-repos
+</code></pre>
+<p>比如我修改为</p>
+<pre><code>repo foo
+    RW+                     =   bob
+    -   master              =   carl
+    -   refs/tags/v[0-9]    =   carl
+    RW+ carl                =   carl
+    R                       =   carl
+</code></pre>
+<p>那么达到的效果是：</p>
+<ol>
+<li>创建了一个名字为foo的仓库</li>
+<li>RW+表示可读可写可overwrite，Bob拥有仓库最大权限</li>
+<li>减号说明Carl没有master分支和tags的读写权限</li>
+<li>Carl只能在自己分支(carl分支)上面进行修改,拥有carl分支的最大权限</li>
+<li>Carl可以读取其它分支，这时候就可以读master分支了</li>
+</ol>
+<p>注意等号后面的名字是跟ssh公钥文件名字对应的，如果gitolite-admin&#x2F;keydir目录下的公钥文件名字是</p>
+<pre><code>carl_ssh_key.pub
+</code></pre>
+<p>那么等号后面的内容就不是carl，而是carl_ssh_key</p>
+<p>为了与conf&#x2F;gitolite.conf中的帐户对应，创建ssh公私鈅要保存为正确的文件名。</p>
+<pre><code># 输出id_rsa的时候,保存为~/my_gitolite_keys/bob
+ssh-keygen -t rsa -b 4096 -C &quot;bob&quot;
+
+# 输出id_rsa的时候,保存为~/my_gitolite_keys/carl
+ssh-keygen -t rsa -b 4096 -C &quot;carl&quot;
+</code></pre>
+<p>把~&#x2F;my_gitolite_keys&#x2F;中对应的公私鈅交给Bob和Carl，下面测试步骤，要用到公私鈅</p>
+<p>将公钥文件添加到gitolite-admin仓库中</p>
+<pre><code>cp ~/my_gitolite_keys/*.pub ~/gitolite-admin/keydir/
+</code></pre>
+<p>修改conf和生成密钥完毕，就可以commit，然后将新配置push给server端</p>
+<pre><code>cd ~/gitolite-admin
+git add *
+git commit -m &quot;add user Bob, Carl; generate keys&quot;
+git push
+</code></pre>
+<p>那么server端在push结束后自动执行perl脚本，实现权限管理。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>测试git在Bob和Carl节点进行</p>
+<p>将由Alice交给Bob和Carl的公私鈅，分别存放到各自节点的.ssh目录下</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>公私鈅存放路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bob</td>
+<td>公钥 ~&#x2F;.ssh&#x2F;bob.pub<br>私钥 ~&#x2F;.ssh&#x2F;bob</td>
+</tr>
+<tr>
+<td>Carl</td>
+<td>公钥 ~&#x2F;.ssh&#x2F;carl.pub<br>私钥 ~&#x2F;.ssh&#x2F;carl</td>
+</tr>
+</tbody></table>
+<h3 id="Bob节点"><a href="#Bob节点" class="headerlink" title="Bob节点"></a>Bob节点</h3><p>将私钥写入当前用户ssh配置文件中</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host server
+  User git
+  Hostname 192.168.100.100
+  Port 22
+  ServerAliveInterval 30
+  IdentityFile ~/.ssh/bob
+</code></pre>
+<p>本地克隆服务器上的foo仓库，测试修改代码</p>
+<pre><code>cd ~
+git clone git@server:foo.git
+cd foo
+echo &quot;hello world&quot; &gt; README.md
+git add README.md
+git commit -m &quot;print hello world&quot;
+git push
+</code></pre>
+<p>这样即验证了Bob有读写服务器master分支的权限</p>
+<h3 id="Carl节点"><a href="#Carl节点" class="headerlink" title="Carl节点"></a>Carl节点</h3><p>将私钥写入当前用户ssh配置文件中</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host server
+  User git
+  Hostname 192.168.100.100
+  Port 22
+  ServerAliveInterval 30
+  IdentityFile ~/.ssh/carl
+</code></pre>
+<p>本地克隆服务器上的foo仓库，测试修改代码</p>
+<pre><code>cd ~
+git clone git@server:foo.git
+cd foo
+echo &quot;try to modify branch master&quot; &gt; README.md
+git add README.md
+git commit -m &quot;invalid commit&quot;
+git push
+</code></pre>
+<p>这么做push的话会被拒绝，即验证了Carl没有写服务器master分支的权限。</p>
+<p>下面测试在carl分支的工作流程</p>
+<p>情况1: 如果上游没有carl分支，可以添加一个carl分支并Push到服务器上</p>
+<pre><code>git checkout -b carl
+echo &quot;create branch carl&quot; &gt; README.md
+git add README.md
+git commit -m &quot;branch: carl created&quot;
+git push --set-upstream origin carl
+</code></pre>
+<p>情况2: 如果上游已经存在carl分支，直接切换到carl分支</p>
+<pre><code>git checkout carl
+</code></pre>
+<p>经常性使用git pull以拉取服务器上最新的代码版本。</p>
+<h2 id="其它设置"><a href="#其它设置" class="headerlink" title="其它设置"></a>其它设置</h2><h3 id="安全项"><a href="#安全项" class="headerlink" title="安全项"></a>安全项</h3><p>修改默认的shell为gitolite专用的，而不是默认的bash，这样让用户无法通过sshkey登陆到终端，且在root用户调用su git也无法切换（提示GL_USER not set）</p>
+<pre><code>sudo vi /etc/passwd
+# 修改git用户的shell程序为/home/git/bin/gitolite-shell
+</code></pre>
+<p>不允许git用户使用密码登陆</p>
+<pre><code>sudo vi /etc/ssh/sshd_config
+# 增加以下
+Match User git
+    PasswordAuthentication no
+
+# 重启ssh服务
+sudo systemctl restart sshd.service
+</code></pre>
+<h3 id="语言项"><a href="#语言项" class="headerlink" title="语言项"></a>语言项</h3><p>避免每次git push都产生如下警告</p>
+<pre><code>perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = &quot;en_US:en&quot;,
+        LC_ALL = (unset),
+        LC_CTYPE = &quot;zh_CN.UTF-8&quot;,
+        LANG = &quot;en_US.UTF-8&quot;
+    are supported and installed on your system.
+perl: warning: Falling back to a fallback locale (&quot;en_US.UTF-8&quot;)
+</code></pre>
+<p>首先重新生成locale</p>
+<pre><code>sudo dpkg-reconfigure locales
+</code></pre>
+<p>然后在sshd_config中禁止客户端传递环境变量给服务器，因为服务器一般才使用一种语言，而不是采用客户端的语言环境。</p>
+<pre><code>vi /etc/ssh/sshd_config
+# 注释掉这一行
+# AcceptEnv LANG LC_*
+</code></pre>
+<p>保存并退出，重启ssh服务</p>
+<pre><code>sudo systemctl restart sshd.service
+</code></pre>
+<h3 id="git-hooks"><a href="#git-hooks" class="headerlink" title="git-hooks"></a>git-hooks</h3><p>设置pre-receive, post-receive等钩子，实现语法检测或者邮件推送。参考<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/29541554/is-it-possible-to-implement-repo-based-hooks-in-gitolite">这篇文章</a>进行设置。</p>
+<p>在RC文件中取消注释数行：</p>
+<pre><code>vi ~/.gitolite.rc
+
+# 取消注释这一行，表示可以从admin仓库中增加local文件，注意不要取消错了，有两行很相似
+LOCAL_CODE =&gt; &quot;$rc&#123;GL_ADMIN_BASE&#125;/local&quot;,
+
+# 取消注释这一行，表示启用单独仓库配置hook
+&#39;repo-specific-hooks&#39;
+</code></pre>
+<p>保存，然后在克隆好的gitolite-admin仓库根目录下建立文件夹</p>
+<pre><code>cd /path/to/your/gitolite-admin-cloned
+mkdir -p local/hooks/repo-specific
+cd local/hooks/repo-specific
+</code></pre>
+<p>在此目录创建对应的hook可执行文件即可，比如我使用这个cppcheck检测Qt工程。文件名不要使用git标准的pre-receive, post-receive, post-update等</p>
+<pre><code>#!/bin/bash
+# works only in gitolite 3.6+
+# hook as pre-receive
+
+REQUIRE_BINS=(&quot;cppcheck&quot; &quot;git&quot;)
+for b in &quot;$&#123;REQUIRE_BINS[@]&#125;&quot;; do
+    type $b &gt;/dev/null 2&gt;&amp;1 || &#123; echo &gt;&amp;2 &quot;$b is required, but was not found. exited&quot;; exit 1; &#125;
+done
+
+# https://github.com/danmar/cppcheck/blob/main/cfg/qt.cfg
+QT_CFG=qt.cfg
+if [ -z $GL_ADMIN_BASE ];then
+    QT_CFG=$PWD/$QT_CFG
+else
+    QT_CFG=$GL_ADMIN_BASE/local/cppcheck-libs/$QT_CFG
+fi
+
+[[ -f $QT_CFG || -L $QT_CFG  ]] || &#123; echo &gt;&amp;2 &quot;Cannot find $QT_CFG. exited&quot;; exit 1; &#125;
+
+NULL_SHA1=&quot;0000000000000000000000000000000000000000&quot; # 40 0&#39;s
+TMP_DIR=$( mktemp -d /tmp/cppcheck-XXXXX )
+EXIT_CODE=0
+
+while read oldrev newrev ref; do
+    if [ &quot;$oldrev&quot; = &quot;$NULL_SHA1&quot; ]; then
+        oldrev=&quot;$newrev^&quot;
+    fi
+
+    echo -n &quot;new commit &quot;
+    git log --pretty=oneline --abbrev-commit -n 1 $newrev
+    echo -n &quot;old commit &quot;
+    git log --pretty=oneline --abbrev-commit -n 1 $oldrev
+
+    for filename in $( git diff --name-only $oldrev $newrev | grep -E &#39;*\.(c|cpp|cc|cxx|h|hpp)$&#39; ); do
+        short_file_name=$( basename $filename )
+        git show $newrev:$filename &gt; $TMP_DIR/$short_file_name
+        echo &quot;checking $filename ...&quot;
+        cppcheck --error-exitcode=1 --quiet --library=$QT_CFG $TMP_DIR/$short_file_name
+        [ &quot;x$?&quot; = &quot;x0&quot; ] || EXIT_CODE=1
+    done
+done
+
+[ -d &quot;$TMP_DIR&quot; ] &amp;&amp; rm -rf $TMP_DIR
+exit $EXIT_CODE
+</code></pre>
+<p>保存以上内容为my-hook，并设置为可执行权限</p>
+<pre><code>echo &#39;echo good; exit 0&#39; &gt; my-hook
+chmod +x my-hook
+</code></pre>
+<p>下载qt.cfg作为cppcheck的语法文件</p>
+<pre><code>mkdir -p /path/to/your/gitolite-admin-cloned/local/cppcheck-libs
+wget https://github.com/danmar/cppcheck/blob/main/cfg/qt.cfg
+mv qt.cfg /path/to/your/gitolite-admin-cloned/local/cppcheck-libs/
+</code></pre>
+<p>修改conf文件，指定hook</p>
+<pre><code>vi /path/to/your/gitolite-admin-cloned/conf/gitolite.conf
+
+# 设置hook
+repo foo
+      option hook.pre-receive = my-hook
+</code></pre>
+<p>提交并push到远端gitolite-admin，下次推送foo仓库即可生效。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="/2016/01/21/ssh-key-usage">ssh key配置</a><br><a target="_blank" rel="noopener" href="https://github.com/sitaramc/gitolite/blob/master/README.markdown">gitolite-README</a><br><a target="_blank" rel="noopener" href="http://perthcharles.github.io/2015/08/24/setup-gitolite-service-git-1/">gitolite搭建git仓库管理服务</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/02/07/twidere-api/" rel="prev" title="自建Twidere API">
+                  <i class="fa fa-chevron-left"></i> 自建Twidere API
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/04/24/ipv6-nat-lede/" rel="next" title="LEDE下的ipv6 NAT6">
+                  LEDE下的ipv6 NAT6 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

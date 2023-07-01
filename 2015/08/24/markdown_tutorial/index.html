@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="标题生成h1--h6,在文字前面加上 1--6个# 来实现 # 一级标题 ## 二级标题 ### 三级标题 #### 四级标题 ##### 五级标题 ###### 六级标题 大标题 &#x3D; 小标题 -">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Markdown学习笔记">
+<meta property="og:url" content="http://lixingcong.github.io/2015/08/24/markdown_tutorial/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="标题生成h1--h6,在文字前面加上 1--6个# 来实现 # 一级标题 ## 二级标题 ### 三级标题 #### 四级标题 ##### 五级标题 ###### 六级标题 大标题 &#x3D; 小标题 -">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/markdown_tutorial/27.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/markdown_tutorial/original.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/markdown_tutorial/14.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/markdown_tutorial/18.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/markdown_tutorial/26.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/markdown_tutorial/25.png">
+<meta property="article:published_time" content="2015-08-24T16:52:31.000Z">
+<meta property="article:modified_time" content="2015-08-24T16:52:31.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="Markdown">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/markdown_tutorial/27.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/08/24/markdown_tutorial/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/08/24/markdown_tutorial/","path":"2015/08/24/markdown_tutorial/","title":"Markdown学习笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Markdown学习笔记 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">标题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">一级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">二级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text">三级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9B%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">四级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%94%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">2.1.1.1.1.</span> <span class="nav-text">五级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%85%AD%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">2.1.1.1.1.1.</span> <span class="nav-text">六级标题</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%A7%E6%A0%87%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">大标题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E6%A0%87%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">小标题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B2%97%E4%BD%93%E3%80%81%E6%96%9C%E4%BD%93"><span class="nav-number">4.</span> <span class="nav-text">粗体、斜体</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E5%88%92%E7%BA%BF"><span class="nav-number">5.</span> <span class="nav-text">下划线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%89%B2%E7%BA%BF"><span class="nav-number">6.</span> <span class="nav-text">分割线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%97%E8%A1%A8"><span class="nav-number">7.</span> <span class="nav-text">列表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E5%BA%8F%E5%88%97%E8%A1%A8"><span class="nav-number">7.1.</span> <span class="nav-text">无序列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%82%E6%AC%A1%E5%88%97%E8%A1%A8"><span class="nav-number">7.2.</span> <span class="nav-text">层次列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-list%E5%88%97%E8%A1%A8"><span class="nav-number">7.3.</span> <span class="nav-text">TODO-list列表</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%B6%85%E9%93%BE%E6%8E%A5%E3%80%81%E5%9B%BE%E7%89%87"><span class="nav-number">8.</span> <span class="nav-text">添加超链接、图片</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E7%BD%91%E7%AB%99%E9%93%BE%E6%8E%A5"><span class="nav-number">8.1.</span> <span class="nav-text">最简单的网站链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BC%A0%E6%A0%87%E7%A7%BB%E8%BF%87%EF%BC%8C%E6%9C%89%E6%8F%90%E7%A4%BA%E6%96%87%E5%AD%97%E7%9A%84%E9%93%BE%E6%8E%A5"><span class="nav-number">8.2.</span> <span class="nav-text">鼠标移过，有提示文字的链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%B9%E5%87%BB%E5%9B%BE%E7%89%87%E8%BF%9B%E8%A1%8C%E9%93%BE%E6%8E%A5"><span class="nav-number">8.3.</span> <span class="nav-text">点击图片进行链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E9%93%BE%E6%8E%A5"><span class="nav-number">8.4.</span> <span class="nav-text">空链接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A8%E6%A0%BC"><span class="nav-number">9.</span> <span class="nav-text">表格</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%BB%A3%E7%A0%81%E6%A1%86"><span class="nav-number">10.</span> <span class="nav-text">添加代码框</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%A1%86"><span class="nav-number">10.1.</span> <span class="nav-text">一行代码框</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-number">10.2.</span> <span class="nav-text">多行代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">11.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E8%A1%8C%E9%95%BF%E6%96%87%E5%AD%97"><span class="nav-number">12.</span> <span class="nav-text">单行长文字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A6%96%E8%A1%8C%E7%BC%A9%E8%BF%9B"><span class="nav-number">13.</span> <span class="nav-text">首行缩进</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8%EF%BC%88%E6%B3%A8%E8%84%9A%EF%BC%89"><span class="nav-number">14.</span> <span class="nav-text">脚注（注脚）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%89%B2%E7%BA%BF-1"><span class="nav-number">15.</span> <span class="nav-text">分割线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E6%96%9C%E6%9D%A0"><span class="nav-number">16.</span> <span class="nav-text">反斜杠</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E7%BA%BF"><span class="nav-number">17.</span> <span class="nav-text">删除线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E5%9E%8B%E6%96%87%E6%9C%AC"><span class="nav-number">18.</span> <span class="nav-text">小型文本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AC%E4%B9%89"><span class="nav-number">19.</span> <span class="nav-text">转义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%92%E6%A0%87"><span class="nav-number">20.</span> <span class="nav-text">角标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E9%AB%98%E4%BA%AE"><span class="nav-number">21.</span> <span class="nav-text">文本高亮</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">22.</span> <span class="nav-text">后记</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/08/24/markdown_tutorial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Markdown学习笔记 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Markdown学习笔记<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/markdown_tutorial.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年8月25日 00:52:31" itemprop="dateCreated datePublished" datetime="2015-08-25T00:52:31+08:00">2015年8月25日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h1><p>生成h1--h6,在文字前面加上 1--6个# 来实现</p>
+<pre><code># 一级标题
+## 二级标题
+### 三级标题
+#### 四级标题
+##### 五级标题
+###### 六级标题
+大标题
+=
+小标题
+-
+</code></pre>
+<span id="more"></span>
+
+<p>效果：</p>
+<h1 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h1><h2 id="二级标题"><a href="#二级标题" class="headerlink" title="二级标题"></a>二级标题</h2><h3 id="三级标题"><a href="#三级标题" class="headerlink" title="三级标题"></a>三级标题</h3><h4 id="四级标题"><a href="#四级标题" class="headerlink" title="四级标题"></a>四级标题</h4><h5 id="五级标题"><a href="#五级标题" class="headerlink" title="五级标题"></a>五级标题</h5><h6 id="六级标题"><a href="#六级标题" class="headerlink" title="六级标题"></a>六级标题</h6><h1 id="大标题"><a href="#大标题" class="headerlink" title="大标题"></a>大标题</h1><h2 id="小标题"><a href="#小标题" class="headerlink" title="小标题"></a>小标题</h2><h1 id="粗体、斜体"><a href="#粗体、斜体" class="headerlink" title="粗体、斜体"></a>粗体、斜体</h1><pre><code>**粗体1**
+__粗体2__
+*斜体1*
+_斜体2_
+</code></pre>
+<p>效果：</p>
+<p><strong>粗体1</strong></p>
+<p><strong>粗体2</strong></p>
+<p><em>斜体1</em></p>
+<p><em>斜体2</em></p>
+<h1 id="下划线"><a href="#下划线" class="headerlink" title="下划线"></a>下划线</h1><p>Markdown自身没有实现下划线，但它是HTML的子集。 建议不要加下划线，容易误会成链接。</p>
+<pre><code>&lt;u&gt;这是下划线&lt;/u&gt;
+</code></pre>
+<p>效果：</p>
+<p><u>这是下划线</u></p>
+<h1 id="分割线"><a href="#分割线" class="headerlink" title="分割线"></a>分割线</h1><pre><code>---
+***
+~~文字删除线~~
+</code></pre>
+<p>效果</p>
+<hr>
+<hr>
+<p><del>文字删除线</del></p>
+<h1 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h1><h2 id="无序列表"><a href="#无序列表" class="headerlink" title="无序列表"></a>无序列表</h2><pre><code>- 无序列表项目
+- 无序列表项目
+- 无序列表项目
+
+* 无序列表项目
+* 无序列表项目
+* 无序列表项目
+
+1. 有序列表项目
+2. 有序列表项目
+3. 有序列表项目
+
+- 外层列表项目
+ + 内层列表项目
+ + 内层列表项目
+ + 内层列表项目
+- 外层列表项目
+</code></pre>
+<p>效果：</p>
+<ul>
+<li>无序列表项目</li>
+<li>无序列表项目</li>
+<li>无序列表项目</li>
+</ul>
+<ul>
+<li>无序列表项目</li>
+<li>无序列表项目</li>
+<li>无序列表项目</li>
+</ul>
+<ol>
+<li>有序列表项目</li>
+<li>有序列表项目</li>
+<li>有序列表项目</li>
+</ol>
+<ul>
+<li>外层列表项目</li>
+</ul>
+<ul>
+<li>内层列表项目</li>
+<li>内层列表项目</li>
+<li>内层列表项目</li>
+</ul>
+<ul>
+<li>外层列表项目</li>
+</ul>
+<h2 id="层次列表"><a href="#层次列表" class="headerlink" title="层次列表"></a>层次列表</h2><pre><code>#### 第一章
+
+1. 第一节
+* 第二节(你不用敲 &quot;2&quot;，自动就有了）
+    * 第一小节（推荐每层次缩进四个空格）
+        * 小小节 1
+        * 小小节 2
+    * 第二小节
+</code></pre>
+<p>“*” 后面要加空格，这是必须的，除了 *，还可以使用 + 或者 -。</p>
+<p>如果格式出现问题，多加个空行，一般就好了。<br>效果：</p>
+<p><img src="/images/markdown_tutorial/27.png"></p>
+<h2 id="TODO-list列表"><a href="#TODO-list列表" class="headerlink" title="TODO-list列表"></a>TODO-list列表</h2><pre><code>- [x] Motion design.
+- [x] Expandable information area.
+</code></pre>
+<p>效果：</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Motion design.</li>
+<li><input checked="" disabled="" type="checkbox"> Expandable information area.</li>
+</ul>
+<h1 id="添加超链接、图片"><a href="#添加超链接、图片" class="headerlink" title="添加超链接、图片"></a>添加超链接、图片</h1><h2 id="最简单的网站链接"><a href="#最简单的网站链接" class="headerlink" title="最简单的网站链接"></a>最简单的网站链接</h2><pre><code>[www.baidu.com](https://www.baidu.com)
+</code></pre>
+<p>如果在[baidu.com]前面加上感叹号！，不会显示文字</p>
+<p>效果：</p>
+<p><a target="_blank" rel="noopener" href="https://www.baidu.com/">www.baidu.com</a></p>
+<h2 id="鼠标移过，有提示文字的链接"><a href="#鼠标移过，有提示文字的链接" class="headerlink" title="鼠标移过，有提示文字的链接"></a>鼠标移过，有提示文字的链接</h2><p>利用脚注，附上文字提示</p>
+<pre><code>一种带提示的链接: [鼠标移过来，**先别单击** ~][hover]
+
+[hover]: http://www.google.com.sg &quot;Google Sg 更快，更好用。好，现在单击吧&quot;
+</code></pre>
+<p>效果：</p>
+<p>一种带提示的链接: <a target="_blank" rel="noopener" href="http://www.google.com.sg/" title="Google Sg 更快，更好用。好，现在单击吧">鼠标移过来，<strong>先别单击</strong> ~</a></p>
+<h2 id="点击图片进行链接"><a href="#点击图片进行链接" class="headerlink" title="点击图片进行链接"></a>点击图片进行链接</h2><pre><code>[![][jane-eyre-pic]][jane-eyre-douban]
+
+[jane-eyre-pic]: images/markdown_tutorial/original.png
+
+[jane-eyre-douban]: http://www.douban.com
+</code></pre>
+<p>效果：</p>
+<p><a target="_blank" rel="noopener" href="http://www.douban.com/"><img src="/images/markdown_tutorial/original.png"></a></p>
+<h2 id="空链接"><a href="#空链接" class="headerlink" title="空链接"></a>空链接</h2><pre><code>[无链接的链接][null-link]
+
+[null-link]: chrome://not-a-link
+</code></pre>
+<p>效果：（哪怕它只有颜色变化）</p>
+<p><a href="chrome://not-a-link">无链接的链接</a></p>
+<h1 id="表格"><a href="#表格" class="headerlink" title="表格"></a>表格</h1><p><img src="/images/markdown_tutorial/14.png"></p>
+<p>效果</p>
+<table>
+<thead>
+<tr>
+<th>ABCD</th>
+<th align="center">EFGH</th>
+<th align="right">IJKL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td align="center">b</td>
+<td align="right">c</td>
+</tr>
+<tr>
+<td>d</td>
+<td align="center">e</td>
+<td align="right">f</td>
+</tr>
+<tr>
+<td>g</td>
+<td align="center">h</td>
+<td align="right">i</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>ABCD</th>
+<th>EFGH</th>
+<th>IGKL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td>b</td>
+<td>c</td>
+</tr>
+<tr>
+<td>d</td>
+<td>e</td>
+<td>f</td>
+</tr>
+<tr>
+<td>g</td>
+<td>h</td>
+<td>i</td>
+</tr>
+</tbody></table>
+<h1 id="添加代码框"><a href="#添加代码框" class="headerlink" title="添加代码框"></a>添加代码框</h1><h2 id="一行代码框"><a href="#一行代码框" class="headerlink" title="一行代码框"></a>一行代码框</h2><p><img src="/images/markdown_tutorial/18.png"></p>
+<p>其中&quot; &#96; &quot;, 就是esc键下面那个符号</p>
+<p><code>These words</code>（加框！！！）</p>
+<h2 id="多行代码"><a href="#多行代码" class="headerlink" title="多行代码"></a>多行代码</h2><p>方法一：拷贝源代码进来，然后给每行前面加tab，可以通过MarkdownPad软件实现，选中代码，按一下tab即可，很方便。</p>
+<p>方法二：</p>
+<p>每行前面加四个空格</p>
+<p>效果：</p>
+<pre><code>#include &lt;cstdio&gt;
+main()
+&#123;
+    printf(&quot;markdown\n&quot;);
+&#125;
+</code></pre>
+<p>方法三：<br>首尾加三个&#96;，如图所示</p>
+<p><img src="/images/markdown_tutorial/26.png"></p>
+<p>优点：在gitbub能显示行号。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bash</span><br><span class="line">$ hexo</span><br><span class="line"><span class="keyword">generate</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>方法：</p>
+<pre><code>&gt; 引用的文字
+&gt; 引用的文字
+&gt; 引用的文字
+</code></pre>
+<p>效果</p>
+<blockquote>
+<p>引用的文字<br>引用的文字<br>引用的文字</p>
+</blockquote>
+<p>（注意引用多行，需要多几下回车键）</p>
+<p>若在引用内，还有引用（嵌套），加&gt;&gt;</p>
+<pre><code>&gt; 引用的文字A
+
+
+ &gt;&gt; 引言内的引言---嵌套
+
+
+&gt; 引用的文字B
+</code></pre>
+<p>效果：</p>
+<blockquote>
+<p>引用的文字A</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>引言内的引言---嵌套</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>引用的文字B</p>
+</blockquote>
+<h1 id="单行长文字"><a href="#单行长文字" class="headerlink" title="单行长文字"></a>单行长文字</h1><p>方法一：只需在需要单行长文字的首尾两端加上三个&#96;即可</p>
+<p>方法二：在需要以单行长文字显示的文字段落前加四个空格，类似于代码框</p>
+<h1 id="首行缩进"><a href="#首行缩进" class="headerlink" title="首行缩进"></a>首行缩进</h1><p>行首输入这个，即可缩进，输入多少个就是缩进多少字符</p>
+<pre><code>&amp;nbsp;
+</code></pre>
+<p>&amp;nbsp;缩进一个字符缩进一个字符缩进一个字符缩进一个字符缩进一个字符缩进一个字符</p>
+<p>&amp;nbsp;&amp;nbsp;缩进两个字符缩进两个字符缩进两个字符缩进两个字符缩进两个字符缩进两个字符</p>
+<p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;缩进四个字符缩进四个字符缩进四个字符缩进四个字符缩进四个字符缩进四个字符</p>
+<p>其他：Markdown语法会忽略首行开头的空格，如果要体现出首行开头空两个的效果，可以使用全角符号下的空格，windows下使用shift+空格切换。</p>
+<h1 id="脚注（注脚）"><a href="#脚注（注脚）" class="headerlink" title="脚注（注脚）"></a>脚注（注脚）</h1><pre><code>这是一个注脚测试[^footer1]
+
+[^footer1]: 这是一个测试，用来阐释注脚。
+</code></pre>
+<p>效果：</p>
+<p>这是一个注脚测试<a href="%E8%BF%99%E6%98%AF%E4%B8%80%E4%B8%AA%E6%B5%8B%E8%AF%95%EF%BC%8C%E7%94%A8%E6%9D%A5%E9%98%90%E9%87%8A%E6%B3%A8%E8%84%9A%E3%80%82">^footer1</a></p>
+<p><strong>PS:</strong> 实际github上没有脚注功能，实测点脚注就打开了新网页了，可能在某些markdown能用。</p>
+<h1 id="分割线-1"><a href="#分割线-1" class="headerlink" title="分割线"></a>分割线</h1><p>只要*或者-大于等于三个就可组成一条平行线。</p>
+<p><img src="/images/markdown_tutorial/25.png"></p>
+<p>但是，使用- - -作为水平分割线时，要在它的前后都空一行，防止- - -被当成标题标记的表示方式。</p>
+<h1 id="反斜杠"><a href="#反斜杠" class="headerlink" title="反斜杠"></a>反斜杠</h1><p>转义符，用于禁用markdown的标记。</p>
+<p>输入</p>
+<pre><code>\*这里不会显示斜体\*
+</code></pre>
+<p>测试结果：</p>
+<p>*这里不会显示斜体*</p>
+<h1 id="删除线"><a href="#删除线" class="headerlink" title="删除线"></a>删除线</h1><p>使用两个~即可、</p>
+<pre><code>~~这是一条删除线~~
+</code></pre>
+<p>效果</p>
+<p><del>这是一条删除线</del></p>
+<h1 id="小型文本"><a href="#小型文本" class="headerlink" title="小型文本"></a>小型文本</h1><pre><code>&lt;small&gt;文本内容&lt;/small&gt;
+</code></pre>
+<p>效果：</p>
+<p><small>文本内容</small></p>
+<h1 id="转义"><a href="#转义" class="headerlink" title="转义"></a>转义</h1><p>使用某些支持markdown的博客程序中特别小心转义。</p>
+<p>大括号需要转义（hexo环境下）</p>
+<h1 id="角标"><a href="#角标" class="headerlink" title="角标"></a>角标</h1><pre><code>上标^上标^
+下标~下标~
+</code></pre>
+<p>效果：</p>
+<p>上标^上标^</p>
+<p>下标<del>下标</del></p>
+<h1 id="文本高亮"><a href="#文本高亮" class="headerlink" title="文本高亮"></a>文本高亮</h1><p>使用HTML标签进行高亮</p>
+<pre><code>&lt;mark&gt;高亮的文本&lt;/mark&gt;
+</code></pre>
+<p>效果</p>
+<p><mark>高亮的文本</mark></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>Markdown有很多变种，各家语法有些许差异，但核心语法差不多。若渲染效果不理想，大部分可能不是你语法的问题，可能就是变种不一。列出我用过的几种：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://pandoc.org/MANUAL.html#pandocs-markdown">Pandoc Markdown</a></li>
+<li><a target="_blank" rel="noopener" href="https://help.github.com/articles/github-flavored-markdown">GitHub-Flavored Markdown</a></li>
+</ul>
+<p>markdown不支持居中右对齐，换句话说，不支持任何格式，包括颜色设置。</p>
+<p>所谓的加粗和斜体，只是两种强调语法，最终是显示为何种样式，取决于HTML渲染都是合理的。</p>
+<p>使用<a target="_blank" rel="noopener" href="https://stackedit.io/app">StackedEdit</a>进行实时编辑预览，省时省力。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Markdown/" rel="tag"># Markdown</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/08/24/test_page/" rel="prev" title="我的博客">
+                  <i class="fa fa-chevron-left"></i> 我的博客
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/08/31/shadowsocks_is_not_a_vpn/" rel="next" title="Shadowsocks：一个混淆工具">
+                  Shadowsocks：一个混淆工具 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

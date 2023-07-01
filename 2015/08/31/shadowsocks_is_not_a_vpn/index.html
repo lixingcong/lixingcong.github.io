@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="shadowsocks是被设计来混淆数据，增加某Wall检查出流量特征所需的计算量，提高实时检测的成本，而不是加密。ss的作者多次强调过这一点。 说这些并不是指责ss的安全性，而是再三强调不要忘记ss作者的本意——这是一个帮你能用Google又或者是看别的什么奇怪porn网站的混淆工具，其意义是瞒过Wall的实时流量检测，而不是瞒过Wall后面的master minds。ss不是一个真正意义上的V">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shadowsocks：一个混淆工具">
+<meta property="og:url" content="http://lixingcong.github.io/2015/08/31/shadowsocks_is_not_a_vpn/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="shadowsocks是被设计来混淆数据，增加某Wall检查出流量特征所需的计算量，提高实时检测的成本，而不是加密。ss的作者多次强调过这一点。 说这些并不是指责ss的安全性，而是再三强调不要忘记ss作者的本意——这是一个帮你能用Google又或者是看别的什么奇怪porn网站的混淆工具，其意义是瞒过Wall的实时流量检测，而不是瞒过Wall后面的master minds。ss不是一个真正意义上的V">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-08-31T15:27:43.000Z">
+<meta property="article:modified_time" content="2015-08-31T15:27:43.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/08/31/shadowsocks_is_not_a_vpn/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/08/31/shadowsocks_is_not_a_vpn/","path":"2015/08/31/shadowsocks_is_not_a_vpn/","title":"Shadowsocks：一个混淆工具"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Shadowsocks：一个混淆工具 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Title-Correct-username-x2F-password-auth-model"><span class="nav-number">1.</span> <span class="nav-text">Title : Correct username&#x2F;password auth model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#x3D-x3D-clowwindy-x3D-x3D-commented-on-9-Aug-2014"><span class="nav-number">1.1.</span> <span class="nav-text">&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 9 Aug 2014</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x3D-x3D-613038475-x3D-x3D-commented-on-27-Aug-2014"><span class="nav-number">1.2.</span> <span class="nav-text">&#x3D;&#x3D;613038475&#x3D;&#x3D; commented on 27 Aug 2014</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x3D-x3D-clowwindy-x3D-x3D-commented-on-27-Aug-2014"><span class="nav-number">1.3.</span> <span class="nav-text">&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 27 Aug 2014</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x3D-x3D-613038475-x3D-x3D-commented-on-27-Aug-2014-1"><span class="nav-number">1.4.</span> <span class="nav-text">&#x3D;&#x3D;613038475&#x3D;&#x3D; commented on 27 Aug 2014</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x3D-x3D-clowwindy-x3D-x3D-commented-on-27-Aug-2014-1"><span class="nav-number">1.5.</span> <span class="nav-text">&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 27 Aug 2014</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#librehat-commented-on-12-Dec-2014"><span class="nav-number">1.6.</span> <span class="nav-text">librehat commented on 12 Dec 2014</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#caizixian-commented-on-29-Jan"><span class="nav-number">1.7.</span> <span class="nav-text">caizixian commented on 29 Jan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clowwindy-commented-on-3-Mar"><span class="nav-number">1.8.</span> <span class="nav-text">clowwindy commented on 3 Mar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lepasserby-commented-on-26-Apr"><span class="nav-number">1.9.</span> <span class="nav-text">lepasserby commented on 26 Apr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clowwindy-commented-on-26-Apr"><span class="nav-number">1.10.</span> <span class="nav-text">clowwindy commented on 26 Apr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lepasserby-commented-on-26-Apr-1"><span class="nav-number">1.11.</span> <span class="nav-text">lepasserby commented on 26 Apr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clowwindy-commented-on-27-Apr"><span class="nav-number">1.12.</span> <span class="nav-text">clowwindy commented on 27 Apr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lepasserby-commented-on-29-Apr"><span class="nav-number">1.13.</span> <span class="nav-text">lepasserby commented on 29 Apr</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/08/31/shadowsocks_is_not_a_vpn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Shadowsocks：一个混淆工具 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Shadowsocks：一个混淆工具<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/shadowsocks_is_not_a_vpn.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年8月31日 23:27:43" itemprop="dateCreated datePublished" datetime="2015-08-31T23:27:43+08:00">2015年8月31日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>shadowsocks是被设计来混淆数据，增加某Wall检查出流量特征所需的计算量，提高实时检测的成本，而不是加密。ss的作者多次强调过这一点。</p>
+<p>说这些并不是指责ss的安全性，而是再三强调不要忘记ss作者的本意——这是一个帮你能用Google又或者是看别的什么奇怪porn网站的混淆工具，其意义是瞒过Wall的实时流量检测，而不是瞒过Wall后面的master minds。ss不是一个真正意义上的VPN，它无法保护你的数据安全。</p>
+<span id="more"></span>
+
+<p>不应该在 SS 里找“安全”。 SS 也是几个程序员的个人业余项目，没有经过严谨的密码学设计，甚至设计初衷就不包括安全性。然而，只要GFW不抽风自己实现加密算法并且写出大bug，AES 比 RC4 安全几个数量级应该是没有争议的。而明文 IV 不应该是问题，至多损失了 defense by depth ，不至于抹平这两者安全性的本质差异。</p>
+<p>SS的用途不是加密，而是混淆。但是仍然可以暴力破解，你设置数字密码一样是不行的。若读懂shadowsocks，并改进过程序，使IV不一样就分析不出差别来，可以抵御基于GFW统计学的计算。</p>
+<p>在通常应用中，SS主要是提供了一个不会被干扰的通道，你SS里面走的东西，一般都还有自己的TLS吧？ 如果VPN不会被干扰，谁会用这个东西。</p>
+<h2 id="Title-Correct-username-x2F-password-auth-model"><a href="#Title-Correct-username-x2F-password-auth-model" class="headerlink" title="Title : Correct username&#x2F;password auth model"></a>Title : Correct username&#x2F;password auth model</h2><p><a target="_blank" rel="noopener" href="https://github.com/shadowsocks/shadowsocks/issues/169">原文地址</a></p>
+<h3 id="x3D-x3D-clowwindy-x3D-x3D-commented-on-9-Aug-2014"><a href="#x3D-x3D-clowwindy-x3D-x3D-commented-on-9-Aug-2014" class="headerlink" title="&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 9 Aug 2014"></a><em>&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 9 Aug 2014</em></h3><p>Original protocol:</p>
+<pre><code>IV + addr + data
+</code></pre>
+<p>Someone implemented a <a target="_blank" rel="noopener" href="https://github.com/Lupino/shadowsocks-auth">username auth version</a>, which is totally WRONG.</p>
+<p>Version numbers and usernames are sent via plain text, which is too obvious for any firewall to detect.</p>
+<pre><code>ver + namelen + username + IV + addr + data
+</code></pre>
+<p>Where ver, namelen, username are plain text.</p>
+<p>We should implement a correct auth model:</p>
+<pre><code>IV1 + ver + userhash + IV2 + addr + data
+</code></pre>
+<p>ver + userhash is encrypted using key, data is encrypted using user&#39;s password.</p>
+<p>userhash is generated from username and password, with fixed length.</p>
+<p>Also we should remove table encryption on this version.</p>
+<p>Compatibility:</p>
+<p>For one user: </p>
+<ul>
+<li>compatible with current config.json</li>
+</ul>
+<p>For multiple users:</p>
+<ul>
+<li><p>server config uses users: {user1: password1} format. port_password is no longer supported</p>
+</li>
+<li><p>client config uses common_key, username, password</p>
+</li>
+</ul>
+<p>One problem:</p>
+<p>If we implement this correct model, every user needs two passwords to use shadowsocks.</p>
+<h3 id="x3D-x3D-613038475-x3D-x3D-commented-on-27-Aug-2014"><a href="#x3D-x3D-613038475-x3D-x3D-commented-on-27-Aug-2014" class="headerlink" title="&#x3D;&#x3D;613038475&#x3D;&#x3D; commented on 27 Aug 2014"></a><em>&#x3D;&#x3D;613038475&#x3D;&#x3D; commented on 27 Aug 2014</em></h3><p>The problem is about how to send user id.</p>
+<p>Send it with fixed key can let it decryptable by other user (only the username, the rest data is safe).</p>
+<p>But if send it with the first password (if there two) will cause performance problem because you don&#39;t known which user should choose to decrypt.</p>
+<p>You may think about use asymmetric encryption.<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie–Hellman key exchange</a></p>
+<p>a. server generate<br>generate private number<br>generate 2048bit prime number<br>generate 2048bit base number<br>server public key &#x3D; base number ^ private number % prime number</p>
+<p>b. distribute server public key, base number and prime to every client</p>
+<p>c. client before connect<br>generate private number (random)<br>client public key &#x3D; base number ^ private number % prime number<br>secret key &#x3D; server public key ^ private number % prime number<br>encrypt username with secret key</p>
+<p>d. client send public key and encrypted username to server</p>
+<p>e. server after receive<br>secret key &#x3D; client public key ^ private number % prime number<br>decrypt username with secret key<br>find password from this username</p>
+<p>then use password to encrypt&#x2F;decrypt rest data.</p>
+<h3 id="x3D-x3D-clowwindy-x3D-x3D-commented-on-27-Aug-2014"><a href="#x3D-x3D-clowwindy-x3D-x3D-commented-on-27-Aug-2014" class="headerlink" title="&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 27 Aug 2014"></a><em>&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 27 Aug 2014</em></h3><p>@613038475<br>We don&#39;t need security. We need indistinguishability from random bytes. If we only need security we can just transfer username in plain text.</p>
+<p>I want zero key exchange time so I choose PSK. Key exchanging sucks:</p>
+<pre><code>   |----------------------&gt;|                      |
+   | 4) Client Hello       |                      |
+   |                       |                      |
+   |&lt;----------------------|                      |
+   | 5) Server Hello       |                      |
+   |                       |                      |
+   |----------------------&gt;|                      |
+   | 6) Client Key Exchange|                      |
+   |                       |                      |
+   |----------------------&gt;|                      |
+   | 7) Client Finished    |                      |
+   |                       |                      |
+   |&lt;----------------------|                      |
+   | 8) Server Finished    |                      |
+   |                       |                      |
+   
+</code></pre>
+<h3 id="x3D-x3D-613038475-x3D-x3D-commented-on-27-Aug-2014-1"><a href="#x3D-x3D-613038475-x3D-x3D-commented-on-27-Aug-2014-1" class="headerlink" title="&#x3D;&#x3D;613038475&#x3D;&#x3D; commented on 27 Aug 2014"></a><em>&#x3D;&#x3D;613038475&#x3D;&#x3D; commented on 27 Aug 2014</em></h3><p>Hmm.. read my solution again.<br>Because client generate random power each times, the first 2048bit is almost random (not detectable).<br>In my solution server already distributed it&#39;s public key, so key exchange is half done.<br>You can notice steps is not increased.<br>a. client send public key, username, address to server<br>b. server decrypt username to find the password, then use password to decrypt address<br>c. transfer rest data use the key from the password<br>Also this one don&#39;t need two password and always find the password by O(1).</p>
+<h3 id="x3D-x3D-clowwindy-x3D-x3D-commented-on-27-Aug-2014-1"><a href="#x3D-x3D-clowwindy-x3D-x3D-commented-on-27-Aug-2014-1" class="headerlink" title="&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 27 Aug 2014"></a><em>&#x3D;&#x3D;clowwindy&#x3D;&#x3D; commented on 27 Aug 2014</em></h3><p>Sorry, I misunderstood your meaning. This is practically safer than using two PSKs. But still, in the client config, you have to set:</p>
+<p>username: xxx<br>password: xxx<br>pubkey: xxx</p>
+<p>Users don&#39;t understand why there&#39;re two passwords. If we can find out a way to reduce password and pubkey to just one, while username is still encrypted somehow with randomness, but server knows how to decrypted it in O(1), it is much easier for our users.</p>
+<p>This can be explained as:</p>
+<ul>
+<li>User Alice knows her username and her secret key.</li>
+<li>User Carol also knows his username and his secret key.</li>
+<li>There&#39;re also other users like Alice and Carol.</li>
+<li>Bob knows all usernames and secret keys, but he shares no other knowledge with all the users.</li>
+<li>Alice sends a message in cipher text to Bob.</li>
+<li>Carol sends a message in cipher text to Bob.</li>
+<li>Bob knows which username the cipher texts belong to in O(1) time. He can decrypt the cipher texts.</li>
+<li>The eavesdropper Eve does not know which cipher text belongs to which user.</li>
+<li>(Optional) Alice and Carol also can not tell which cipher text belongs to which user, if it is not their own cipher texts.</li>
+</ul>
+<p>I&#39;m not good at cryptography, therefore I can neither figure out a solution nor prove this is theoretical impossible yet. If this is impossible, we might compromise using two keys, no matter two PSKs or DH + PSK.</p>
+<h3 id="librehat-commented-on-12-Dec-2014"><a href="#librehat-commented-on-12-Dec-2014" class="headerlink" title="librehat commented on 12 Dec 2014"></a><em>librehat commented on 12 Dec 2014</em></h3><p>I believe there is no need to have lots of keys. We only need one key for one server, which serves as master key to encrypt all data. So the config file would something like:</p>
+<pre><code>server:&quot;localhost&quot;,
+server_port:8388,
+......
+pubkey:&quot;pubkeyfile&quot;,
+users: &#123;
+&quot;alice&quot;:&quot;alicepassword&quot;,
+&quot;bob&quot;:&quot;bobpassword&quot;
+&#125;
+</code></pre>
+<p>The pubkey can even be stored in the code if someone want to make a commercial product (that&#39;s another story).</p>
+<h3 id="caizixian-commented-on-29-Jan"><a href="#caizixian-commented-on-29-Jan" class="headerlink" title="caizixian commented on 29 Jan"></a><em>caizixian commented on 29 Jan</em></h3><p>Username support is not a good idea because under most circumstances we just don&#39;t need username-password pair.<br>Port number-password pair is good enough.</p>
+<h3 id="clowwindy-commented-on-3-Mar"><a href="#clowwindy-commented-on-3-Mar" class="headerlink" title="clowwindy commented on 3 Mar"></a><em>clowwindy commented on 3 Mar</em></h3><p>Maybe we can learn from WPA Enterprise.</p>
+<h3 id="lepasserby-commented-on-26-Apr"><a href="#lepasserby-commented-on-26-Apr" class="headerlink" title="lepasserby commented on 26 Apr"></a><em>lepasserby commented on 26 Apr</em></h3><p>@clowwindy:<br>By the way, have you considered using something like ScrambleSuit or the like ?</p>
+<h3 id="clowwindy-commented-on-26-Apr"><a href="#clowwindy-commented-on-26-Apr" class="headerlink" title="clowwindy commented on 26 Apr"></a><em>clowwindy commented on 26 Apr</em></h3><p>@lepasserby<br>Then the firewall could just decrypt ver and userhash using IV1 to find it&#39;s not random. It could block the connection then.</p>
+<p>Speaking of ScrambleSuit, most people doing anti-censorship research outside China often don&#39;t realize that actually we don&#39;t care about censorship. They thought we&#39;re curious about uncensored news, and we&#39;re eager to find out what the government has blocked recently. Unfortunately that&#39;s not true. Nobody is gonna do that. Most people just want to watch silly gameplay videos on YouTube, share their silly photos on Instagram, download pirate or porn movies, play online PC or PS4 games that are often too slow without using a proxy. If we really were a freedom loving nation, we won&#39;t have such a firewall.</p>
+<p>Compared to those projects from outsiders, the tools that Chinese people invented have one characteristic in common: speed. We have high goodput and low latency, even better than most of the VPN protocols.</p>
+<h3 id="lepasserby-commented-on-26-Apr-1"><a href="#lepasserby-commented-on-26-Apr-1" class="headerlink" title="lepasserby commented on 26 Apr"></a><em>lepasserby commented on 26 Apr</em></h3><p>@clowwindy<br>good point re: decryption.</p>
+<p>You&#39;re right that if we&#39;re aiming for indistinguishability against adversaries determined enough to run different decryption attempts on suspicious traffic (that&#39;s expensive because there probably are tens, if not hundreds, possible other &quot;suspect sources&quot; besides shadowsocks, but GFW in general is expensive, so there :) ) your two-password proposal is probably one of most simple and efficient solutions.</p>
+<p>So,let&#39;s try to make it a little more efficient still.</p>
+<p>We now have two pre-shared secrets : user_password and server_password (it would be prudent to have them different, so if user tries to have &quot;user_password &#x3D;&#x3D; server_password&quot;, we should at least give a fair warning and advice to make them at least slightly different)</p>
+<p>Because user-generated passwords are usually rather crappy, we should probably derive keys from them. Since this is a one-time affair (reasonable implementations of both client and server should store the derived keys long-term after being supplied with relevant user_password and server_password) we should probably use a really modern secure hash here.<br>(The GFW people could still try creating a giant rainbow table of all likely user_password&#x2F;username&#x2F;server_password combinations, but at this point the user has to &quot;merely&quot; use good, long, high-entropy passwords to thwart such shenanigans. Since user_password and server_password have to be entered just once during client and server configuration, that&#39;s not too much hassle, in my opinion)</p>
+<p>Thus</p>
+<p>ukey &#x3D; SHA3(user_password)</p>
+<p>servkey &#x3D; SHA3(server_password)</p>
+<p>SHA3 is a secure and fast hash, good enough for deriving our keys (it&#39;s slower than MD5 :-) , but we only do this once when configuring the client and when configuring the server)</p>
+<p>To recap:</p>
+<p>Each user has only one ukey. Each server has only one servkey.</p>
+<p>they are generated from user_password and server_password respectively during setup, and stored.</p>
+<p>Now...</p>
+<p>Let&#39;s make the entire message thing in the following manner</p>
+<p>IV1 + ENCSITKey(ver + userhash) + ENCUITKey(addr + data)</p>
+<p>SITKey &#x3D; MD5(IV1+servkey)<br>UITKey &#x3D; MD5(IV1+ukey)</p>
+<p>ENC &#x3D; whatever cipher configured during server setup (RC4-MD5 is probably the favorite for situations where speed &gt; security, though, maybe make it default setting)</p>
+<p>Now, when our shadowsocks server recieves this entire thing, it reconstructs the SITKey by taking the IV1, concatenating it with servkey (which was generated from server_password during server setup) and decrypts &quot;ver&quot; and &quot;userhash&quot;</p>
+<p>if &quot;ver&quot; is sane, and userhash belongs to a known user, the server proceeds to reconstruct UITKey ( by taking the IV1, concatenating it with user&#39;s respective ukey, which server knows) and then server decrypts (addr + data).</p>
+<p>If &quot;ver&quot; is wrong or userhash is not one of known users, server drops the entire thing.</p>
+<p>The GFW cannot decrypt (ver + userhash) in reasonable time without knowing server_password (and thus servkey).</p>
+<p>Use of SHA3 when generating servkey and ukey ensures that we don&#39;t run into issues associated with low entropy of user-supplied passwords.</p>
+<p>Also, do note that we need only one pseudorandom nonce as IV here (IV1), which makes the message slightly smaller and thus slightly more efficient.</p>
+<p>So, your opinion on this version?</p>
+<p>P.S.:<br>Very good points with regards to failings of ScrambleSuit and the like.<br>A lot of research in this area is really a bit too academic.</p>
+<p>Besides, stuff like SS or Meek or TOR really devour the battery on mobile, and works poorly on 3G. Shadowsocks is currently my favorite precisely because it works wonders on my mobile (though the android client does seem to devour battery way too fast on lolipop, which I fixed by downgrading to KitKat)</p>
+<h3 id="clowwindy-commented-on-27-Apr"><a href="#clowwindy-commented-on-27-Apr" class="headerlink" title="clowwindy commented on 27 Apr"></a><em>clowwindy commented on 27 Apr</em></h3><p>@lepasserby So this is the model I proposed in the thread. There&#39;re two different keys: vendor key and user key. This is difficult for users to understand. And @sorz has already implemented this model.<br><a target="_blank" rel="noopener" href="https://github.com/sorz/shadowsocks">https://github.com/sorz/shadowsocks</a></p>
+<h3 id="lepasserby-commented-on-29-Apr"><a href="#lepasserby-commented-on-29-Apr" class="headerlink" title="lepasserby commented on 29 Apr"></a><em>lepasserby commented on 29 Apr</em></h3><p>@clowwindy<br>Yes, pretty much</p>
+<p>original proposal had two IVs though... Is the marginal security increase from avoiding IV reuse under unrelated keys worth the (admittedly very small) overhead?</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/08/24/markdown_tutorial/" rel="prev" title="Markdown学习笔记">
+                  <i class="fa fa-chevron-left"></i> Markdown学习笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/09/01/python-list-and-triple/" rel="next" title="Python列表,元组,字典,数组,set,struct">
+                  Python列表,元组,字典,数组,set,struct <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

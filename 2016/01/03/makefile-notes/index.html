@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Makefile是帮助我们进行编译的工具，可以简化流程，易于维护，编译不必依赖IDE，当源文件数量较多时候，使用Makefile更适合管理Project的开发。在开源软件中大多采用Makefile进行管理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Makefile读书笔记">
+<meta property="og:url" content="http://lixingcong.github.io/2016/01/03/makefile-notes/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="Makefile是帮助我们进行编译的工具，可以简化流程，易于维护，编译不必依赖IDE，当源文件数量较多时候，使用Makefile更适合管理Project的开发。在开源软件中大多采用Makefile进行管理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-03T06:37:34.000Z">
+<meta property="article:modified_time" content="2016-01-03T06:37:34.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/01/03/makefile-notes/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/01/03/makefile-notes/","path":"2016/01/03/makefile-notes/","title":"Makefile读书笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Makefile读书笔记 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">入门</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E5%88%AB%E5%90%8D"><span class="nav-number">2.</span> <span class="nav-text">编译器别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E5%BF%97"><span class="nav-number">3.</span> <span class="nav-text">标志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E5%8F%98%E9%87%8F"><span class="nav-number">4.</span> <span class="nav-text">自动化变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E6%9F%A5%E6%89%BE%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">指定查找文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">静态模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%AD%A3%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="nav-number">7.</span> <span class="nav-text">自动更正依赖关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%BE%8B%E5%AD%90"><span class="nav-number">8.</span> <span class="nav-text">应用例子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%83%E4%B9%A0"><span class="nav-number">8.1.</span> <span class="nav-text">简单的练习</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E9%9D%99%E6%80%81%E5%BA%93%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-number">8.2.</span> <span class="nav-text">链接静态库的例子</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/01/03/makefile-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Makefile读书笔记 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Makefile读书笔记<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/makefile-notes.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年1月3日 14:37:34" itemprop="dateCreated datePublished" datetime="2016-01-03T14:37:34+08:00">2016年1月3日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Makefile是帮助我们进行编译的工具，可以简化流程，易于维护，编译不必依赖IDE，当源文件数量较多时候，使用Makefile更适合管理Project的开发。在开源软件中大多采用Makefile进行管理。</p>
+<span id="more"></span>
+
+<p>花时间读了两本书，讲的很明白。做个笔记</p>
+<table>
+<thead>
+<tr>
+<th>书名</th>
+<th>《Managing Projects with GNU Make》</th>
+<th>《跟我一起写makefile》</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>作者</td>
+<td>Robert Mecklenburg</td>
+<td>陈皓</td>
+</tr>
+<tr>
+<td>地址</td>
+<td><a href="">暂无</a></td>
+<td><a target="_blank" rel="noopener" href="http://wiki.ubuntu.org.cn/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99Makefile">ubuntu社区</a></td>
+</tr>
+</tbody></table>
+<h3 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h3><p>每一条命令都是这样格式</p>
+<pre><code>targets : prerequisites
+    command
+    
+</code></pre>
+<p>Makefile严格规定需要Tab缩进，否则提示</p>
+<pre><code>Makefile:88: *** 遗漏分隔符 。 停止。
+</code></pre>
+<p>1.显式推导那几个文件，具有相同依赖</p>
+<pre><code>vpath.o variabl.o : make.h config.h
+上式等价于：
+vpath.o : make.h config.h
+variale.o : make.h config.h
+</code></pre>
+<p>2.一条规则不必写成一句话，makefile会自动添加依赖文件<br>3.更复杂的情况</p>
+<p>举例</p>
+<ul>
+<li><p>让lexer.c在vpath.c之前被编译</p>
+<pre><code>  vapth.o : vpath.c
+  
+</code></pre>
+</li>
+<li><p>用特定的参数flags编译</p>
+<pre><code>  vpath.o : path.c
+      $(COMPLIE) $(RULE_FLAGS) $(OUTPUT_OPTIONS) $&lt;
+  # 这是一个双向关系：
+  # 1，如果lexer.c已经被编译，则编译vpath.o
+  # 2，如果想更新vpath.o，首先保证lexer.c最新
+</code></pre>
+</li>
+</ul>
+<p>4.通配符</p>
+<p>生成一个包含所有c文件的列表</p>
+<pre><code>SRC_FILES := $(wildcard *.c)
+</code></pre>
+<p>生成一个中间object列表，文件名为所有c文件，后缀替换*.o</p>
+<pre><code>OBJECTS := $(patsubst %.c,%.o,$(wildcard *.c))
+    
+</code></pre>
+<p>clean目标的编写</p>
+<pre><code>clean:
+    rm -f *.o
+</code></pre>
+<p>5.伪命令</p>
+<p>若定了make clean，不巧的是当前目录下有一个clean的同名文件，会报错。<br>使用.PHONY指定执行的是make clean而不是.&#x2F;clean</p>
+<pre><code># Tells Make that &#39;clean&#39; is not a file
+.PHONY: clean
+clean:
+    rm -f *.o
+    
+</code></pre>
+<p>6.空目标</p>
+<p>与伪命令相似，是一个无输出文件，并且是需要在偶然的情况下执行的命令，也不需要任何依赖关系。</p>
+<pre><code>prog: size prog.o
+    gcc -o $@ prog.o
+
+size: prog.o
+    size $&lt;
+    touch size
+
+prog.o: prog.c
+    gcc -c $&lt;
+    
+</code></pre>
+<p>功能：每次更新prog.o时候，自动打印当前文件的hex信息，并用touch命令修改文件的修改时间。</p>
+<pre><code>[root@localhost]# make
+gcc -c prog.c
+size prog.o
+   text    data     bss     dec     hex filename
+     58       0       0      58      3a prog.o
+touch size
+gcc -o prog prog.o
+[root@localhost]#
+</code></pre>
+<p>7.变量赋值与宏</p>
+<p>赋值有两种</p>
+<ul>
+<li>:&#x3D; 不会搜寻下方的变量，直接赋值</li>
+<li>&#x3D; 递归，搜索下方的变量</li>
+</ul>
+<p>区别很简单：</p>
+<pre><code>CC=gcc
+CMD := $(CC) -v
+# 结果：CMD=gcc -v
+</code></pre>
+<p>换位置：</p>
+<pre><code>CMD := $(CC) -v
+CC=gcc
+# 结果：CMD= -v
+</code></pre>
+<h3 id="编译器别名"><a href="#编译器别名" class="headerlink" title="编译器别名"></a>编译器别名</h3><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AR</td>
+<td>函数库打包程序。默认命令是“ar”</td>
+</tr>
+<tr>
+<td>AS</td>
+<td>汇编语言编译程序。默认命令是“as”</td>
+</tr>
+<tr>
+<td>CC</td>
+<td>C语言编译程序。默认命令是“cc”</td>
+</tr>
+<tr>
+<td>CXX</td>
+<td>C++语言编译程序。默认命令是“g++”</td>
+</tr>
+</tbody></table>
+<h3 id="标志"><a href="#标志" class="headerlink" title="标志"></a>标志</h3><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ARFLAGS</td>
+<td>函数库打包程序 AR 命令的参数。默认值是“rv”</td>
+</tr>
+<tr>
+<td>ASFLAGS</td>
+<td>汇编语言编译器参数。(当明显地调用“.s”或“.S”文件时)</td>
+</tr>
+<tr>
+<td>CFLAGS</td>
+<td>C 语言编译器参数。</td>
+</tr>
+<tr>
+<td>CXXFLAGS</td>
+<td>C++语言编译器参数。</td>
+</tr>
+<tr>
+<td>CPPFLAGS</td>
+<td>C 预处理器参数。( C 和 Fortran 编译器也会用到)</td>
+</tr>
+<tr>
+<td>LDFLAGS</td>
+<td>链接器参数。(如:“ld”)</td>
+</tr>
+<tr>
+<td>TARGET_ARCH</td>
+<td>结构平台，比如armv7,mips</td>
+</tr>
+</tbody></table>
+<p>不建议所有标志写在一起</p>
+<pre><code>FLAGS=-I project/inc --Wall
+</code></pre>
+<p>一旦执行make FLAGS&#x3D;-DEBUG会覆盖标志。所以要分门别类写标志</p>
+<h3 id="自动化变量"><a href="#自动化变量" class="headerlink" title="自动化变量"></a>自动化变量</h3><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$@</td>
+<td>目的文件名</td>
+</tr>
+<tr>
+<td>$&lt;</td>
+<td>依赖列表的第一个文件</td>
+</tr>
+<tr>
+<td>$^</td>
+<td>当前规则的整个依赖列表</td>
+</tr>
+<tr>
+<td>$+</td>
+<td>类似“$^&quot;,但它保留了依赖文件中重复出现的文件。主要用在程序链接时的库的交叉引用场合</td>
+</tr>
+<tr>
+<td>$*</td>
+<td>目标文件去掉后缀后的名称</td>
+</tr>
+<tr>
+<td>$%</td>
+<td>当规则的目标文件是一个静态文件时，$%代表静态库的一个成员名</td>
+</tr>
+<tr>
+<td>$&gt;</td>
+<td>它和$%一样只适用于库文件，它的值是库名</td>
+</tr>
+<tr>
+<td>$?</td>
+<td>所有比目标文件新的依赖文件，以空格分隔。如果目标是静态库文件，代表的库成员</td>
+</tr>
+</tbody></table>
+<p>&#x3D; &#x3D; &#x3D; &#x3D; &#x3D;<br>若在上面每一个命令后加上&#39;F&#39;或者&#39;D&#39;，可以分别返回‘目录’或者&#39;文件名&#39;</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$(@F)</td>
+<td>目标文件的所在目录，如果$@&#x3D;dir&#x2F;foo.o，则返回dir</td>
+</tr>
+<tr>
+<td>$(@F)</td>
+<td>目标文件名，如果$@&#x3D;dir&#x2F;foo.o，则返回foo.o</td>
+</tr>
+<tr>
+<td>$(^D)</td>
+<td>整个依赖列表的所在目录，如果$^&#x3D;dir&#x2F;foo.c，则返回dir</td>
+</tr>
+<tr>
+<td>$(^F)</td>
+<td>整个依赖列表文件名，如果$^&#x3D;dir&#x2F;foo.c，则返回foo.c</td>
+</tr>
+</tbody></table>
+<p>其他自动变量表达式后面加F或D类推。</p>
+<h3 id="指定查找文件夹"><a href="#指定查找文件夹" class="headerlink" title="指定查找文件夹"></a>指定查找文件夹</h3><p>文件目录展示：</p>
+<pre><code>../
+|--Makefile
+|--inc/
+|  |--counter.h
+|  |--lexer.h
+|--src/
+|  |--counter_words.c
+|  |--counter.c
+|  |--lexer.l
+|--README.md
+</code></pre>
+<p> 若make提示</p>
+<pre><code> No rules to make target for &#39;couter.c&#39; needed by counter_words.o, Stop.
+</code></pre>
+<p>即找不到文件，指定VPATH（大写）即可找到文件</p>
+<pre><code>VPATH=src
+</code></pre>
+<p>再次make提示</p>
+<pre><code>no such file or dir: &#39;counter.h&#39;, Error 1
+</code></pre>
+<p>说明c文件找到了，但是inc文件没有找到。添加变量查找include即可。</p>
+<pre><code>CFLAGS = -I inc
+gcc $(CFLAGS) -c $&lt;
+</code></pre>
+<p>VPATH的特性：</p>
+<ul>
+<li><p>空格分隔多个目录</p>
+</li>
+<li><p>若搜索过程中出现多个结果，自动摘取第一个结果，若想精确匹配：</p>
+<pre><code>  VPATH %.c src
+  VPATH %.h inc
+  VPATH %.l src
+</code></pre>
+</li>
+</ul>
+<h3 id="静态模式"><a href="#静态模式" class="headerlink" title="静态模式"></a>静态模式</h3><p>避免模糊匹配，限制匹配的范围，仅匹配自己定义的几个object。</p>
+<pre><code>&lt;TARGETS ...&gt;: &lt;target-pattern&gt;: &lt;prereq-patterns ...&gt;
+  &lt;commands&gt;
+  
+</code></pre>
+<p>我们的target-parrtern定义成“%.o”，意味着我们的TARGETS集合中必须是以“.o”结尾的。</p>
+<p>而我们的prereq-parrterns定义成“%.c”，意思是对target-parrtern所形成的目标集进行二次定义，其计算方法是，取target-parrtern模式中的“%”（也就是去掉了.o这个结尾），并为其加上.c这个结尾，形成的新集合。</p>
+<p>所以，我们的“目标模式”或是“依赖模式”中都应该有“%”这个字符。</p>
+<p>举例：假设目录下有1.c, 2.c, 3.c, foo.c, bar.c五个文件，现在只需编译几个文件即可获得可执行文件</p>
+<pre><code># 注意这里objects并不需要foo.c bar.c文件，后面会自动推导
+objects = foo.o bar.o
+all: main
+main: $(objects)
+    $(CC) $^ -o $@
+$(objects): %.o: %.c
+    $(CC) -c $(CFLAGS) $&lt; -o $@
+    
+</code></pre>
+<p>我们的目标从objects中获取，%.o表明要所有以.o结尾的目标，也就是foo.o bar.o，也就是变量object集合的模式</p>
+<p>而依赖模式%.c则取模式%.o的%，也就是foo bar，并为其加下.c的后缀</p>
+<p>于是，我们的依赖目标就是“foo.c bar.c”。于是，上面的规则展开后等价于下面的规则：</p>
+<pre><code>main: $(objects)
+    $(CC) $^ -o main
+foo.o : foo.c
+    $(CC) -c $(CFLAGS) foo.c -o foo.o
+bar.o : bar.c
+    $(CC) -c $(CFLAGS) bar.c -o bar.o
+    
+</code></pre>
+<h3 id="自动更正依赖关系"><a href="#自动更正依赖关系" class="headerlink" title="自动更正依赖关系"></a>自动更正依赖关系</h3><p>查看当前依赖文件的关系：</p>
+<pre><code>echo &quot;#include &lt;stdio.h&gt;&quot; &gt; 1.c
+gcc -M 1.c
+</code></pre>
+<p>发现依赖很多文件，所以要自动添加依赖到Makefile中。<br>make中可以读取每个源文件的依赖文件*.d，然后以*.d为工作目标加入依存规则，这样，当源文件被改变时，make就会知道更新该.d文件以及目标文件。<br>假设$(SOURCES)&#x3D;main.c hello.c</p>
+<p>然后使用以下规则产生依赖，参考sed的用法</p>
+<pre><code>%d : %.c
+    $(CC) -MM $&lt; $(CFLAGS) &gt; $@.$$$$; \
+    sed &#39;s,\($*\)\.o[ :]*,\1.o $@ : ,g&#39; &lt; $@.$$$$ &gt; $@; \
+    rm -f $@.$$$$
+</code></pre>
+<p>在Makefile编写的依存关系后添加一句，实现把sources里面的字符串从.c转为.d字符串<br>include前面有个-号，用途是禁用include警告，可以去掉看看效果。</p>
+<pre><code>-include $(subst .c,.d,$(SOURCES))
+</code></pre>
+<h3 id="应用例子"><a href="#应用例子" class="headerlink" title="应用例子"></a>应用例子</h3><h4 id="简单的练习"><a href="#简单的练习" class="headerlink" title="简单的练习"></a>简单的练习</h4><p>(所有文件都放在相同文件夹中)<br>注意提示“遗漏分隔符”，即为缺少Tab缩进，GNU规定必须使用TAB分隔而不是四个空格。<br>main.c中的内容：</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &quot;hello.h&quot;
+main()
+&#123;
+    print_hello();
+&#125;
+</code></pre>
+<p>hello.c中的内容：</p>
+<pre><code>#include &quot;hello.h&quot;
+void print_hello()
+&#123;
+    printf(&quot;hello_world\n&quot;);
+&#125;
+</code></pre>
+<p>hello.h中的内容：</p>
+<pre><code>#ifndef _HELLO_H_
+#define _HELLO_H_
+#include &lt;stdio.h&gt;
+void print_hello();
+#endif
+</code></pre>
+<p>Makefile中的内容：</p>
+<pre><code>CC=gcc
+CFLAG=-I.
+CFLAGS += -Wall -Werror -Wmissing-prototypes
+SRC=hello.c main.c
+OBJS=hello.o main.o
+
+all:$(OBJS)
+    $(CC) $(CFLAG) $^ -o main
+    
+$(OBJS):$(SRC)
+    $(CC) -c $^ $(CFLAG)
+
+.PHONY:clean
+clean:
+    rm *.o
+    rm main
+    
+</code></pre>
+<h4 id="链接静态库的例子"><a href="#链接静态库的例子" class="headerlink" title="链接静态库的例子"></a>链接静态库的例子</h4><p>首先区分一下静态库和动态库区别</p>
+<p>Shared libraries are .so (or in Windows .dll, or in OS X .dylib) files. </p>
+<blockquote>
+<p>All the code relating to the library is in this *.so file, and it is referenced by programs using it at run-time. A program using a shared library only makes reference to the code that it uses in the shared library.</p>
+</blockquote>
+<p>Static libraries are .a (or in Windows .lib) files. </p>
+<blockquote>
+<p>All the code relating to the library is in this file, and it is directly linked into the program at compile time. A program using a static library takes copies of the code that it uses from the static library and makes it part of the program. [Windows also has .lib files which are used to reference .dll files, but they act the same way as the first one].</p>
+</blockquote>
+<p>在做到斯坦福公开课Week 5的课程编程作业时，用到了C的一个大数库GMP（就是相当于Java的BigNum类），使用Eclipse编译必须手写Makefile，所以有了下面这个例程。<br>注意链接静态库时什么时候使用-L什么时候使用-l</p>
+<p>使用静态库方法</p>
+<ol>
+<li><p>使用路径，如</p>
+<p> g++ test.o .&#x2F;libtest.a -o test.out</p>
+</li>
+<li><p>使用 -L 设置文件路径，-l 代表库名，例文件为 libtest.a 则参数为 -ltest</p>
+<p> g++ test.o -L.&#x2F; -llog -L&#x2F;usr&#x2F;local&#x2F;lib -lboost_thread -o test.out</p>
+</li>
+</ol>
+<p>但是：使用 -L -l 会带来一个问题，该方式不指定链接库类型，即静态or动态（.a or .so），且优先链接动态库。<br>因为我电脑已经下载了libgmp的源码并且编译安装到&#x2F;usr&#x2F;local&#x2F;lib了，如果找不到这个库地址可以临时导出linker的变量：</p>
+<pre><code>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+</code></pre>
+<p>目录结构：</p>
+<pre><code>../
+|--Makefile
+|--src/
+   |--main.cpp
+
+/usr/local/lib
+    |--libgmp.a
+    |--libgmp.a
+    |--libgmp.la
+    |--libgmp.so
+    |--libgmp.so.10
+
+/usr/local/include/
+    |--gmp.h
+    
+</code></pre>
+<p>main.cpp内容：</p>
+<pre><code>#include &lt;iostream&gt;
+#include &lt;gmp.h&gt;
+using namespace std;
+int main() &#123;
+    char result[200];
+    mpz_t a, b, res;
+    mpz_init(res);
+    mpz_init_set_str(a,&quot;123456789123456789123456789&quot;,10);
+    mpz_init_set_str(b,&quot;100000000000000000&quot;, 10);
+    mpz_sub(res, a, b);
+    mpz_get_str(result, 10, res);
+    cout &lt;&lt; result &lt;&lt; endl;
+    return 0;
+&#125;
+</code></pre>
+<p>Makefile内容：</p>
+<pre><code>CC=g++
+VPATH = src
+LIBS = -lgmp 
+
+SRC=main.cpp
+OBJS=main.o 
+
+all:$(OBJS)
+    $(CC) $^ $(LIBS) -o main
+
+$(OBJS):$(SRC)
+    $(CC) -c $(LIBS) $^ -o $@
+
+.PHONY:clean
+clean:
+    rm *.o
+    rm main
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/01/02/compile_shadowvpn_for_openwrt/" rel="prev" title="从Openwrt SDK编译出ShadowVPN包">
+                  <i class="fa fa-chevron-left"></i> 从Openwrt SDK编译出ShadowVPN包
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/03/C_CPP_notes/" rel="next" title="C/C++笔记">
+                  C/C++笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

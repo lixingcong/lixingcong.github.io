@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="想要使用ss-redir代理所有非中国大陆的UDP流量（用于打游戏），需要将ss的项目脚本稍作修改。本文提出一种修改后的脚本方案，可以支持代理不仅仅是53端口的UDP流量，而是所有境外IP的UDP流量。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ss-redir配合ipset转发TCP+UDP">
+<meta property="og:url" content="http://lixingcong.github.io/2018/06/11/ss-redir-ipset/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="想要使用ss-redir代理所有非中国大陆的UDP流量（用于打游戏），需要将ss的项目脚本稍作修改。本文提出一种修改后的脚本方案，可以支持代理不仅仅是53端口的UDP流量，而是所有境外IP的UDP流量。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-11T08:47:36.000Z">
+<meta property="article:modified_time" content="2018-06-11T08:47:36.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2018/06/11/ss-redir-ipset/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2018/06/11/ss-redir-ipset/","path":"2018/06/11/ss-redir-ipset/","title":"ss-redir配合ipset转发TCP+UDP"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ss-redir配合ipset转发TCP+UDP | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-number">1.</span> <span class="nav-text">最简单的例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E5%88%86%E6%B5%81-%E5%90%AF%E5%8A%A8"><span class="nav-number">2.</span> <span class="nav-text">代理分流(启动)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E5%88%86%E6%B5%81-%E5%85%B3%E9%97%AD"><span class="nav-number">3.</span> <span class="nav-text">代理分流(关闭)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2018/06/11/ss-redir-ipset/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ss-redir配合ipset转发TCP+UDP | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ss-redir配合ipset转发TCP+UDP<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/ss-redir-ipset.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018年6月11日 16:47:36" itemprop="dateCreated datePublished" datetime="2018-06-11T16:47:36+08:00">2018年6月11日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>想要使用ss-redir代理所有非中国大陆的UDP流量（用于打游戏），需要将ss的项目脚本稍作修改。本文提出一种修改后的脚本方案，可以支持代理不仅仅是53端口的UDP流量，而是所有境外IP的UDP流量。</p>
+<span id="more"></span>
+<p>我的电脑是Ubuntu 18.04，现假设ss的服务器IP为<code>123.123.123.123</code>，本地ss-redir端口为<code>12345</code>（下文同）</p>
+<p>广告：推荐使用搬瓦工(BandwagonHost)，一键部署shadowsocks，轻松切换机房，<a target="_blank" rel="noopener" href="https://bandwagonhost.com/aff.php?aff=17660">点我直达购买</a>搬瓦工!</p>
+<p>要想代理UDP流量，首先要在服务端开启UDP转发（这不是废话）。ss-server启动参数带上<code>-u</code>即可。</p>
+<h2 id="最简单的例子"><a href="#最简单的例子" class="headerlink" title="最简单的例子"></a>最简单的例子</h2><p>在shadowsocks-libev<a target="_blank" rel="noopener" href="https://github.com/shadowsocks/shadowsocks-libev">项目主页</a>上的ss-redir例子是如下</p>
+<pre><code>iptables -t nat -N SHADOWSOCKS
+iptables -t mangle -N SHADOWSOCKS
+
+iptables -t nat -A SHADOWSOCKS -d 123.123.123.123 -j RETURN
+
+iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN
+iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN
+
+iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports 12345
+
+ip route add local default dev lo table 100
+ip rule add fwmark 1 lookup 100
+iptables -t mangle -A SHADOWSOCKS -p udp --dport 53 -j TPROXY --on-port 12345 --tproxy-mark 0x01/0x01
+
+iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS
+iptables -t mangle -A PREROUTING -j SHADOWSOCKS
+
+ss-redir -u -c /etc/config/shadowsocks.json -f /var/run/shadowsocks.pid
+</code></pre>
+<p>项目主页的这个例子，可以实现TCP全局代理，UDP只代理53端口。</p>
+<h2 id="代理分流-启动"><a href="#代理分流-启动" class="headerlink" title="代理分流(启动)"></a>代理分流(启动)</h2><p>我们可以借鉴luci-app-shadowsocks项目的<a target="_blank" rel="noopener" href="https://github.com/shadowsocks/luci-app-shadowsocks/blob/master/files/root/usr/bin/ss-rules">ss-rules脚本</a>实现TCP+UDP代理。</p>
+<p>更新中国大陆的路由表</p>
+<pre><code>wget -O- &#39;http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest&#39; | awk -F\| &#39;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&#39; &gt; ~/route.txt
+</code></pre>
+<p>为了减少路由表的体积，可以使用cidrmerge精简合并（可选步骤，实测体积减少20KB左右）</p>
+<p>给出完整的启动脚本</p>
+<pre><code>#! /bin/bash
+
+ss_server_ip=123.123.123.123
+ss_redir_port=12345
+ss_redir_pid=/var/run/shadowsocks.pid
+ss_config_file=/etc/config/shadowsocks.json
+chnroute_file=&quot;~/route.txt&quot;
+
+# 开启redir
+ss-redir -u -c $ss_config_file -f $ss_redir_pid
+
+# IP内网地址
+BYPASS_RESERVED_IPS=&quot; \
+    0.0.0.0/8 \
+    10.0.0.0/8 \
+    127.0.0.0/8 \
+    169.254.0.0/16 \
+    172.16.0.0/12 \
+    192.168.0.0/16 \
+    224.0.0.0/4 \
+    240.0.0.0/4 \
+&quot;
+
+ipset create ss_bypass_set hash:net
+
+# 添加内网地址到ipset
+for line in $BYPASS_RESERVED_IPS; do
+    ipset add ss_bypass_set $line
+done
+
+# 添加ss地址到ipset
+ipset add ss_bypass_set $ss_server_ip
+
+# 添加chinaroute到ipset
+if [ -f $chnroute_file ]; then
+    IPS=`which ipset`
+    $IPS -! restore &lt;&lt;-EOF || return 1
+        $(egrep -v &quot;^#|^$&quot; $chnroute_file | sed -e &quot;s/^/add ss_bypass_set /&quot;)
+    EOF
+
+    echo &quot;China route was loaded&quot;
+else
+    echo &quot;China route does not exist&quot;
+fi
+
+# TCP规则
+iptables -t nat -N SHADOWSOCKS_TCP
+
+iptables -t nat -A SHADOWSOCKS_TCP -p tcp -m set --match-set ss_bypass_set dst -j RETURN
+iptables -t nat -A SHADOWSOCKS_TCP -p tcp -j REDIRECT --to-ports $ss_redir_port
+
+# Apply for tcp
+iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS_TCP
+
+# UDP规则
+iptables -t mangle -N SHADOWSOCKS_UDP
+iptables -t mangle -N SHADOWSOCKS_UDP_MARK
+
+ip route add local default dev lo table 100
+ip rule add fwmark 1 lookup 100
+
+iptables -t mangle -A SHADOWSOCKS_UDP -p udp -m set --match-set ss_bypass_set dst -j RETURN
+iptables -t mangle -A SHADOWSOCKS_UDP -p udp -j TPROXY --on-port $ss_redir_port --tproxy-mark 0x01/0x01
+
+iptables -t mangle -A SHADOWSOCKS_UDP_MARK -p udp -m set --match-set ss_bypass_set dst -j RETURN
+iptables -t mangle -A SHADOWSOCKS_UDP_MARK -p udp -j MARK --set-mark 1
+
+# Apply for udp
+iptables -t mangle -A PREROUTING -p udp -j SHADOWSOCKS_UDP
+iptables -t mangle -A OUTPUT -p udp -j SHADOWSOCKS_UDP_MARK
+
+echo &quot;ss-redir is loaded&quot;
+</code></pre>
+<p>接着设定Ubuntu的DNS为8.8.8.8，或者使用各种抗DNS污染的方案，清理DNS缓存后就能实现TCP+UDP分流</p>
+<p>如何验证UDP转发是有效的呢？可以在ss-redir启动时候使用<code>-v</code>参数调试。</p>
+<h2 id="代理分流-关闭"><a href="#代理分流-关闭" class="headerlink" title="代理分流(关闭)"></a>代理分流(关闭)</h2><p>开启代理分流后，如何恢复为启动ss-redir前的iptables规则呢？</p>
+<p>给出完整的关闭脚本</p>
+<pre><code>#! /bin/bash
+
+ss_redir_pid=/var/run/shadowsocks.pid
+
+# TCP规则
+iptables -t nat -D OUTPUT -p tcp -j SHADOWSOCKS_TCP
+
+iptables -t nat -F SHADOWSOCKS_TCP
+iptables -t nat -X SHADOWSOCKS_TCP
+
+# UDP规则
+iptables -t mangle -D PREROUTING -p udp -j SHADOWSOCKS_UDP
+iptables -t mangle -D OUTPUT -p udp -j SHADOWSOCKS_UDP_MARK
+
+iptables -t mangle -F SHADOWSOCKS_UDP
+iptables -t mangle -X SHADOWSOCKS_UDP
+
+iptables -t mangle -F SHADOWSOCKS_UDP_MARK
+iptables -t mangle -X SHADOWSOCKS_UDP_MARK
+
+ip route del local default dev lo table 100
+ip rule del fwmark 1 lookup 100
+
+# 删除ipset
+ipset destroy ss_bypass_set &gt;/dev/null 2&gt;&amp;1
+
+# 杀死进程
+kill -9 `cat $ss_redir_pid`
+
+echo &quot;ss-redir is stopped&quot;
+</code></pre>
+<p>最后修改为正常的运营商DNS即可。</p>
+<p>另一种方法，是启动ss-redir前使用iptables-save备份，使用完毕后iptables-restore还原。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://github.com/shadowsocks/luci-app-shadowsocks">luci-app-shadowsocks</a><br><a target="_blank" rel="noopener" href="https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html">iptables基础命令(英文)</a><br><a target="_blank" rel="noopener" href="http://ipset.netfilter.org/ipset.man.html">ipset官方文档(英文)</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/05/25/dante-socks5/" rel="prev" title="dante搭建socks5代理">
+                  <i class="fa fa-chevron-left"></i> dante搭建socks5代理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/12/archlinux-install/" rel="next" title="硬盘安装Archlinux">
+                  硬盘安装Archlinux <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="shadowsocks-libev从2.4.8版本开始增加了asciidoc样式的帮助文档生成，个人感觉意义不太大，手册这玩意再漂亮，谁也不会天天看，要不只看一次就会用了，下次不会用再查。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不编译shadowsocks的文档">
+<meta property="og:url" content="http://lixingcong.github.io/2016/07/20/compile-with-no-doc-for-shadowsocks/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="shadowsocks-libev从2.4.8版本开始增加了asciidoc样式的帮助文档生成，个人感觉意义不太大，手册这玩意再漂亮，谁也不会天天看，要不只看一次就会用了，下次不会用再查。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-07-20T15:35:25.000Z">
+<meta property="article:modified_time" content="2016-07-20T15:35:25.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/07/20/compile-with-no-doc-for-shadowsocks/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/07/20/compile-with-no-doc-for-shadowsocks/","path":"2016/07/20/compile-with-no-doc-for-shadowsocks/","title":"不编译shadowsocks的文档"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>不编译shadowsocks的文档 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80-make"><span class="nav-number">1.</span> <span class="nav-text">方式一 make</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C-build-deb"><span class="nav-number">2.</span> <span class="nav-text">方式二 build-deb</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/07/20/compile-with-no-doc-for-shadowsocks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="不编译shadowsocks的文档 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          不编译shadowsocks的文档<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/compile-with-no-doc-for-shadowsocks.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年7月20日 23:35:25" itemprop="dateCreated datePublished" datetime="2016-07-20T23:35:25+08:00">2016年7月20日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>shadowsocks-libev从2.4.8版本开始增加了asciidoc样式的帮助文档生成，个人感觉意义不太大，手册这玩意再漂亮，谁也不会天天看，要不只看一次就会用了，下次不会用再查。</p>
+<span id="more"></span>
+
+<p><code>2018-06-11</code>友情提示：本文较老旧，可能对新版ss-libev不再适用。</p>
+<p>该man page依赖的asciidoc，安装后体积高达1GB，真没必要啊！我的宝贵的搬瓦工这个破3GB磁盘，绝对没空间放下这么庞然大物！</p>
+<p>下文以shadowsocks-libev v2.6.2 为例，版本为</p>
+<pre><code>commit 520290349ed62129579013eac72bcc4d0119fcd1
+Author: Max Lv &lt;max.c.lv@gmail.com&gt;
+Date:   Thu Jan 19 12:14:26 2017 +0800
+
+    Update configure.ac
+</code></pre>
+<p>其它版本也许不太一样。但是思路是类似的。</p>
+<p>首先得更新submodules，按照README.md文档步骤来。</p>
+<pre><code>git clone https://github.com/shadowsocks/shadowsocks-libev.git
+cd shadowsocks-libev
+git submodule update --init --recursive
+</code></pre>
+<p>编译主要分为下面两种情况：Make编译和build-deb包</p>
+<h2 id="方式一-make"><a href="#方式一-make" class="headerlink" title="方式一 make"></a>方式一 make</h2><p>make是直接产生二进制可执行文件。</p>
+<p>编译时候默认是编译帮助文档的，由于依赖包体积过大可以选择不编译手册(documentation)</p>
+<pre><code>./autogen.sh
+./configure --disable-documentation
+
+# 四线程编译并安装
+make -j4 install
+</code></pre>
+<h2 id="方式二-build-deb"><a href="#方式二-build-deb" class="headerlink" title="方式二 build-deb"></a>方式二 build-deb</h2><p>主要是debian&#x2F;ubuntu用户，方便打包成debian package在多台机子上安装。这样不需要每台机子都执行make</p>
+<p>删掉检查依赖asciidoc xmlto</p>
+<pre><code>vi debian/control
+# 删build-depends内的asciidoc和xmlto
+</code></pre>
+<p>不安装Man手册</p>
+<pre><code>vi debian/shadowsocks-libev.install
+# 删usr/share/man/
+</code></pre>
+<p>向configure传递参数：禁用编译文档</p>
+<pre><code>vi debian/rules
+# 找到
+override_dh_auto_configure:
+# 添加这句
+--disable-documentation \
+</code></pre>
+<p>编译</p>
+<pre><code>./autogen.sh &amp;&amp; dpkg-buildpackage -b -us -uc -i
+ls .. | grep shadowsocks
+</code></pre>
+<p>安装前可以备份一份&#x2F;etc&#x2F;shadowsocks-libev&#x2F;config.json。以便恢复旧版本的配置。</p>
+<p>卸载干净旧版本（可选步骤）</p>
+<pre><code>dpkg -r shadowsocks-libev 
+dpkg -P shadowsocks-libev
+</code></pre>
+<p>最后安装deb，并解决软件包依赖错误</p>
+<pre><code>dpkg -i shadowsocks-libev_2.6.2-1_amd64.deb
+apt install -f
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/06/09/openvpn-gen-keys/" rel="prev" title="openvpn生成密钥对">
+                  <i class="fa fa-chevron-left"></i> openvpn生成密钥对
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/07/31/nginx-reverse-proxy-for-google/" rel="next" title="nginx反代google">
+                  nginx反代google <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

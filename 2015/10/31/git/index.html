@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="git入门简单写一下读后感。我看完的参考书籍，建议先看译本，再看英文原版加深理解：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git读书笔记">
+<meta property="og:url" content="http://lixingcong.github.io/2015/10/31/git/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="git入门简单写一下读后感。我看完的参考书籍，建议先看译本，再看英文原版加深理解：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-10-31T12:20:28.000Z">
+<meta property="article:modified_time" content="2015-10-31T12:20:28.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/10/31/git/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/10/31/git/","path":"2015/10/31/git/","title":"Git读书笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Git读书笔记 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">本地仓库操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E6%AC%A1%E8%BF%90%E8%A1%8Cgit%E5%89%8D%E9%85%8D%E7%BD%AE"><span class="nav-number">1.1.</span> <span class="nav-text">初次运行git前配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E4%B8%8E%E6%9A%82%E5%AD%98%E5%8C%BA"><span class="nav-number">1.2.</span> <span class="nav-text">工作区与暂存区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E6%A0%87%E7%AD%BE"><span class="nav-number">1.4.</span> <span class="nav-text">打标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%BF%BD%E7%95%A5%E6%8F%90%E4%BA%A4%E5%90%8D%E5%8D%95"><span class="nav-number">1.5.</span> <span class="nav-text">创建忽略提交名单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2"><span class="nav-number">1.6.</span> <span class="nav-text">查看提交历史</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%AF%B9%E6%8F%90%E4%BA%A4%E5%90%8D"><span class="nav-number">1.7.</span> <span class="nav-text">相对提交名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%81%A2%E5%A4%8D%E5%88%B0%E6%9F%90%E6%AC%A1%E6%8F%90%E4%BA%A4"><span class="nav-number">1.8.</span> <span class="nav-text">恢复到某次提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%96%87%E4%BB%B6%E7%A7%BB%E5%8A%A8%E4%B8%8E%E9%87%8D%E5%91%BD%E5%90%8D"><span class="nav-number">1.9.</span> <span class="nav-text">目录下文件移动与重命名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%94%AF%E6%93%8D%E4%BD%9C"><span class="nav-number">1.10.</span> <span class="nav-text">分支操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">远程仓库操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%B6%E4%BD%9C%E4%B8%80%E4%B8%AA%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="nav-number">2.1.</span> <span class="nav-text">制作一个远程仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%8B%E9%9A%86%EF%BC%8C%E4%BF%AE%E6%94%B9%EF%BC%8C%E6%8F%90%E4%BA%A4%E4%B8%80%E6%9D%A1%E9%BE%99"><span class="nav-number">2.2.</span> <span class="nav-text">克隆，修改，提交一条龙</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#remote%E7%AB%AF%E6%94%B6%E5%88%B0push%E5%90%8E%E5%90%88%E5%B9%B6"><span class="nav-number">2.3.</span> <span class="nav-text">remote端收到push后合并</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Github%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">Github常用操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Fork"><span class="nav-number">3.1.</span> <span class="nav-text">Fork</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pull-Request"><span class="nav-number">3.2.</span> <span class="nav-text">Pull Request</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wiki"><span class="nav-number">3.3.</span> <span class="nav-text">Wiki</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E5%BE%85%E4%BA%86%E8%A7%A3%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">有待了解的知识点</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/10/31/git/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Git读书笔记 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git读书笔记<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/git.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年10月31日 20:20:28" itemprop="dateCreated datePublished" datetime="2015-10-31T20:20:28+08:00">2015年10月31日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>git入门<br>简单写一下读后感。<br>我看完的参考书籍，建议先看译本，再看英文原版加深理解：</p>
+<span id="more"></span>
+
+<table>
+<thead>
+<tr>
+<th>书名</th>
+<th>Pro Git</th>
+<th>Version Control with Git</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>作者</td>
+<td>Scott Chacon &amp; Ben Straub</td>
+<td>Jon Loeliger &amp; Matthew McCullogh</td>
+</tr>
+<tr>
+<td>下载地址</td>
+<td><a target="_blank" rel="noopener" href="https://git-scm.com/book/">在线查看</a></td>
+<td><a target="_blank" rel="noopener" href="http://www.foo.be/cours/dess-20122013/b/OReilly%20Version%20Control%20with%20GIT.pdf">PDF</a></td>
+</tr>
+</tbody></table>
+<h2 id="本地仓库操作"><a href="#本地仓库操作" class="headerlink" title="本地仓库操作"></a>本地仓库操作</h2><p>先熟练掌握本地仓库的操作才比较容易理解远程仓库</p>
+<h3 id="初次运行git前配置"><a href="#初次运行git前配置" class="headerlink" title="初次运行git前配置"></a>初次运行git前配置</h3><pre><code>git config --global user.name &quot;YOUR_NAME&quot;
+git config --global user.email &quot;YOUR_EMAIL&quot;
+</code></pre>
+<p>若需要提交GPG签名</p>
+<pre><code>git config --global user.signingkey &lt;public GPG key&gt;
+# &lt;public GPG key&gt;是你的公钥id，可以从gpg --list-keys查看
+</code></pre>
+<p>若要检查你的git配置，打开～&#x2F;.gitconfig文件即可。这是我的配置文件：</p>
+<pre><code>[user]
+    name = lixingcong
+    email = lixingcong@xxx.xxx
+    signingkey = xxx  # GPG公钥id(可选)
+[push]
+    default = simple  #使用新版的推送模式
+[alias]
+    ls = log -1 HEAD  # 别名，快捷命令
+    ad = add *
+    cm = commit -am
+    lg = log --pretty=format:&quot;%Cred%h%Creset-%cD-%Cgreen%s&quot; --graph
+    lg1 = log --pretty=oneline
+    st = status -s
+    ps = stash
+[credential]
+    helper = cache  #凭证缓存
+[help]
+    autocorrect = 15  #自动更正错误
+</code></pre>
+<p>也可以运行查看当前的configuration</p>
+<pre><code>git config list
+</code></pre>
+<p>开始工作！<br>初始化一个文件夹为git仓库：</p>
+<pre><code>mk /tmp/test &amp;&amp; cd /tmp/test
+git init
+</code></pre>
+<h3 id="工作区与暂存区"><a href="#工作区与暂存区" class="headerlink" title="工作区与暂存区"></a>工作区与暂存区</h3><p>你在资源管理器里面看到的文件是“工作区”，你通过git add跟踪的文件存放的缓存位置是“暂存区”。<br>当你的“工作区”与“暂存区”中的文件是一致的，可以称为“干净”的。反之，称为“脏的”。<br>查看当前的工作区与暂存区命令</p>
+<pre><code>git status
+</code></pre>
+<p>这个命令要尽量多使用，可以了解当前目录的情况。<br>执行status后，绿色的表示已经跟踪并且存放到暂存区（可以随时commit）。红色的表示尚未跟踪，使用</p>
+<pre><code>git add FILE-NAME
+</code></pre>
+<p>可以将该文件加入暂存区，生成一个缓存。（准确来说是一个object）<br>每次修改玩完一个文件，都需要加入暂存区。<br>看看当前目录下与暂存区有什么区别？</p>
+<pre><code>git diff
+</code></pre>
+<p>关于git diff，主要有三种使用方法：</p>
+<pre><code>git diff #工作区中文件更新了哪些内容
+git diff HEAD #工作区与HEAD中内容对比
+git diff --cached #暂存区将要添加到commit的内容
+</code></pre>
+<p>HEAD指针可以理解为最近一次的提交。</p>
+<h3 id="提交"><a href="#提交" class="headerlink" title="提交"></a>提交</h3><p>通过add跟踪后并使用status确认工作区是干净的，可以进行提交。‘<br>这里的提交，不是指提交到github上面，而是提交到本地的git仓库。<br>因为每一个文件夹下都有一个隐藏的.git文件夹，存放提交的历史记录。</p>
+<pre><code>git commit -m &quot;YOUR-COMMENT&quot;
+</code></pre>
+<p>若文件file1已经被跟踪，后来又修改file1,可以使用-add选项，不需另外敲add跟踪</p>
+<pre><code>git commit -am &quot;YOUR-COMMENT&quot;
+</code></pre>
+<p>若提交后，发现文件A中某句话写错了，修改文件A后，可以追加提交：覆盖上一次提交。建议书写your-comment跟上一次提交一致。</p>
+<pre><code>git commit -am &quot;YOUR-COMMENT&quot; --amend
+</code></pre>
+<h3 id="打标签"><a href="#打标签" class="headerlink" title="打标签"></a>打标签</h3><p>提交确认无误可以进行打标签，方便后期管理</p>
+<pre><code>git tag -a v1.0 -m &quot;YOUR-COMMENT-ON-THIS-TAG&quot;
+</code></pre>
+<p>如果已经有GPG key，可以对tag进行GPG签名。参数-s</p>
+<pre><code>git tag -a -s v2.0 -m &quot;SIGN-MY-TAG&quot;
+</code></pre>
+<p>验证tag签名</p>
+<pre><code>git -v v2.0
+</code></pre>
+<p>默认情况下，git push 并不会把标签传送到远端服务器上，只有通过显式命令才能分享标签到远端仓库。其命令格式如同推送分支：</p>
+<pre><code>git push origin [tagname]
+</code></pre>
+<p>注意：打标签有两种方式，一种称之为轻量级“lightweight”，另一种是正常的“annotated”。不带任何参数运行git tag就是轻量级，加上<code>-a</code>参数就是annotated</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>命令</th>
+<th>特点</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>lightweight</td>
+<td><code>git tag v1.0</code></td>
+<td>不含任何tagger信息，仅仅是将某次commit作为tag</td>
+<td>不建议使用，但可以暂时作为二分查找bisect的临时标签</td>
+</tr>
+<tr>
+<td>annotated</td>
+<td><code>git tag -a v1.0</code></td>
+<td>完整的标签，含tagger所有信息：文字信息，作者，日期，GPG签名值</td>
+<td>建议使用，作为正常发布的release tag</td>
+</tr>
+</tbody></table>
+<p>摘录一段关于lightweight标签的<a target="_blank" rel="noopener" href="http://gitready.com/beginner/2009/02/03/tagging.html">博客文章</a></p>
+<blockquote>
+<p>So, how does one create a tag? Just git tag v1.0.0 right? WRONG. You usually don&#39;t want to do that. In fact, some suggest that this command does the wrong thing by default. Without arguments, git tag creates a  &quot;lightweight&quot; tag that is basically a branch that never moves. </p>
+</blockquote>
+<blockquote>
+<p>Lightweight tags are still useful though, perhaps for marking a known good (or bad) version, or a bunch of commits you may need to use in the future. Nevertheless, you probably don&#39;t want to push these kinds of tags.</p>
+</blockquote>
+<p>上述意思就是不鼓励我们使用lightweight标签，不鼓励push到上游。</p>
+<h3 id="创建忽略提交名单"><a href="#创建忽略提交名单" class="headerlink" title="创建忽略提交名单"></a>创建忽略提交名单</h3><p>功能就是防止提交上去。忽略.o这种c语言中间文件例：</p>
+<pre><code>echo *.o &gt; ./.gitignore
+</code></pre>
+<p>这个ignore文件支持通配符，参考pro-git.pdf</p>
+<h3 id="查看提交历史"><a href="#查看提交历史" class="headerlink" title="查看提交历史"></a>查看提交历史</h3><p>基本命令：</p>
+<pre><code>git log
+</code></pre>
+<p>使用图的方式，比较直观看到当前更新了的分支。</p>
+<pre><code>git log --pretty=format:&quot;%s--%h--%ci&quot; --graph
+</code></pre>
+<p>查看上一次的提交</p>
+<pre><code>git log -1 HEAD
+</code></pre>
+<p>查看某个文件的提交历史</p>
+<pre><code>git log FILE-NAME
+</code></pre>
+<p>当然，可以按时间进行筛选结果，参考pro-git.pdf</p>
+<p>使用二分搜索查找bug出处，详细看pro-git.pdf：</p>
+<pre><code>git bisect start
+git bisect bad
+git reset v1.4
+git bisect good
+</code></pre>
+<p>查看某个文件在某次Commit的完整内容（比如前2个提交）</p>
+<pre><code>git show master~2:src/main.cpp
+</code></pre>
+<h3 id="相对提交名"><a href="#相对提交名" class="headerlink" title="相对提交名"></a>相对提交名</h3><p>有时候使用相对提交名，以确定【相对本次提交】的【前某次提交】。</p>
+<pre><code>尖角符号^n表示本次提交的来自第n个祖先（纵向，相当于爸爸/叔叔/伯伯）
+波浪号～n表示当前提交的前第n代（横向，相当于爸爸/爷爷/曾祖父）
+</code></pre>
+<h3 id="恢复到某次提交"><a href="#恢复到某次提交" class="headerlink" title="恢复到某次提交"></a>恢复到某次提交</h3><p>使用reset 命令，能把暂存区恢复到任意一次commit。<br>使用soft模式，将head指针指向新的提交，暂存区和工作区的内容不变。对当前工作具有最小的影响。</p>
+<pre><code>git reset --soft YOUR-COMMIT-SHA1
+</code></pre>
+<p>使用mixed模式，不改变工作区，只恢复暂存区。<br>因为默认reset就是mixed模式，所以这个命令省略mixed</p>
+<pre><code>git reset YOUR-COMMIT-SHA1
+</code></pre>
+<p>若使用--hard具有更大的威力，其破坏性更大，恢复也更彻底。</p>
+<pre><code>git reset --hard YOUR-COMMIT-SHA1
+</code></pre>
+<p>对比一下威力:</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>soft</th>
+<th>mixed</th>
+<th>hard</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>恢复HEAD指针</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>恢复暂存区</td>
+<td>-</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>恢复工作区</td>
+<td>-</td>
+<td>-</td>
+<td>yes</td>
+</tr>
+</tbody></table>
+<h3 id="目录下文件移动与重命名"><a href="#目录下文件移动与重命名" class="headerlink" title="目录下文件移动与重命名"></a>目录下文件移动与重命名</h3><p>不建议使用system-commands，使用git专用的命令：</p>
+<pre><code>git rm FILE-NAME
+git mv FILE1 FILE2
+</code></pre>
+<h3 id="分支操作"><a href="#分支操作" class="headerlink" title="分支操作"></a>分支操作</h3><p>使用分支是git的一大特色，加速开发。</p>
+<p>查看分支：</p>
+<pre><code>git branch
+</code></pre>
+<p>新建分支：</p>
+<pre><code>git branch YOUR-BRANCH-NAME
+</code></pre>
+<p>切换分支：</p>
+<pre><code>git checkout YOUR-BRANCH-NAME
+</code></pre>
+<p>合并分支：</p>
+<pre><code>git merge ANOTHER-BRANCH-NAME
+</code></pre>
+<p>合并时候，通常会遇到冲突，平和冲突完毕，commit一次即可。</p>
+<p>删除本地分支：</p>
+<pre><code>git branch -D [BRANCH_NAME]
+</code></pre>
+<p>保存进度：<br>有时候需要切换紧急的分支，而又不想提交当前的分支。可以将其暂存下来。<br>如果不暂存，会提示切换分支失败。<br>保存的地方类似一个栈的数据结构。“入栈”-&gt;“出栈”</p>
+<pre><code>git stash save
+</code></pre>
+<p>保存完毕，工作区是干净的，可以进行切换分支</p>
+<p>恢复进度：<br>从紧急分支切换回来，需要恢复进度：</p>
+<pre><code>git stash pop
+</code></pre>
+<p>变基:参考pro-git.pdf，说白了就是改祖宗。</p>
+<p>Youtube上一段几分钟的视频，讲得非常清楚。请自备梯子观看！</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cSf8cO0WB4o" frameborder="0" allowfullscreen></iframe>
+
+<p>干货来了：</p>
+<p>花了一小时，我详细地学习了台湾同胞写的一篇非常精彩的博客<a target="_blank" rel="noopener" href="https://blog.yorkxin.org/2011/07/29/git-rebase">《Git-rebase 小筆記》</a>，终于知道怎么用rebase了，功能非常强大！！可以实现分支之间的变基、单分支的历史commit的改写（改commit message，commit代码内容，变换commit顺序等），诸多功能。。说不清楚啊！！</p>
+<p>基本命令：分支test_rebse的base-commit变为master</p>
+<pre><code>git checkout test_rebse
+git rebase master
+</code></pre>
+<p>交互式变基：可以单分支的改写历史commit</p>
+<pre><code>git rebase -i COMMIT_SHA_ID_TO_CHANGE_START_FROM
+</code></pre>
+<p>删除远程分支：</p>
+<pre><code>git push origin :[BRANCH_NAME]
+</code></pre>
+<h2 id="远程仓库操作"><a href="#远程仓库操作" class="headerlink" title="远程仓库操作"></a>远程仓库操作</h2><p>主要是在本机实现一下远程的模拟。</p>
+<h3 id="制作一个远程仓库"><a href="#制作一个远程仓库" class="headerlink" title="制作一个远程仓库"></a>制作一个远程仓库</h3><pre><code>mkdir /tmp/remote_sample &amp;&amp; cd /tmp/remote_sample
+git init
+git remote add origin /tmp/remote_sample
+git config receive.denyCurrentBranch warn #允许从别的地方推送
+echo hello world &gt; test
+git add test &amp;&amp; git commit -m &quot;INIT_COMMENT&quot;
+</code></pre>
+<p>就可以简单制作一个服务器了，有趣的是只运行在自己电脑上！</p>
+<p>添加一个合作者，如Tony，新建一个Tony分支，以防止推送到master主线：</p>
+<pre><code>git checkout -b Tony
+</code></pre>
+<p>当然，可以添加更多的参与者。这个remote仓库只需适时进行多分支合并到master。<br>多人开发某个分支会导致某些合并问题并造成覆盖。不建议多人公用一个master分支。<br>master分支作为最终产品发布的主线。</p>
+<h3 id="克隆，修改，提交一条龙"><a href="#克隆，修改，提交一条龙" class="headerlink" title="克隆，修改，提交一条龙"></a>克隆，修改，提交一条龙</h3><p>模拟一下github的克隆：</p>
+<pre><code>mkdir /tmp/local_test &amp;&amp; cd /tmp/local_test
+git clone /tmp/remote_sample
+cd remote_sample
+</code></pre>
+<p>假如我是tony，我的原则：只在自己的分支进行工作。<br>为了不影响其他人分支，先切换自己的分支</p>
+<pre><code>git checkout Tony
+</code></pre>
+<p>想要进行提交，必须先跟上游服务器的HEAD一致。先从远处拉！</p>
+<pre><code>git pull
+</code></pre>
+<p>提示Already up-to-date 就把自己的Tony专属分支拿回来了。<br>若多人开发这个分支，在pull时候，会遇到冲突，也许你克隆仓库后没有及时跟上分支的步伐。<br>强烈建议一人一个分支。<br>修改过程模拟：</p>
+<pre><code>echo hello world from Tony! &gt; test
+</code></pre>
+<p>按照正常步骤add ， commit提交。最后推送给远处：</p>
+<pre><code>git push
+</code></pre>
+<h3 id="remote端收到push后合并"><a href="#remote端收到push后合并" class="headerlink" title="remote端收到push后合并"></a>remote端收到push后合并</h3><p>当remote仓库管理者得知你推送后，考虑是否把tony跟master分支合并。<br>模拟一下合并：</p>
+<pre><code>cd /tmp/remote_sample
+git checkout master
+git merge Tony
+</code></pre>
+<p>修正冲突，合并。master分支变为新master，称为Fast-Forward，表示前进了一步</p>
+<p>好奇，是否remote的Tony分支跟Tony的文件一致呢？<br>切换一下Tony分支看看：</p>
+<pre><code>git checkout Tony
+git status
+</code></pre>
+<p>什么！有未提交的文件！这是什么鬼！<br>原因很简单，暂存区是tony提交的，在【Tony分支暂存区】test文件内容是Hello world form tony。<br>而在【remote工作区】的test文件内容是hello world。<br>因此造成一种“别人都改了，怎么我变化没有呢？”的错觉。实际上缓存区已经是Tony最新的副本了。<br>HEAD指针还停留在原来地方，落后于Tony分支。<br>证明一下：查看从工作区准备commit的内容</p>
+<pre><code>git diff --cached
+</code></pre>
+<p>可以看到，当前工作区居然想把Tony写的那句from tony删掉了。<br>因此，要想保持工作区与分支是一致的，使用reset更新当前工作区。<br>(不可逆的工作区清倒)</p>
+<pre><code>git reset --hard SHA1-OF-TONY-LAST-PUSH
+</code></pre>
+<h2 id="Github常用操作"><a href="#Github常用操作" class="headerlink" title="Github常用操作"></a>Github常用操作</h2><h3 id="Fork"><a href="#Fork" class="headerlink" title="Fork"></a>Fork</h3><p>在以前,“fork”是一个贬义词,指的是某个人使开源项目向不同的方向发展,或者创建一个竞争项目,使得原项目的贡献者分裂。<br>在 GitHub,“fork”指的是你自己的空间中创建的项目副本,这个副本允许你以一种更开放的方式对其进行修改。</p>
+<h3 id="Pull-Request"><a href="#Pull-Request" class="headerlink" title="Pull Request"></a>Pull Request</h3><p>GitHub 设计了一个以合并请求为中心的特殊合作流程。不管你是在一个紧密的团队中使用单独的版本库,或者使用许多的“Fork”来为一个由陌生人组成的国际企业或网络做出贡献,这种合作流程都能应付。<br>流程通常如下:</p>
+<ul>
+<li>Fork</li>
+<li>从 master 分支中创建一个新分支</li>
+<li>提交一些修改来改进项目</li>
+<li>将这个分支推送push到 GitHub 上</li>
+<li>创建一个合并请求Pull Request</li>
+<li>讨论(通过网页或者邮件),根据实际情况继续修改</li>
+<li>项目的拥有者合并或关闭你的合并请求</li>
+</ul>
+<p>:eyes:</p>
+<h3 id="Wiki"><a href="#Wiki" class="headerlink" title="Wiki"></a>Wiki</h3><p>wiki页面的制作。</p>
+<h2 id="有待了解的知识点"><a href="#有待了解的知识点" class="headerlink" title="有待了解的知识点"></a>有待了解的知识点</h2><p>列个表，自己还不懂的:</p>
+<ul>
+<li>以补丁形式的Merge</li>
+<li>Git服务器搭建</li>
+</ul>
+<p>未完成：配图片。实际的pul request操作</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/10/29/RE_POSIX/" rel="prev" title="POSIX正则表达式">
+                  <i class="fa fa-chevron-left"></i> POSIX正则表达式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/10/31/sed/" rel="next" title="shell简单的文本处理">
+                  shell简单的文本处理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

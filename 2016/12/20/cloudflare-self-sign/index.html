@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="将自签名的openssl证书与cloudflare配合使用，达到CDN效果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloudflare自签名SSL证书">
+<meta property="og:url" content="http://lixingcong.github.io/2016/12/20/cloudflare-self-sign/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="将自签名的openssl证书与cloudflare配合使用，达到CDN效果。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/cloudflare_self_sign/ssllabs.png">
+<meta property="article:published_time" content="2016-12-20T01:50:14.000Z">
+<meta property="article:modified_time" content="2016-12-20T01:50:14.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="html">
+<meta property="article:tag" content="nginx">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/cloudflare_self_sign/ssllabs.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/12/20/cloudflare-self-sign/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/12/20/cloudflare-self-sign/","path":"2016/12/20/cloudflare-self-sign/","title":"Cloudflare自签名SSL证书"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cloudflare自签名SSL证书 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%88%8F"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E7%AD%BE%E5%90%8D"><span class="nav-number">2.</span> <span class="nav-text">自签名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E9%80%A0CA%E8%AF%81%E4%B9%A6"><span class="nav-number">2.1.</span> <span class="nav-text">自造CA证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%9B%E5%9F%9F%E5%90%8D%E8%AF%81%E4%B9%A6"><span class="nav-number">2.2.</span> <span class="nav-text">泛域名证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CA%E8%87%AA%E7%AD%BE%E8%AF%81"><span class="nav-number">2.3.</span> <span class="nav-text">CA自签证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2"><span class="nav-number">3.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx"><span class="nav-number">3.1.</span> <span class="nav-text">nginx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cloudflare"><span class="nav-number">3.2.</span> <span class="nav-text">cloudflare</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83"><span class="nav-number">4.</span> <span class="nav-text">其它</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%85%E9%99%A4HPKP"><span class="nav-number">4.1.</span> <span class="nav-text">清除HPKP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E6%96%87%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">原文链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/12/20/cloudflare-self-sign/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cloudflare自签名SSL证书 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cloudflare自签名SSL证书<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/cloudflare-self-sign.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年12月20日 09:50:14" itemprop="dateCreated datePublished" datetime="2016-12-20T09:50:14+08:00">2016年12月20日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>将自签名的openssl证书与cloudflare配合使用，达到CDN效果。</p>
+<span id="more"></span>
+<p>let&#39;s encrypt的证书每三个月都要续签，即便可以用脚本实现，但是我这个懒人还是想一劳永逸：签证一次以后也不需要再签名，而且证书“不会过期”，那是坠吼的！</p>
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><p>确保cloudflare中的DNS记录为DNS only（仅解析DNS），先不急着上CDN。待调试成功再开启HTTP Proxy CDN。</p>
+<h2 id="自签名"><a href="#自签名" class="headerlink" title="自签名"></a>自签名</h2><p>自签名需要生成两个密钥，一个用于自造CA，另一个用作泛域名。</p>
+<p>切换当前目录</p>
+<pre><code>cd /tmp/test-cert
+</code></pre>
+<h3 id="自造CA证书"><a href="#自造CA证书" class="headerlink" title="自造CA证书"></a>自造CA证书</h3><p>新建一个ca目录，存放自造ca</p>
+<pre><code>mkdir ca
+</code></pre>
+<p>创建一个私钥用于CA，这里使用ECC证书（如果使用RSA证书，可以使用genrsa参数）</p>
+<pre><code>openssl ecparam -genkey -name prime256v1 -out ca/ca.key
+</code></pre>
+<p>生成CA根证书，参数days后面的7305是指证书的有效期，这里设置成了20年</p>
+<pre><code>openssl req -new -x509 -days 7305 -key ca/ca.key -out ca/ca.crt \
+  -subj &quot;/C=CN/ST=Sichuan/L=Chengdu/CN=example.com&quot;
+</code></pre>
+<p>ca.crt就是自造的根域名CA证书。拷贝给其它设备安装它即可信任该自签CA</p>
+<h3 id="泛域名证书"><a href="#泛域名证书" class="headerlink" title="泛域名证书"></a>泛域名证书</h3><p>创建一个私钥用于泛域名</p>
+<pre><code>openssl ecparam -genkey -name prime256v1 -out domain.key
+</code></pre>
+<p>生成签名请求CSR：</p>
+<pre><code>openssl req -new -sha256 -key domain.key -out domain.csr\
+  -subj &quot;/C=CN/ST=Sichuan/L=Chengdu/CN=example.com&quot;
+</code></pre>
+<p>domain.csr就是自造的域名CSR，用于下文的签证书。</p>
+<h3 id="CA自签证"><a href="#CA自签证" class="headerlink" title="CA自签证"></a>CA自签证</h3><p>新建一个extended.ext文件，内容如下，修改最后的subjectAltName字段为主域名+泛域名。</p>
+<pre><code>[ req ]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+req_extensions      = san
+extensions          = san
+
+[ req_distinguished_name ]
+countryName         = CN
+stateOrProvinceName = Sichuan
+localityName        = Chengdu
+
+[ SAN ]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = DNS:example.com,DNS:*.example.com
+</code></pre>
+<p>开始签名，使用指定的extended.ext文件，签名有效期20年。。。</p>
+<pre><code>openssl x509 -req \
+  -days 7305 \
+  -sha256 \
+  -CA ca/ca.crt -CAkey ca/ca.key -CAcreateserial \
+  -in domain.csr -out cert.crt \
+  -extfile extended.ext -extensions SAN
+</code></pre>
+<p>将根证书和泛域名证书合成一个full-chain证书</p>
+<pre><code>cat cert.crt ca.crt &gt; fullchain.crt
+</code></pre>
+<p>在下一步部署nginx，我们只需要以下三个文件</p>
+<ul>
+<li>domain.key</li>
+<li>cert.crt</li>
+<li>fullchain.crt</li>
+</ul>
+<p>自造CA可以选择留存下来，下次可以再签新证书。再签的时候需要重新删除并做一个demoCA目录。否则提示<em>TXT_DB error number 2</em></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>在监听80端口的server标签中，强制http跳转到https。</p>
+<pre><code>location / &#123;
+    rewrite ^(.*)$  https://$host$1 permanent;
+&#125;
+</code></pre>
+<p>在监听443端口server标签中修改</p>
+<pre><code>listen 443 ssl;
+ssl_certificate /tmp/test-cert/cert.crt;
+ssl_certificate_key /tmp/test-cert/domain.key;
+ssl_trusted_certificate /tmp/test-cert/fullchain.crt;
+</code></pre>
+<p>测试配置是否正确(test)，正确就reload</p>
+<pre><code>nginx -t &amp;&amp; nginx -s reload
+</code></pre>
+<p>打开网站看看效果，肯定提示证书不被信任（自签证书），跟12306网站一样。忽略这个警告，进入网站，确认无误就可以开启cloudflare的CDN了。</p>
+<h3 id="cloudflare"><a href="#cloudflare" class="headerlink" title="cloudflare"></a>cloudflare</h3><p>大致就是如下步骤</p>
+<ul>
+<li>在cloudflare中的DNS选项卡，右侧的Status选择&quot;HTTP proxy,CDN&quot;。</li>
+<li>注意cloudflare在切换HTTP CDN模式和DNS Only模式有一定的延时，可能是DNS缓存。有时候修改记录后一分钟后就生效了，有时候却等几个小时才生效。耐心等候。</li>
+<li>在cloudflare中的crypto选项卡，SSL模式选择Full。</li>
+</ul>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><h3 id="清除HPKP"><a href="#清除HPKP" class="headerlink" title="清除HPKP"></a>清除HPKP</h3><p>之前有证书，且部署了HPKP，使用自签证书后，chrome提示如下错误</p>
+<pre><code>NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN
+</code></pre>
+<p>由于我的网站使用了pinned SHA256，在浏览器中清除以前的HPKP记录即可</p>
+<pre><code># 打开并删除自己网站记录
+chrome://net-internals/#hsts
+</code></pre>
+<p>可以使用ca.crt重新生成pinned key，放入到nginx配置中</p>
+<pre><code>openssl x509 -in ca.crt -noout -pubkey | openssl asn1parse -noout -inform pem -out ca.pubkey
+HPKP_SHA256=`openssl dgst -sha256 -binary ca.pubkey | openssl enc -base64`
+echo $HPKP_SHA256
+</code></pre>
+<p>当然，若要使用cloudflare，必须或cloudflare中间证书的SHA256值，而不是自签CA的。</p>
+<p>我的方法是打开这个<a target="_blank" rel="noopener" href="https://www.ssllabs.com/">SSLlabs网站</a>，填入自己域名，点测试，查看中间证书的SHA256值，然后手动加入到nginx里面的。</p>
+<p><img src="/images/cloudflare_self_sign/ssllabs.png"></p>
+<p>从上图可以看出，加入到nginx的代码如下</p>
+<pre><code>add_header Public-Key-Pins &#39;pin-sha256=&quot;x9SZw6TwIqfmvrLZ/kz1o0Ossjmn728BnBKpUFqGNVM=&quot;; max-age=2592000;&#39;;
+</code></pre>
+<h2 id="原文链接"><a href="#原文链接" class="headerlink" title="原文链接"></a>原文链接</h2><p><a target="_blank" rel="noopener" href="https://www.eaimty.com/2016/10/encrypt-site-with-customs-and-cloudflare-ssl.html">自签名ssl证书+cloudflare</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/html/" rel="tag"># html</a>
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/11/15/anki-doc/" rel="prev" title="Anki理解笔记">
+                  <i class="fa fa-chevron-left"></i> Anki理解笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/01/06/create-multiple-ip-addresses-to-one-interface/" rel="next" title="单网络接口多IP设置">
+                  单网络接口多IP设置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

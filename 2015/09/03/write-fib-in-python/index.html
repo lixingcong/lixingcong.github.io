@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="不同的角度，不同的玩法用九种不同的风格写出一个Fibonacci函数。要求很简单，输入n，输出第n个Fibonacci数，n为正整数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用Python实现Fibonacci函数">
+<meta property="og:url" content="http://lixingcong.github.io/2015/09/03/write-fib-in-python/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="不同的角度，不同的玩法用九种不同的风格写出一个Fibonacci函数。要求很简单，输入n，输出第n个Fibonacci数，n为正整数">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-09-03T11:45:06.000Z">
+<meta property="article:modified_time" content="2015-09-03T11:45:06.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/09/03/write-fib-in-python/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/09/03/write-fib-in-python/","path":"2015/09/03/write-fib-in-python/","title":"用Python实现Fibonacci函数"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>用Python实现Fibonacci函数 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%86%99%E7%A8%8B%E5%BA%8F%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">1.</span> <span class="nav-text">第一次写程序的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9A%E5%AD%A6Python%E4%B8%8D%E4%B9%85%E7%9A%84%E7%9A%84C%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">2.</span> <span class="nav-text">刚学Python不久的的C程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%87%92%E6%95%A3%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">3.</span> <span class="nav-text">懒散的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%87%92%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">4.</span> <span class="nav-text">更懒的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9A%E5%AD%A6%E5%AE%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">5.</span> <span class="nav-text">刚学完数据结构的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%9C%A8%E4%BF%AESICP%E8%AF%BE%E7%A8%8B%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">6.</span> <span class="nav-text">正在修SICP课程的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A5%BD%E8%80%8D%E5%B0%8F%E8%81%AA%E6%98%8E%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">7.</span> <span class="nav-text">好耍小聪明的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9A%E4%BF%AE%E5%AE%8C%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">8.</span> <span class="nav-text">刚修完线性代数的Python程序员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%8F%82%E5%8A%A0ACM%E6%AF%94%E8%B5%9B%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E5%91%98"><span class="nav-number">9.</span> <span class="nav-text">准备参加ACM比赛的Python程序员</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/09/03/write-fib-in-python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="用Python实现Fibonacci函数 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用Python实现Fibonacci函数<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/write-fib-in-python.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年9月3日 19:45:06" itemprop="dateCreated datePublished" datetime="2015-09-03T19:45:06+08:00">2015年9月3日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>不同的角度，不同的玩法<br>用九种不同的风格写出一个Fibonacci函数。<br>要求很简单，输入n，输出第n个Fibonacci数，n为正整数</p>
+<span id="more"></span>
+<p>下面是这九种不同的风格：</p>
+<h2 id="第一次写程序的Python程序员"><a href="#第一次写程序的Python程序员" class="headerlink" title="第一次写程序的Python程序员"></a>第一次写程序的Python程序员</h2><pre><code>def fib(n):
+     return nth fibonacci number
+     
+</code></pre>
+<p>说明：<br>第一次写程序的人往往遵循人类语言的语法而不是编程语言的语法，就拿我一个编程很猛的哥们来说，他写的第一个判断闰年的程序，里面直接是这么写的：如果year是闰年，输出year是闰年，否则year不是闰年。</p>
+<h2 id="刚学Python不久的的C程序员"><a href="#刚学Python不久的的C程序员" class="headerlink" title="刚学Python不久的的C程序员"></a>刚学Python不久的的C程序员</h2><pre><code>def fib(n):
+    if n&lt;=2:
+        return 1
+    else:
+        return fib(n-1)+fib(n-2)
+</code></pre>
+<p>说明：<br>在刚接触Python时，用缩进而非大括号的方式来划分程序块这种方式我是很不适应的，而且每个语句后面没有结束符，所以每次写完一个Python函数之后干的第一件事一般就是一边注释大括号，一边添加漏掉的冒号。</p>
+<h2 id="懒散的Python程序员"><a href="#懒散的Python程序员" class="headerlink" title="懒散的Python程序员"></a>懒散的Python程序员</h2><pre><code>def fib(n):
+    return 1 and n&lt;=2 or fib(n-1)+fib(n-2)
+</code></pre>
+<p>说明：<br>看了Learning Python之后，才知道Python没有三元操作符？，不过鉴于Python里bool值比较特殊（有点像C，非零即真，非空即真），再加上Python的逻辑语句也是支持短路求值（Short-Circuit Evaluation）的，这就可以写出一个仿？语句出来。</p>
+<h2 id="更懒的Python程序员"><a href="#更懒的Python程序员" class="headerlink" title="更懒的Python程序员"></a>更懒的Python程序员</h2><pre><code>fib=lambda n:1 if n&lt;=2 else fib(n-1)+fib(n-2)
+</code></pre>
+<p>说明：<br>lambda关键字我曾在C#和Scheme里面用过，Python里面的lambda比C#里简便，并很像Scheme里的用法，所以很快就适应了。在用Python Shell声明一些小函数时经常用这种写法。</p>
+<h2 id="刚学完数据结构的Python程序员"><a href="#刚学完数据结构的Python程序员" class="headerlink" title="刚学完数据结构的Python程序员"></a>刚学完数据结构的Python程序员</h2><pre><code>def fib(n):
+    x,y=0,1
+    while(n):
+        x,y,n=y,x+y,n-1
+    return x
+</code></pre>
+<p>说明：<br>前面的Fibonacci函数都是树形递归的实现，哪怕是学一点算法就应该知道这种递归的低效了。在这里从树形递归改为对应的迭代可以把效率提升不少。<br>Python的元组赋值特性是我很喜欢的一个东东，这玩意可以把代码简化不少。举个例子，以前的tmp&#x3D;a;a&#x3D;b;b&#x3D;tmp;可以直接用一句a,b&#x3D;b,a实现，既简洁又明了。</p>
+<h2 id="正在修SICP课程的Python程序员"><a href="#正在修SICP课程的Python程序员" class="headerlink" title="正在修SICP课程的Python程序员"></a>正在修SICP课程的Python程序员</h2><pre><code>def fib(n):
+    def fib_iter(n,x,y):
+        if n==0 : return x
+        else : return fib_iter(n-1,y,x+y)
+    return fib_iter(n,0,1)
+</code></pre>
+<p>说明：<br>在这里我使用了Scheme语言中很常见的尾递归（Tail-recursion）写法。Scheme里面没有迭代，但可以用不变量和尾递归来模拟迭代，从而实现相同的效果。不过我还不清楚Python有没有对尾递归做相应的优化，回头查一查。<br>PS：看过SICP的同学，一眼就能看出，这个程序其实就是SICP第一章里的一个例子。</p>
+<h2 id="好耍小聪明的Python程序员"><a href="#好耍小聪明的Python程序员" class="headerlink" title="好耍小聪明的Python程序员"></a>好耍小聪明的Python程序员</h2><pre><code>fib=lambda n,x=0,y=1:x if not n else f(n-1,y,x+y)
+</code></pre>
+<p>说明：<br>基本的逻辑和上面的例子一样，都是尾递归写法。主要的区别就是利用了Python提供的默认参数和三元操作符，从而把代码简化至一行。至于默认参数，学过C++的同学都知道这玩意，至于C#4.0也引入了这东东。</p>
+<h2 id="刚修完线性代数的Python程序员"><a href="#刚修完线性代数的Python程序员" class="headerlink" title="刚修完线性代数的Python程序员"></a>刚修完线性代数的Python程序员</h2><pre><code>def fib(n):
+    def m1(a,b):
+        m=[[],[]]
+        m[0].append(a[0][0]*b[0][0]+a[0][1]*b[1][0])
+        m[0].append(a[0][0]*b[0][1]+a[0][1]*b[1][1])
+        m[1].append(a[1][0]*b[0][0]+a[1][1]*b[1][0])
+        m[1].append(a[1][0]*b[1][0]+a[1][1]*b[1][1])
+        return m
+    def m2(a,b):
+        m=[]
+        m.append(a[0][0]*b[0][0]+a[0][1]*b[1][0])
+        m.append(a[1][0]*b[0][0]+a[1][1]*b[1][0])
+        return m
+    return m2(reduce(m1,[[[0,1],[1,1]] for i in range(n)]),[[0],[1]])[0]
+</code></pre>
+<p>说明：<br>这段代码就不像之前的代码那样清晰了，所以先介绍下原理（需要一点线性代数知识）：<br>首先看一下之前的迭代版本的Fibonacci函数，很容易可以发现存在一个变换：</p>
+<pre><code>y-&gt;x, x+y-&gt;y
+</code></pre>
+<p>换一个角度，就是</p>
+<pre><code>[x,y]-&gt;[y,x+y]
+</code></pre>
+<p>在这里，我声明一个二元向量[x,y]T，它通过一个变换得到[y,x+y]T，可以很容易得到变换矩阵是[[1,0],[1,1]]，也就是说：</p>
+<pre><code>[[1,0],[1,1]]*[x,y]T=[y,x+y]T
+</code></pre>
+<p>令二元矩阵A&#x3D;[[1,0],[1,1]]，二元向量x&#x3D;[0,1]T，容易知道Ax的结果就是下一个Fibonacci数值，即：</p>
+<pre><code>Ax=[fib(1),fib(2)]T
+</code></pre>
+<p>亦有：</p>
+<pre><code>Ax=[fib(2),fib(3)]T
+......
+</code></pre>
+<p>以此类推，可以得到：</p>
+<pre><code>Aⁿx=[fib(n),fib(n-1)]T
+</code></pre>
+<p>也就是说可以通过对二元向量[0,1]T进行n次A变换，从而得到[fib(n),fib(n+1)]T，从而得到fib(n)。</p>
+<p>在这里我定义了一个二元矩阵的相乘函数m1，以及一个在二元向量上的变换m2，然后利用reduce操作完成一个连乘操作得到Aⁿx，最后得到fib(n)。</p>
+<h2 id="准备参加ACM比赛的Python程序员"><a href="#准备参加ACM比赛的Python程序员" class="headerlink" title="准备参加ACM比赛的Python程序员"></a>准备参加ACM比赛的Python程序员</h2><pre><code>def fib(n):
+    lhm=[[0,1],[1,1]]
+    rhm=[[0],[1]]
+    em=[[1,0],[0,1]]
+    #multiply two matrixes
+    def matrix_mul(lhm,rhm):
+        #initialize an empty matrix filled with zero
+        result=[[0 for i in range(len(rhm[0]))] for j in range(len(rhm))]
+        #multiply loop
+        for i in range(len(lhm)):
+            for j in range(len(rhm[0])):
+                for k in range(len(rhm)):
+                    result[i][j]+=lhm[i][k]*rhm[k][j]
+        return result
+
+    def matrix_square(mat):
+        return matrix_mul(mat,mat)
+    #quick transform
+    def fib_iter(mat,n):
+        if not n:
+            return em
+        elif(n%2):
+            return matrix_mul(mat,fib_iter(mat,n-1))
+        else:
+            return matrix_square(fib_iter(mat,n/2))
+    return matrix_mul(fib_iter(lhm,n),rhm)[0][0]
+</code></pre>
+<p>说明：<br>看过上一个fib函数就比较容易理解这一个版本了，这个版本同样采用了二元变换的方式求fib(n)。不过区别在于这个版本的复杂度是lgn，而上一个版本则是线性的。<br>这个版本的不同之处在于，它定义了一个矩阵的快速求幂操作fib_iter，原理很简单，可以类比自然数的快速求幂方法，所以这里就不多说了。</p>
+<p>Python是最好的初学编程入门语言，没有之一。所以它可以取代Scheme成为MIT的计算机编程入门语言。</p>
+<p><a target="_blank" rel="noopener" href="http://www.cnblogs.com/figure9/archive/2010/08/30/1812927.html">原文地址</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/09/01/python-list-and-triple/" rel="prev" title="Python列表,元组,字典,数组,set,struct">
+                  <i class="fa fa-chevron-left"></i> Python列表,元组,字典,数组,set,struct
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/09/06/shadowvpn-conf-EN/" rel="next" title="Configuring the ShadowVPN Server/Client">
+                  Configuring the ShadowVPN Server/Client <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

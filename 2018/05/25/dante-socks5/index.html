@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="服务器上搭建带认证Socks5代理，供Telegram等程序使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dante搭建socks5代理">
+<meta property="og:url" content="http://lixingcong.github.io/2018/05/25/dante-socks5/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="服务器上搭建带认证Socks5代理，供Telegram等程序使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-25T02:11:07.000Z">
+<meta property="article:modified_time" content="2018-05-25T02:11:07.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2018/05/25/dante-socks5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2018/05/25/dante-socks5/","path":"2018/05/25/dante-socks5/","title":"dante搭建socks5代理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>dante搭建socks5代理 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Build"><span class="nav-number">1.</span> <span class="nav-text">Build</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Configuration"><span class="nav-number">2.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test"><span class="nav-number">3.</span> <span class="nav-text">Test</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Access-Control"><span class="nav-number">4.</span> <span class="nav-text">Access Control</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2018/05/25/dante-socks5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="dante搭建socks5代理 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          dante搭建socks5代理<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/dante-socks5.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018年5月25日 10:11:07" itemprop="dateCreated datePublished" datetime="2018-05-25T10:11:07+08:00">2018年5月25日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>服务器上搭建带认证Socks5代理，供Telegram等程序使用。</p>
+<span id="more"></span>
+<p>俄罗斯不是封堵电报嘛，Telegram老板们呼吁大家搭建socks代理突破封锁。。。</p>
+<h2 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h2><p>当前用的版本是1.4.2，建议使用新版本。官网<a target="_blank" rel="noopener" href="https://www.inet.no/dante/download.html">下载地址</a>。</p>
+<pre><code>wget https://www.inet.no/dante/files/dante-1.4.2.tar.gz
+tar xf dante-1.4.2.tar.gz
+cd dante-1.4.2
+autoreconf --install --force
+./configure
+make install
+</code></pre>
+<p>编译完产生的二进制文件叫sockd，以前的老版本是叫danted</p>
+<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><p>创建并编辑&#x2F;etc&#x2F;sockd.conf，修改为如下，该配置参考自<a target="_blank" rel="noopener" href="https://www.binarytides.com/setup-dante-socks5-server-on-ubuntu">这篇博客</a></p>
+<pre><code># /etc/sockd.conf
+
+logoutput: syslog
+user.privileged: root
+user.unprivileged: nobody
+
+# The listening network interface or address.
+internal: 0.0.0.0 port=1080
+
+# The proxying network interface or address.
+external: eth0
+
+# socks-rules determine what is proxied through the external interface.
+# The default of &quot;none&quot; permits anonymous access.
+socksmethod: username
+
+# client-rules determine who can connect to the internal interface.
+# The default of &quot;none&quot; permits anonymous access.
+clientmethod: none
+
+client pass &#123;
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    #log: connect disconnect error
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    #log: connect disconnect error
+&#125;
+</code></pre>
+<p>将上述配置文件中的external修改为VPS实际的流量出口interface，比如我的openVZ机子是venet0:0</p>
+<p>创建一个用户并修改密码，用于，赋予最低的权限。</p>
+<pre><code>useradd -r -s /bin/false USERNAME
+passwd USERNAME
+</code></pre>
+<h2 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h2><p>使用内置的-V命令测试sockd.conf文件是否正确，若正确则无任何输出</p>
+<pre><code>sockd -V
+</code></pre>
+<p>直接以daemon模式运行即可</p>
+<pre><code>sockd -D
+</code></pre>
+<p>使用Telegram设置该地址为socks代理，填入刚才新建的用户名即可。</p>
+<h2 id="Access-Control"><a href="#Access-Control" class="headerlink" title="Access Control"></a>Access Control</h2><p>需求如下：socks5服务器仅代理Telegram的IP段（类似于Shadowsocks-libev的ACL功能），对其它代理请求一律拒绝</p>
+<p>只需把sockd.conf最后的</p>
+<pre><code>socks pass &#123;
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    #log: connect disconnect error
+&#125;
+</code></pre>
+<p>替换为</p>
+<pre><code>socks pass &#123;
+    from: 0.0.0.0/0 to: 91.108.4.0/22
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 91.108.8.0/21
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 91.108.16.0/21
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 91.108.36.0/23
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 91.108.38.0/23
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 91.108.56.0/22
+&#125;
+
+socks pass &#123;
+    from: 0.0.0.0/0 to: 149.154.160.0/2
+&#125;
+
+socks block &#123;
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+&#125;
+</code></pre>
+<p>参考dante官方的文档，client规则和socks规则的区别：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>区别</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Client规则</td>
+<td>对于限制客户端接入，服务端有选择地拒绝建立TCP</td>
+<td>工作在TCP层，优先于Socks规则</td>
+</tr>
+<tr>
+<td>Socks规则</td>
+<td>对于已经accept connection的连接，服务端有选择的拒绝转发Socket</td>
+<td>工作在Socks层</td>
+</tr>
+</tbody></table>
+<p>所以Client规则是在TCP的accept阶段进行控制，Socks规则是满足Client规则后且建立TCP连接后的Sock层控制。有顺序之分。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/04/13/mwan3-macvlan-notes/" rel="prev" title="macvlan单线多拨+mwan3负载平衡">
+                  <i class="fa fa-chevron-left"></i> macvlan单线多拨+mwan3负载平衡
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/11/ss-redir-ipset/" rel="next" title="ss-redir配合ipset转发TCP+UDP">
+                  ss-redir配合ipset转发TCP+UDP <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dnsmasq配合dnscrypt解决DNS污染openwrt">
+<meta property="og:url" content="http://lixingcong.github.io/2016/05/01/DNSCrypt-with-dnsmasq/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-05-01T17:04:13.000Z">
+<meta property="article:modified_time" content="2016-05-01T17:04:13.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/05/01/DNSCrypt-with-dnsmasq/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/05/01/DNSCrypt-with-dnsmasq/","path":"2016/05/01/DNSCrypt-with-dnsmasq/","title":"dnsmasq配合dnscrypt解决DNS污染openwrt"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>dnsmasq配合dnscrypt解决DNS污染openwrt | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#dnscrypt-wrapper"><span class="nav-number">1.</span> <span class="nav-text">dnscrypt-wrapper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dnscrypt-proxy"><span class="nav-number">2.</span> <span class="nav-text">dnscrypt-proxy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%B2%E6%90%AD%E5%BB%BAwrapper%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">已搭建wrapper配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dnsmasq-full"><span class="nav-number">3.</span> <span class="nav-text">dnsmasq-full</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">3.1.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-1"><span class="nav-number">3.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9conf"><span class="nav-number">3.3.</span> <span class="nav-text">修改conf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu%E4%B8%8B%E7%9A%84dnsmasq"><span class="nav-number">3.4.</span> <span class="nav-text">ubuntu下的dnsmasq</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8Eshadowsocks%E5%85%B3%E7%B3%BB"><span class="nav-number">4.</span> <span class="nav-text">与shadowsocks关系</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/05/01/DNSCrypt-with-dnsmasq/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="dnsmasq配合dnscrypt解决DNS污染openwrt | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          dnsmasq配合dnscrypt解决DNS污染openwrt<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/DNSCrypt-with-dnsmasq.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年5月2日 01:04:13" itemprop="dateCreated datePublished" datetime="2016-05-02T01:04:13+08:00">2016年5月2日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt</p>
+<span id="more"></span>
+
+<p><code>2018-06-11</code>友情提示：鉴于国内ISP对UDP数据包疯狂丢包，不建议使用dnscrypt，更好的方式是使用udp2raw伪装TCP流量，建立到8.8.8.8的隧道。</p>
+<h2 id="dnscrypt-wrapper"><a href="#dnscrypt-wrapper" class="headerlink" title="dnscrypt-wrapper"></a>dnscrypt-wrapper</h2><p>PS:搭建私人转发器非必要步骤。可以不搭建，直接<a href="#dnscrypt-proxy">跳到dnscrypt-proxy部份</a>。</p>
+<p>这个wrapper是运行在VPS的，用于搭建个人的dnscrypt-proxy转发器。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Cofyc/dnscrypt-wrapper">dnscrypt-wrapper项目地址</a><br>按照README编译安装libevent 2.1.1+的版本，libsodium可以从apt下载安装。然后编译安装dnscrypt-wrapper</p>
+<p>生成证书步骤参考<a target="_blank" rel="noopener" href="https://www.logcg.com/archives/981.html">这篇博客</a></p>
+<pre><code>cd ~
+mkdir dnskey &amp;&amp; cd dnskey
+# 新建一个目录来存放证书
+dnscrypt-wrapper --gen-provider-keypair
+# 生成提供商密钥对
+</code></pre>
+<p>这里系统会反馈一个指纹信息，这个信息就是客户端配置时候需要的“provider_public_key”！所以一定要保存好。</p>
+<pre><code># 公钥类似格式
+FF2F:34F2:3EF0:2ED2:A2C7:79A2:5F1B:3DB8:6258:B74A:A806:28C4:9F6D:3AF5:E4D8:61DA
+</code></pre>
+<p>然后，我们使用命令生成有时限的加密密钥对以及生成预签名证书</p>
+<pre><code>dnscrypt-wrapper --gen-crypt-keypair --crypt-secretkey-file=1.key
+dnscrypt-wrapper --gen-cert-file --crypt-secretkey-file=1.key --provider-cert-file=1.cert
+</code></pre>
+<p>这样，dnscrypt-wrapper 就已经准备好了。</p>
+<p>下面可以自定义一个provider-name，必须以2.dnscrypt-cert.开头，后面的随便写。</p>
+<pre><code>2.dnscrypt-cert.hhhh.com
+</code></pre>
+<p>启动wrapper服务测试（以监听555端口为例）<br>哆嗦模式，用于调试</p>
+<pre><code>dnscrypt-wrapper --resolver-address=8.8.8.8:53 --listen-address=0.0.0.0:555 --provider-name=2.dnscrypt-cert.hhhh.com --crypt-secretkey-file=1.key --provider-cert-file=1.cert -VV
+</code></pre>
+<p>守护模式，用于常驻监听</p>
+<pre><code>dnscrypt-wrapper --resolver-address=8.8.8.8:53 --listen-address=0.0.0.0:555 --provider-name=2.dnscrypt-cert.hhhh.com --crypt-secretkey-file=1.key --provider-cert-file=1.cert -d
+</code></pre>
+<h2 id="dnscrypt-proxy"><a href="#dnscrypt-proxy" class="headerlink" title="dnscrypt-proxy"></a>dnscrypt-proxy</h2><p>以下在路由器openwrt操作，其实可以先拿linux PC操作一下验证是否正确。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre><code>opkg install dnscrypt-proxy
+</code></pre>
+<p>如果不喜欢从openwrt源安装，可以自己编译并安装，我试了试，编译成功，可以参考<a target="_blank" rel="noopener" href="https://github.com/lixingcong/dnscrypt-proxy-openwrt">我的项目openwrt-dnscypt</a></p>
+<p>其实安装ipk后就能使用了，默认情况下内置了大量dnscrypt服务器，如果你搭建了私人wrapper，可以替换官方opendns的服务器。没有搭建的没关系，可以不用做任何修改，直接改listen端口为5355即可。</p>
+<pre><code>vi /etc/config
+# 修改端口为5355，总之不冲突就ok
+/etc/init.d/dnscrypt-proxy restart
+</code></pre>
+<p>没有搭建的可以<a href="#dnsmasq-full">直接跳到dnsmasq-full设置</a>。</p>
+<h3 id="已搭建wrapper配置"><a href="#已搭建wrapper配置" class="headerlink" title="已搭建wrapper配置"></a>已搭建wrapper配置</h3><p>添加私人服务器，添入服务器生成的信息</p>
+<pre><code>vi /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv
+# 从中增加一行，注意不要加入到文件最后一行，末尾缺逗号
+my_server,,,,,,1,no,no,no,123.45.67.89:555,2.dnscrypt-cert.hhhh.com,FF2F:34F2:3EF0:2ED2:A2C7:79A2:5F1B:3DB8:6258:B74A:A806:28C4:9F6D:3AF5:E4D8:61DA,
+</code></pre>
+<p>自建wrapper配置</p>
+<pre><code># 取消注释如下内容，将opendns改为你刚的第一个字段，比如上面的my_server
+option resolver &#39;my_server&#39;
+option resolvers_list &#39;...&#39;
+</code></pre>
+<p>重启服务</p>
+<pre><code>/etc/init.d/dnscrypt-proxy restart
+</code></pre>
+<p>这时候应改可以查询了</p>
+<pre><code>nslookup google.com 127.0.0.1:5355
+</code></pre>
+<p>如果不能查询，提示timeout，那么就比较折腾，同样步骤如果在Linux PC上面测试dnscrypt-proxy时区正确应该没问题。但是openwrt的时区很蛋疼，导致加密数据包握手时证书过期，无法返回dns查询结果。具体表现为</p>
+<pre><code># openwrt日志显示（web-&gt;状态-&gt;系统日志）
+[ERROR] No useable certificates found
+# 服务端开哆嗦模式只显示下面内容
+client to proxy
+</code></pre>
+<p>使用NTP校时</p>
+<pre><code># 安装ntpdate测试一下NTP服务器，如果提示no server suitable就换NTP
+ntpdate asia.pool.ntp.org
+# 服务器ok的话，写进去crontab，每半小时同步一次
+crontab -e
+*/30 * * * * /usr/sbin/ntpd -q -p asia.pool.ntp.org
+</code></pre>
+<p>除了上面的亚洲授时外，还有别的的NTP服务器</p>
+<pre><code>ntp.ubuntu.com
+0.fedora.pool.ntp.org
+0.debian.pool.ntp.org
+time.windows.com
+</code></pre>
+<p>使用test验证证书是否有效</p>
+<pre><code>/etc/init.d/dnscrypt-proxy stop
+dnscrypt-proxy -L /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv -R &lt;NAME&gt; -t 0
+</code></pre>
+<p>其中NAME为csv文件中的自建服务器名字，即为每行第一列字段。比如刚提到的my_server。</p>
+<p>如果test提示没有错，那就可以投入使用了，这个是毫无污染、高强度加密、非常纯净的DNS！但是我的目标是仅仅用于解析境外网站，需要配合下面的dnsmasq区分境外境内分别使用不同dns解析。</p>
+<p>重新开启dnscrypt</p>
+<pre><code>/etc/init.d/dnscrypt-proxy start
+</code></pre>
+<h2 id="dnsmasq-full"><a href="#dnsmasq-full" class="headerlink" title="dnsmasq-full"></a>dnsmasq-full</h2><h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><p>参考我修改的<a target="_blank" rel="noopener" href="https://github.com/lixingcong/openwrt-dnsmasq">openwrt-dnsmasq项目</a>的README步骤进行编译dnsmasq，这个是2.75版的。</p>
+<p>为什么要手动编译？因为dnsmasq从2.73开始支持具有ip过滤黑名单(ignore-address)功能，达到ChinaDNS类似的效果，这个功能是<a target="_blank" rel="noopener" href="https://github.com/aa65535">@aa66535</a>提交给开发者的。openwrt 15.05内置的dnsmasq比较老，不支持ignore-address和min-cache-ttl。</p>
+<h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><p>首先卸载系统中原有的dnsmasq，还有残留的配置文件</p>
+<pre><code># 删除前先update
+opkg update
+opkg remove dnsmasq
+rm /etc/dnsmasq.conf &amp;&amp; rm /etc/config/dhcp
+# 忽略SHA256不符合的警告安装
+opkg install /tmp/dnsmasq_2.7.5_ramips_24k.ipk --force-checksum
+</code></pre>
+<h3 id="修改conf"><a href="#修改conf" class="headerlink" title="修改conf"></a>修改conf</h3><pre><code>vi /etc/dnsmasq.conf
+
+# 添加如下
+all-servers
+server=114.114.114.114
+server=127.0.0.1#5355
+cache-size=2500
+min-cache-ttl=300
+
+# 根据你需要的域名走指定的DNS查询，配合ipset
+# 以Facebook为例，自己手动添加几个常用域名即可，可以参考他人的列表
+server=/.fb.me/127.0.0.1#5355
+server=/.thefacebook.com/127.0.0.1#5355
+server=/.fbsbx.com/127.0.0.1#5355
+server=/.akamaihd.net/127.0.0.1#5355
+server=/.fbcdn.net/127.0.0.1#5355
+server=/.facebook.com/127.0.0.1#5355
+
+# 过滤的黑名单ip，当dns返回如下结果就忽略。
+# 仅列出4条，可以参考Chinadns-github项目中的iplist.txt
+ignore-address=1.1.127.45
+ignore-address=1.1.67.51
+ignore-address=1.2.3.4
+ignore-address=1.209.208.200
+</code></pre>
+<p>PS:有关链接：<br><a target="_blank" rel="noopener" href="https://github.com/aa65535/openwrt-dnsmasq/blob/master/etc/dnsmasq.d/server-custom.conf">自定义DNS域名解析dnsmasq.conf</a><br><a target="_blank" rel="noopener" href="https://github.com/shadowsocks/ChinaDNS/blob/master/iplist.txt">ChinaDNS-iplist.txt</a><br><a target="_blank" rel="noopener" href="https://github.com/clowwindy/ChinaDNS-C/blob/master/tests/iplist.py">ChinaDNS-iplist生成的python脚本</a></p>
+<p>重启dnsmasq就能解析了</p>
+<pre><code>/etc/init.d/dnsmasq restart
+nslookup facebook.com
+# 正确结果是 31.13.76.68
+</code></pre>
+<h3 id="ubuntu下的dnsmasq"><a href="#ubuntu下的dnsmasq" class="headerlink" title="ubuntu下的dnsmasq"></a>ubuntu下的dnsmasq</h3><p>与openwrt平台设置类似</p>
+<ol>
+<li>首先更新至dnsmasq 2.73+</li>
+<li>指定好dnsmasq的监听（默认是127.0.0.1）和dnscrypt监听（默认是127.0.2.1）</li>
+<li>修改&#x2F;etc&#x2F;dnsmasq.conf中的server&#x3D;dnscrypt-porxy端口</li>
+<li>sudo service dnscrypt-proxy restart &amp;&amp; sudo service dnsmasq restart</li>
+</ol>
+<p>ubuntu默认安装了resolvconf这个自动管理dns的程序，但有时候很烦他会自动更改dns地址，我采用暴力方法去除这个影响，强制指定使用dnsmasq为系统上游dns</p>
+<p>这个&#x2F;etc&#x2F;resolv.conf是一个符号链接，链接到&#x2F;run&#x2F;resolvconf&#x2F;resolv.conf，可以删掉这个链接。</p>
+<pre><code>sudo rm /etc/resolv.conf
+sudo vi /etc/resolv.conf
+# 添加dnsmasq的地址，以127.0.0.1为例
+nameserver 127.0.0.1
+</code></pre>
+<p>如果不想用dnsmasq了，恢复为默认resolvconf（其实我压根就不想用resolvconf,因dns更强大），创建链接即可。或者直接修改nameserver为127.0.1.1</p>
+<pre><code>sudo rm /etc/resolv.conf
+sudo ln -s /run/resolvconf/resolv.conf /etc/resolv.conf
+sudo resolvconf -u
+</code></pre>
+<h2 id="与shadowsocks关系"><a href="#与shadowsocks关系" class="headerlink" title="与shadowsocks关系"></a>与shadowsocks关系</h2><p>shadowsocks-libev从2.4.6开始才正式修复了udp转发的bug，可以使用ss-tunnel作为dnsmasq的上游DNS。而不必使用dnscrypt-proxy。</p>
+<p>经过无数次测试，发现ss-tunnel比dnscrypt-proxy稳定！所以到这里才告诉大家可以放心使用ss-tunnel，把dnscrypt作为备用的上游dns吧！</p>
+<p>在openwrt下，注意ss-tunnel依赖kmod-ipt-tproxy和iptables-mod-tproxy。默认的opkg不安装该内核模块。</p>
+<pre><code># opewrt 编辑 /etc/rc.local
+# 如果使用一次性验证OTA，需要加上-A参数
+/usr/bin/ss-tunnel -s [VPS_ADDR] -p [Shadowsocks-port] -l 5355 -m aes-128-cfb -k password -L 8.8.8.8:53 -u -f /tmp/ss-tunnel.pid
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/20/ubuntu-for-raspberry-pi2/" rel="prev" title="ubuntu 14.04 树莓派2">
+                  <i class="fa fa-chevron-left"></i> ubuntu 14.04 树莓派2
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/05/03/openwrt-helloword/" rel="next" title="openwrt编译出helloword.ipk">
+                  openwrt编译出helloword.ipk <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

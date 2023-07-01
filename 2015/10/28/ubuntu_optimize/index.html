@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="自己在反复重装过程总结出的经验。可以供大家参考 笔记本开机亮度每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu通用优化设置">
+<meta property="og:url" content="http://lixingcong.github.io/2015/10/28/ubuntu_optimize/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="自己在反复重装过程总结出的经验。可以供大家参考 笔记本开机亮度每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-10-28T14:15:46.000Z">
+<meta property="article:modified_time" content="2015-10-28T14:15:46.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/10/28/ubuntu_optimize/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/10/28/ubuntu_optimize/","path":"2015/10/28/ubuntu_optimize/","title":"ubuntu通用优化设置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ubuntu通用优化设置 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%94%E8%AE%B0%E6%9C%AC%E5%BC%80%E6%9C%BA%E4%BA%AE%E5%BA%A6"><span class="nav-number">1.</span> <span class="nav-text">笔记本开机亮度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%92%9F%E6%AF%8F%E6%AC%A1%E6%AF%94CMOS%E5%BF%AB8%E5%B0%8F%E6%97%B6"><span class="nav-number">2.</span> <span class="nav-text">时钟每次比CMOS快8小时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDntfs"><span class="nav-number">3.</span> <span class="nav-text">开机自动挂载ntfs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AC%E7%A7%BBchrome%E7%BC%93%E5%AD%98"><span class="nav-number">4.</span> <span class="nav-text">转移chrome缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">创建快捷方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/10/28/ubuntu_optimize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ubuntu通用优化设置 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ubuntu通用优化设置<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/ubuntu_optimize.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年10月28日 22:15:46" itemprop="dateCreated datePublished" datetime="2015-10-28T22:15:46+08:00">2015年10月28日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>自己在反复重装过程总结出的经验。可以供大家参考</p>
+<h2 id="笔记本开机亮度"><a href="#笔记本开机亮度" class="headerlink" title="笔记本开机亮度"></a>笔记本开机亮度</h2><p>每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。</p>
+<span id="more"></span>
+<p>跟黑苹果一个吊样。囧</p>
+<p>控制亮度的文件位置：</p>
+<ul>
+<li>对于MBR格式安装的ubuntu，控制亮度在&#x2F;sys&#x2F;class&#x2F;backlight&#x2F;acpi_video1&#x2F;brightness</li>
+<li>对于GPT格式安装的，控制在&#x2F;sys&#x2F;class&#x2F;backlight&#x2F;intel_backlight&#x2F;brightness</li>
+</ul>
+<p>可以测一下当前的亮度，先手动调节到合适的亮度，打印出当前的亮度值</p>
+<pre><code>cat /sys/class/backlight/intel_backlight/brightness
+</code></pre>
+<p>比如我的是GPT，当前亮度值为480，可以将脚本写入&#x2F;etc&#x2F;rc.local进行加载亮度</p>
+<pre><code>vi /etc/rc.local
+echo 480 &gt; cat /sys/class/backlight/intel_backlight/brightness
+</code></pre>
+<p>重启看看效果</p>
+<h2 id="时钟每次比CMOS快8小时"><a href="#时钟每次比CMOS快8小时" class="headerlink" title="时钟每次比CMOS快8小时"></a>时钟每次比CMOS快8小时</h2><p>这种状况主要是出现在双系统（win + linux）上，因为win默认是以cmos时间为utc+8后的时间，而ubuntu每次读取cmos时间都是以cmos时间为utc+0</p>
+<p>先确保系统时区是正确的</p>
+<pre><code># 若显示链接到上海时区则不需要修改
+ll /etc/localtime
+
+sudo rm /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+</code></pre>
+<p>或者直接使用tzdata配置时区</p>
+<pre><code>sudo dpkg-reconfigure tzdata
+</code></pre>
+<p>检测当前时区是否正确（不用管时间，只看时区），以下输出CST即为China Standard Time时区，表示设置正确</p>
+<pre><code># 显示系统时间
+date
+2021年 08月 04日 星期三 22:56:11 CST
+</code></pre>
+<p>查看UTC时间、BIOS时间</p>
+<pre><code>timedatectl status
+</code></pre>
+<p>输出结果如下</p>
+<pre><code>               Local time: 二 2023-04-04 08:28:17 CST
+           Universal time: 二 2023-04-04 00:28:17 UTC
+                 RTC time: 二 2023-04-04 00:28:17
+                Time zone: Asia/Shanghai (CST, +0800)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+</code></pre>
+<p>其中RTC time表示BIOS的时间（与Local有8小时差别），使用以下命令将时间强行同步到BIOS</p>
+<pre><code>timedatectl set-local-rtc 1
+</code></pre>
+<p>执行后，再次输出得到RTC time已经与Local Time一致（这时末尾有个警告，看看就好，不要管太多）</p>
+<h2 id="开机自动挂载ntfs"><a href="#开机自动挂载ntfs" class="headerlink" title="开机自动挂载ntfs"></a>开机自动挂载ntfs</h2><p>目的是开机自动挂载某个ntfs卷。首先安装gparted看看你的卷是&#x2F;dev&#x2F;sdxx多少。然后</p>
+<pre><code>mkdir /media/USER/NTFS
+sudo vi /etc/fstab
+#加入挂载命令
+/dev/sda6 /media/USER/NTFS ntfs defaults,locale=zh_CN.UTF-8 0 0 
+</code></pre>
+<p>这样得到的默认权限是600，即用拥有者只能读写。其他人都不能读写。<br>如果想要更大的权限，比如755，可以添加umask为022，如下句</p>
+<pre><code>/dev/sda6 /media/USER/NTFS ntfs defaults,user,uid=1000,gid=1000,umask=022,locale=zh_CN.UTF-8 0 0
+</code></pre>
+<p>如果想禁止自动挂载，每次手动挂载。可以添加noauto标志，只要执行mount优先执行fstab里面的命令。(以600权限为例)</p>
+<pre><code>/dev/sda6 /media/USER/NTFS ntfs defaults,noauto,locale=zh_CN.UTF-8 0 0
+</code></pre>
+<p>若挂载ext4分区，（建议使用ext4！），可以将fstab中的&#x2F;home那一行拷贝过来，改成合适的uuid，改变挂载点的拥有者为当前用户。</p>
+<pre><code>sudo mkdir /mydir
+sudo chmod username:username /mydir
+# sudo vi /etc/fstab
+# 增加一行类似/home的挂载
+UUID=54d8be7f-6bae-4512-aaef-6385c5fb6d13 /mydir ext4 defaults 0 2
+</code></pre>
+<h2 id="转移chrome缓存"><a href="#转移chrome缓存" class="headerlink" title="转移chrome缓存"></a>转移chrome缓存</h2><p>最好的就是关机自动清除缓存，懒人必备，利用ramdisk实现，vi &#x2F;etc&#x2F;fstab有一句是将部份内存挂载到&#x2F;dev&#x2F;shm</p>
+<pre><code>tmpfs /dev/shm tmpfs defaults,size=512M 0 0
+</code></pre>
+<p>然后退出chrome，建立一个bash脚本存为~&#x2F;.chrome-cache.sh，运行这个脚本测试一下。</p>
+<pre><code>#! /bin/bash
+
+CACHE_DIR=~/.cache/google-chrome/Default
+MEMORY_DIR=/dev/shm/chrome-cache
+
+if [ ! -L $MEMORY_DIR ];then
+    echo &quot;creating $MEMORY_DIR&quot;
+    rm -rf $CACHE_DIR
+    mkdir -p $MEMORY_DIR
+    ln -s $MEMORY_DIR $CACHE_DIR
+fi
+</code></pre>
+<p>测试没问题就将脚本写到~&#x2F;.zprofile里面，当进入X11桌面时，自动执行该脚本</p>
+<pre><code>bash ~/.chrome-cache.sh
+</code></pre>
+<h2 id="创建快捷方式"><a href="#创建快捷方式" class="headerlink" title="创建快捷方式"></a>创建快捷方式</h2><p>以AS为例，这是自己创建的Android Studio.desktop文件内容</p>
+<pre><code>[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Android Studio
+Exec=&quot;/home/ubuntu/programs/android-studio/bin/studio.sh&quot; %f
+Icon=/home/ubuntu/programs/android-studio/bin/studio.png
+Categories=Development;IDE;
+Terminal=false
+StartupNotify=true
+# 这个WMclass暂时不太清楚是什么东西
+StartupWMClass=jetbrains-android-studio
+Name[en_GB]=android-studio.desktop
+</code></pre>
+<p>可以根据实际，修改图标和程序执行位置。<br>更改为可执行权限</p>
+<pre><code>chmod a+x &#39;Android Studio.desktop&#39;
+</code></pre>
+<p>对于GNOME3桌面环境，可将其放置在系统托盘的快捷方式中，将Android Studio.desktop复制到*&#x2F;usr&#x2F;share&#x2F;applications*下面即可。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>主要是某些小程序安装</p>
+<p>gedit disable auto-backup：</p>
+<pre><code>编辑-&gt;设置-&gt;编辑器 取消选中“保存前创建备份文件”
+</code></pre>
+<p>安装温度监控：</p>
+<pre><code>sudo apt-get install lm-sensors
+sudo sensors-detect
+sudo apt-get install xsensors //或者ksensors(KDE中推荐使用ksensors)
+</code></pre>
+<p>滚动条模式：</p>
+<pre><code>使用经典滚动条命令：
+gsettings set com.canonical.desktop.interface scrollbar-mode normal
+恢复overlay scoller滚动条：
+gsettings reset com.canonical.desktop.interface scrollbar-mode
+</code></pre>
+<p>修改默认的session for 14.04</p>
+<pre><code>cat /usr/share/xsessions //记下需要设置的session名字
+sudo gedit /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+把user-session改为适合。
+</code></pre>
+<p>网速指示 for gnome:</p>
+<pre><code>sudo add-apt-repository ppa:nilarimogard/webupd8
+sudo apt-get update
+sudo apt-get install indicator-netspeed
+</code></pre>
+<p>cpu表格指示 for gnome:</p>
+<pre><code>sudo apt-get install indicator-multiload
+</code></pre>
+<p>安装星际词典：</p>
+<pre><code>sudo apt-get install stardict
+</code></pre>
+<p>然后到<a target="_blank" rel="noopener" href="http://download.huzheng.org/">地址1</a>或者<a target="_blank" rel="noopener" href="http://blog.sciencenet.cn/blog-203570-722938.html">地址2</a>下载一个字典包，解压到一个文件夹，比如&#x2F;home&#x2F;ubuntu&#x2F;dicts&#x2F;stardict-oxford-gb-formated-2.4.2，解压到一个文件夹内，允许有词典子目录。创建链接到词典文件夹</p>
+<pre><code> sudo ln -s ~/programs/Stardict_dicts /usr/share/stardict/dic
+ 
+</code></pre>
+<p>打开星际词典，设置词典后就可以查字典了。我用的词典主要有三个</p>
+<pre><code># 朗道英汉词典5.0 词汇量435468
+langdao-ec-gb-2.4.2
+
+# 牛津高阶词典 英英 词汇量 78075	
+Oxford_Advanced_Learner_s_Dictionary-8th
+
+# cedict汉英词典 词汇量31992
+stardict-cedict-gb-2.4.2
+</code></pre>
+<p>安装字体：<br><a target="_blank" rel="noopener" href="https://github.com/yakumioto/YaHei-Consolas-Hybrid-1.12/blob/master/YaHei%20Consolas%20Hybrid%201.12.ttf">YaHei.Consolas.1.12.ttf</a>是混排字体，适合写程序。</p>
+<pre><code>mkdir ~/.fonts
+mv YaHei.Consolas.1.12.ttf ~/.fonts
+cd ~/.fonts
+chmod 744 *
+sudo mkfontscale
+sudo mkfontdir
+sudo fc-cache -f -v
+</code></pre>
+<p>注销即可使用新字体</p>
+<p>RIME输入法(APT仓库支持)</p>
+<p>ibus-rime输入法，设置横排，用网上的教材是无效的，需要使用ibus覆盖rime设置</p>
+<pre><code>gsettings set org.freedesktop.ibus.panel lookup-table-orientation 0
+</code></pre>
+<p>某些设置可以在运行ibus-setup设置里面看到<br>运行im-config配置多输入环境。</p>
+<p>连自定义字体都需要命令修改</p>
+<pre><code>gsettings set org.freedesktop.ibus.panel use-custom-font true
+</code></pre>
+<p>任务栏指示当前的运行情况（cpu.ram.hdisk.net）使用<a target="_blank" rel="noopener" href="https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet">gnome-shell-system-monitor-applet</a></p>
+<p>添加shell extension的方法：<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=etAneQtlTLQ">Youtube教程</a></p>
+<p>屏幕录像</p>
+<pre><code>sudo add-apt-repository ppa:maarten-baert/simplescreenrecorder
+sudo apt-get update
+sudo apt-get install simplescreenrecorder
+</code></pre>
+<p>SMPLAYER播放器</p>
+<pre><code>sudo add-apt-repository ppa:rvm/smplayer 
+sudo apt-get update 
+sudo apt-get install smplayer smplayer-themes smplayer-skins
+</code></pre>
+<p>Android Studio杂项</p>
+<p>初次运行提示appt返回一个非零的值，是缺库：</p>
+<pre><code>sudo apt install lib32stdc++6
+</code></pre>
+<p>输入法：fcitx支持</p>
+<pre><code>vi android studio/bin/studio.sh
+# 文件上方加入
+export XMODIFIERS=”@im=fcitx” 
+export GTK_IM_MODULE=”fcitx” 
+export QT_IM_MODULE=”fcitx”
+</code></pre>
+<p>可以支持fcitx输入法框架，但是AS仍然无法跟踪光标。</p>
+<p>KDE环境快捷键修改</p>
+<p>终端：修改复制按键为ctrl+insert：配置-&gt;设置快捷键</p>
+<p>全局按win窗口快捷键：<br>进行左右侧snap：系统设置-&gt;快捷键-&gt;全局快捷键-&gt;组件KWin-&gt;将窗口快速铺到左（右）侧，最大化，最小化<br>显示桌面：系统设置-&gt;快捷键-&gt;全局快捷键-&gt;组件KWin-&gt;显示桌面</p>
+<p>多媒体（音量增减）:<br>快捷键-&gt;全局快捷键-&gt;自定义快捷键-&gt;新建如下三个动作代表静音、加、减音量</p>
+<pre><code>amixer set &#39;Master&#39; 0
+amixer set &#39;Master&#39; 10%+
+amixer set &#39;Master&#39; 10%-
+</code></pre>
+<p>安装差异比较器（类似windows的beyond compare）</p>
+<pre><code>sudo apt install meld
+</code></pre>
+<p>串口设备读写权限</p>
+<pre><code>sudo vi /etc/udev/rules.d/99-ttyUSB.rules
+KERNEL==&quot;ttyUSB[0-9]*&quot;,MODE=&quot;0666&quot;
+</code></pre>
+<p>效果是：不需要使用sudo 来进行open串口</p>
+<p>fcitx在zsh环境下的环境变量。解决部份窗口无法切换输入法，和无法自启动的问题。</p>
+<pre><code># ~/.zprofile
+
+export XIM=fcitx  
+export XIM_PROGRAM=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=&quot;@im=fcitx&quot;
+
+# auto start fcitx
+exec fcitx-autostart &amp;
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/10/22/python_re_usage/" rel="prev" title="Python re库 正则表达式">
+                  <i class="fa fa-chevron-left"></i> Python re库 正则表达式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/10/29/RE_POSIX/" rel="next" title="POSIX正则表达式">
+                  POSIX正则表达式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

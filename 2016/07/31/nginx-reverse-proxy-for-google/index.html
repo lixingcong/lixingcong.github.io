@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一键部署xx之类的脚本使用有风险，试想一下脚本弄出异常的&#39;sudo rm -rf &#x2F;&#39;就让VPS挂掉的情形。。因为已经有前车之鉴，不敢再偷懒，自己实践下反代过程也不错哦！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx反代google">
+<meta property="og:url" content="http://lixingcong.github.io/2016/07/31/nginx-reverse-proxy-for-google/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="一键部署xx之类的脚本使用有风险，试想一下脚本弄出异常的&#39;sudo rm -rf &#x2F;&#39;就让VPS挂掉的情形。。因为已经有前车之鉴，不敢再偷懒，自己实践下反代过程也不错哦！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-07-31T06:25:13.000Z">
+<meta property="article:modified_time" content="2016-07-31T06:25:13.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="html">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/07/31/nginx-reverse-proxy-for-google/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/07/31/nginx-reverse-proxy-for-google/","path":"2016/07/31/nginx-reverse-proxy-for-google/","title":"nginx反代google"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>nginx反代google | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx"><span class="nav-number">1.</span> <span class="nav-text">nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96module"><span class="nav-number">1.1.</span> <span class="nav-text">获取module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91nginx"><span class="nav-number">1.2.</span> <span class="nav-text">编译nginx</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Let-39-s-Encrypt%E8%AF%81%E4%B9%A6"><span class="nav-number">2.</span> <span class="nav-text">Let&#39;s Encrypt证书</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E7%A7%81%E9%88%85"><span class="nav-number">2.1.</span> <span class="nav-text">生成私鈅</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%BE%E5%8F%91%E8%AF%81%E4%B9%A6"><span class="nav-number">2.2.</span> <span class="nav-text">签发证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%AD%E8%AF%81%E4%B9%A6%E8%84%9A%E6%9C%AC"><span class="nav-number">2.3.</span> <span class="nav-text">续证书脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E4%BB%A3google"><span class="nav-number">3.</span> <span class="nav-text">反代google</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.1.</span> <span class="nav-text">其它设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#nginx%E6%9D%83%E9%99%90"><span class="nav-number">3.1.1.</span> <span class="nav-text">nginx权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ssl%E5%AE%89%E5%85%A8%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.1.2.</span> <span class="nav-text">ssl安全设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E4%B8%8A%E6%B8%B8ip"><span class="nav-number">3.1.3.</span> <span class="nav-text">设置上游ip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%90%E5%88%B6%E8%BF%9E%E6%8E%A5%E6%95%B0"><span class="nav-number">3.1.4.</span> <span class="nav-text">限制连接数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#http%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-number">3.1.5.</span> <span class="nav-text">http重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP%E4%BC%98%E5%8C%96%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.1.6.</span> <span class="nav-text">TCP优化设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nginx%E7%BC%93%E5%AD%98"><span class="nav-number">3.1.7.</span> <span class="nav-text">nginx缓存</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">4.</span> <span class="nav-text">后记</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/07/31/nginx-reverse-proxy-for-google/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="nginx反代google | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          nginx反代google<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/nginx-reverse-proxy-for-google.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年7月31日 14:25:13" itemprop="dateCreated datePublished" datetime="2016-07-31T14:25:13+08:00">2016年7月31日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>一键部署xx之类的脚本使用有风险，试想一下脚本弄出异常的&#39;sudo rm -rf &#x2F;&#39;就让VPS挂掉的情形。。因为已经有前车之鉴，不敢再偷懒，自己实践下反代过程也不错哦！</p>
+<span id="more"></span>
+<p>提示：此文于2016年撰写，信息已过时，博主不再更新，请不要过度参考。</p>
+<h2 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h2><p>目的是编译带有以下模块的nginx，实现正则表达式匹配谷歌的地址</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/cuber/ngx_http_google_filter_module">ngx_http_google_filter_module</a></td>
+<td>google反代</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/yaoweibin/ngx_http_substitutions_filter_module">ngx_http_substitutions_filter_module</a></td>
+<td>正则表达式</td>
+</tr>
+</tbody></table>
+<h3 id="获取module"><a href="#获取module" class="headerlink" title="获取module"></a>获取module</h3><pre><code>cd /root &amp;&amp; mkdir ng &amp;&amp; cd ng
+git clone https://github.com/cuber/ngx_http_google_filter_module
+git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+</code></pre>
+<p>安装module依赖</p>
+<pre><code>apt install libpcre3-dev libssl-dev zlib1g-dev libxslt1-dev libgd-dev libgeoip-dev
+</code></pre>
+<h3 id="编译nginx"><a href="#编译nginx" class="headerlink" title="编译nginx"></a>编译nginx</h3><p>去<a target="_blank" rel="noopener" href="http://nginx.org/en/download.html">nginx download page</a>下载需要的版本，以1.10.1为例</p>
+<pre><code>wget http://nginx.org/download/nginx-1.10.1.tar.gz
+tar xf nginx-1.10.1.tar.gz
+cd nginx-1.10.1
+</code></pre>
+<p>configure参数填入，再加上两个Module，生成Makefile</p>
+<pre><code>./configure \
+--with-cc-opt=&#39;-g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2&#39; \
+--with-ld-opt=&#39;-Wl,-Bsymbolic-functions -Wl,-z,relro&#39; \
+--prefix=/usr/share/nginx \
+--conf-path=/etc/nginx/nginx.conf \
+--with-debug \
+--with-pcre-jit \
+--with-ipv6 \
+--with-http_ssl_module \
+--with-http_stub_status_module \
+--with-http_realip_module \
+--with-http_auth_request_module \
+--with-http_addition_module \
+--with-http_dav_module \
+--with-http_geoip_module \
+--with-http_gunzip_module \
+--with-http_gzip_static_module \
+--with-http_image_filter_module \
+--with-http_v2_module \
+--with-http_sub_module \
+--with-http_xslt_module \
+--with-stream \
+--with-stream_ssl_module \
+--with-threads \
+--add-module=../ngx_http_google_filter_module \
+--add-module=../ngx_http_substitutions_filter_module
+</code></pre>
+<p>若外置openssl，使用这个参数</p>
+<pre><code>--with-openssl=../openssl-1.1.0c
+</code></pre>
+<p>*PS:*这个configure参数是从apt install nginx后执行nginx -V得到的，根据个人需要编译模块</p>
+<p>没有问题就编译安装吧</p>
+<pre><code>make -j2
+make install
+</code></pre>
+<p>看看nginx模块是否正确，方法是看configure末尾是否有ngx_http_google_filter_module</p>
+<pre><code>nginx -V
+# 若command not found可以创建符号链接
+# ln -s /usr/share/nginx/sbin/nginx /usr/sbin/nginx
+</code></pre>
+<p>然后配置一下网站，看看是否能从外网打开本机网站</p>
+<pre><code>vi /etc/nginx/nginx.conf
+# 修改server_name为自己的域名
+nginx -s reload
+</code></pre>
+<p>最后，记得添加开机启动，写入.bashrc脚本或者rc.local脚本</p>
+<pre><code>/usr/sbin/nginx
+</code></pre>
+<h2 id="Let-39-s-Encrypt证书"><a href="#Let-39-s-Encrypt证书" class="headerlink" title="Let&#39;s Encrypt证书"></a>Let&#39;s Encrypt证书</h2><h3 id="生成私鈅"><a href="#生成私鈅" class="headerlink" title="生成私鈅"></a>生成私鈅</h3><p>挑选一个合适的letsencrypt客户端（网上大约有十多种），我以这个acme-tiny为例</p>
+<pre><code>cd /root/ng
+git clone https://github.com/diafygi/acme-tiny
+cd acme-tiny	
+</code></pre>
+<p>生成自己用于续证书有效期的私钥，用于let&#39;s Encrypt识别你的个人身份，需要妥善保管，不能与下面的domain.key混用。</p>
+<pre><code>openssl genrsa 4096 &gt; account.key
+</code></pre>
+<p>生成 CSR（Certificate Signing Request，证书签名请求）</p>
+<p>1.先生成RSA私钥，用于生成CSR（实际中可以选用ECC私钥）</p>
+<pre><code>openssl genrsa 4096 &gt; domain.key
+</code></pre>
+<p>2.接下来生成CSR文件</p>
+<pre><code># 单域名
+openssl req -new -sha256 -key domain.key -subj &quot;/CN=MY_DOMAIN.COM&quot; &gt; domain.csr
+
+# 多域名(use this one if you want both MY_DOMAIN.COM and WWW.MY_DOMAIN.COM)
+openssl req -new -sha256 -key domain.key -subj &quot;/&quot; -reqexts SAN -config &lt;(cat /etc/ssl/openssl.cnf &lt;(printf &quot;[SAN]\nsubjectAltName=DNS:MY_DOMAIN.COM,DNS:WWW.MY_DOMAIN.COM&quot;)) &gt; domain.csr
+</code></pre>
+<h3 id="签发证书"><a href="#签发证书" class="headerlink" title="签发证书"></a>签发证书</h3><p>Let&#39;s Encrypt 在你的服务器上生成一个随机验证文件，再通过创建 CSR 时指定的域名访问，如果可以访问则表明你对这个域名有控制权。验证通过才允许下一步签证书。</p>
+<p>创建用于存放验证文件的目录，不能用root权限的目录，建议使用nginx的www目录下（貌似权限是www-data？）</p>
+<pre><code>mkdir /var/www/challenges/
+</code></pre>
+<p>往nginx配置一个HTTP服务器，用于验证let&#39;s Encrypt域名所有权, 添加前请注释掉之前已经存在的监听80端口的服务器</p>
+<pre><code>vi /etc/nginx/nginx.conf
+# http标签内
+server &#123;
+    server_name MY_DOMAIN.COM;
+    listen 80;
+    # ipv6
+    # listen [::]:80;
+
+    location ^~ /.well-known/acme-challenge/ &#123;
+        alias /var/www/challenges/;
+        try_files $uri =404;
+    &#125;
+&#125;
+</code></pre>
+<p>重载服务</p>
+<pre><code>nginx -s reload
+</code></pre>
+<p>这个验证服务以后（比如三个月后）更新证书还要用到，建议一直保留。</p>
+<p>有了验证服务器，就可以验证域名并签发证书了。</p>
+<pre><code>cd /root/ng/acme-tiny
+# 注意验证目录是/var/www/challenges，与上面mkdir一致
+python acme_tiny.py --account-key ./account.key --csr ./domain.csr --acme-dir /var/www/challenges/ &gt; ./signed.crt
+</code></pre>
+<p>提示*Certificate signed!*就可以生成一个singed.crt网站证书。</p>
+<p>接下来还要下载 Let&#39;s Encrypt 的中间证书，配置 HTTPS 证书时既不要漏掉中间证书，也不要包含根证书。在 Nginx 配置中，需要把中间证书和网站证书合在一起</p>
+<pre><code>wget -O - https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem &gt; intermediate.pem
+cat signed.crt intermediate.pem &gt; chained.pem
+</code></pre>
+<h3 id="续证书脚本"><a href="#续证书脚本" class="headerlink" title="续证书脚本"></a>续证书脚本</h3><p>创建 renew_cert.sh 并通过 chmod a+x renew_cert.sh 赋予执行权限</p>
+<pre><code>#! /bin/bash
+
+export ACME_TINY_DIR=/root/ng/acme-tiny
+
+cd $ACME_TINY_DIR &amp;&amp; python acme_tiny.py --account-key account.key --csr domain.csr --acme-dir /var/www/challenges/ &gt; signed.crt || exit
+cd $ACME_TINY_DIR &amp;&amp; wget -O - https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem &gt; intermediate.pem
+cd $ACME_TINY_DIR &amp;&amp; cat signed.crt intermediate.pem &gt; chained.pem
+cd $ACME_TINY_DIR &amp;&amp; wget -O - https://letsencrypt.org/certs/isrgrootx1.pem &gt; root.pem
+cd $ACME_TINY_DIR &amp;&amp; cat intermediate.pem root.pem &gt; full_chained.pem
+
+nginx -s reload || echo &quot;renew fail&quot;
+</code></pre>
+<p>写入crontab，定期执行续证书脚本（比如每个月20号续一次）</p>
+<h2 id="反代google"><a href="#反代google" class="headerlink" title="反代google"></a>反代google</h2><pre><code>vi /etc/nginx/nginx.conf
+# http标签内加入一个HTTPS服务器
+server &#123;
+    server_name MY_DOMAIN.COM;
+    listen 443;
+    # ipv6
+    # listen [::]:443;
+
+    ssl on;
+    # specify your cert location
+    ssl_certificate /root/ng/acme-tiny/chained.pem;
+    ssl_certificate_key /root/ng/acme-tiny/domain.key;
+
+    resolver 8.8.8.8;
+    location / &#123;
+        google on;
+        google_scholar on;
+        google_language &quot;en&quot;;
+    &#125;
+    
+    # forbid search engine spider
+    if ($http_user_agent ~* &quot;qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot&quot;)&#123;
+        return 403;
+    &#125;
+    
+    # not allow robots
+    location /robots.txt &#123;
+        add_header Content-Type text/plain;
+        return 200 &quot;User-agent: *\nDisallow: /\n&quot;;
+    &#125;
+    
+    # forbid illegal domain request
+    if ( $host != $server_name ) &#123;
+        return 403;
+    &#125;
+&#125;
+</code></pre>
+<p>这样可以实现反代了，重载nginx看看效果</p>
+<pre><code>nginx -s reload
+</code></pre>
+<h3 id="其它设置"><a href="#其它设置" class="headerlink" title="其它设置"></a>其它设置</h3><h4 id="nginx权限"><a href="#nginx权限" class="headerlink" title="nginx权限"></a>nginx权限</h4><p>默认是nobody权限执行nginx，建议指定nginx的执行者为www-data</p>
+<pre><code>vi /etc/nginx/nginx.conf
+user=www-data
+</code></pre>
+<p>因为用到的proxy模块，需要更改proxy module的拥有者为www-data</p>
+<pre><code>chown -R www-data:www-data /var/lib/nginx/proxy
+</code></pre>
+<h4 id="ssl安全设置"><a href="#ssl安全设置" class="headerlink" title="ssl安全设置"></a>ssl安全设置</h4><p>这个设置不是必要的，但是我看到<a target="_blank" rel="noopener" href="https://www.ssllabs.com/ssltest/">SSL Lab</a>对我的网站https评分仅有B等级，安全性不足，需要设定更好的密钥交换机制。</p>
+<p>当然，尽量使用最新的Nginx，保证安全性，编译nginx也尽量使用指定模块最新源码的方式进行编译，堵住0day。</p>
+<p>以下ssl设置均在http-server(HTTPS)标签内进行修改</p>
+<p>在其listen 443改为</p>
+<pre><code>listen 443 ssl http2 fastopen=2 reuseport;
+</code></pre>
+<p>开启OCSP</p>
+<p>先把根证书和中间证书合在一起</p>
+<pre><code>cd /root/ng/acme-tiny
+wget -O - https://letsencrypt.org/certs/isrgrootx1.pem &gt; root.pem
+cat intermediate.pem root.pem &gt; full_chained.pem
+</code></pre>
+<p>在nginx配置中指定ssl_stapling</p>
+<pre><code>ssl_stapling               on;
+ssl_stapling_verify        on;
+ssl_trusted_certificate    /root/ng/acme-tiny/full_chained.pem;
+</code></pre>
+<p>指定加密算法</p>
+<pre><code>ssl_ciphers                EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+ssl_prefer_server_ciphers  on;
+ssl_protocols              TLSv1 TLSv1.1 TLSv1.2;
+</code></pre>
+<p>超时等</p>
+<pre><code>ssl_session_cache          shared:SSL:50m;
+ssl_session_timeout        1d;
+ssl_session_tickets        on;
+
+# openssl rand 48 &gt; session_ticket.key
+# 单机（standalone）部署可以不指定 ssl_session_ticket_key
+# ssl_session_ticket_key     /root/ng/acme-tiny/session_ticket.key;
+</code></pre>
+<p>经过以上ssl设置，我的网站安全等级上升到A级，有些许提升。</p>
+<h4 id="设置上游ip"><a href="#设置上游ip" class="headerlink" title="设置上游ip"></a>设置上游ip</h4><p>防止谷歌认为你是机器人，要求输入验证码</p>
+<p>在vps上面多次执行以下命令获得不同的ip（至少能获取3个吧，多一些比较好）</p>
+<pre><code>dig google.com +short @8.8.8.8
+dig google.com +short @208.67.222.222
+</code></pre>
+<p>对每一个dns结果进行ping测试，选择延迟低的dns结果，按权重放入upstream标签内</p>
+<pre><code>vi /etc/nginx/nginx.conf
+# http标签内加入upstream上游
+upstream www.google.com&#123;
+    server 216.58.217.206:443 weight=34;
+    server 172.217.4.142:443 weight=33;
+    server 216.58.193.206:443 weight=33;
+&#125;
+</code></pre>
+<h4 id="限制连接数"><a href="#限制连接数" class="headerlink" title="限制连接数"></a>限制连接数</h4><p>设置同一个ip访问本站频率，防止滥用，具体数值根据服务负荷设置</p>
+<p>这里设置某个ip频率每秒10次请求，并发burst最多允许50：效果可以从打开“谷歌图片”搜索一个关键词，看加载图片速度中体会得到。被限制的请求将返回503错误</p>
+<pre><code># http标签内加入setlimit
+limit_req_zone $binary_remote_addr zone=setfreq:10m rate=10r/s;
+limit_req zone=setfreq burst=50 nodelay;
+</code></pre>
+<h4 id="http重定向"><a href="#http重定向" class="headerlink" title="http重定向"></a>http重定向</h4><p>设置http访问后重定向为baidu.com（纯属恶搞，专门对付那些不开https的人）</p>
+<pre><code># http-server(HTTP)标签内加入rewrite
+location / &#123;
+    # change to your target website
+    rewrite ^/(.*)$ http://www.baidu.com permanent;
+&#125;
+</code></pre>
+<p>如果不恶搞，同理可以rewrite为https，达到http跳转https目的</p>
+<pre><code>rewrite ^/(.*)$ https://$host/$1 permanent;
+</code></pre>
+<h4 id="TCP优化设置"><a href="#TCP优化设置" class="headerlink" title="TCP优化设置"></a>TCP优化设置</h4><pre><code>vi /etc/nginx/nginx.conf
+# http标签内修改
+sendfile           on;
+tcp_nopush         on;
+tcp_nodelay        on;
+keepalive_timeout  60;
+
+# gzip压缩（可选）
+gzip               on;
+gzip_vary          on;
+gzip_comp_level    6;
+gzip_buffers       16 8k;
+gzip_min_length    1000;
+gzip_proxied       any;
+gzip_disable       &quot;msie6&quot;;
+gzip_http_version  1.0;
+gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+</code></pre>
+<h4 id="nginx缓存"><a href="#nginx缓存" class="headerlink" title="nginx缓存"></a>nginx缓存</h4><p>参考<a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache">ngx_http_proxy_module官方手册</a>有关缓存的设置。</p>
+<p>首先mkdir几个文件夹&#x2F;etc&#x2F;nginx&#x2F;cache&#x2F;one、two、three。</p>
+<pre><code>vi /etc/nginx/nginx.conf
+# http标签内，这里定义了三个zone，后面google实际上只用到一个zone（two）
+proxy_cache_path  /etc/nginx/cache/one    levels=1      keys_zone=one:10m;
+proxy_cache_path  /etc/nginx/cache/two    levels=2:2    keys_zone=two:10m;
+proxy_cache_path  /etc/nginx/cache/three  levels=1:1:2  keys_zone=three:10m;
+
+# 缓存有效时间
+proxy_cache_valid  200 302 10m;
+proxy_cache_valid  301 30m;
+proxy_cache_valid  any 1m;
+
+# http-&gt;server标签内，加入允许缓存，zone名字为two
+location / &#123;
+    proxy_cache two;
+    google on;
+&#125;
+</code></pre>
+<p>这样每次请求谷歌的结果都缓存在nginx服务器内，减少VPS与谷歌的通信次数。</p>
+<p>需要定期清理缓存，nginx没有自动清理缓存的功能，可以向crontab写入定时任务清理缓存。</p>
+<pre><code>find /etc/nginx/cache/ -type f -delete
+</code></pre>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>设置到这里就可以使用反代了，建议搭建后域名不要公开使用，亲友几个人使用还是没问题的，人多了你的ip或者域名容易被GFW认证，最后只能更换VPS或者域名。</p>
+<p>谷歌反代教程来源于项目<a target="_blank" rel="noopener" href="https://github.com/cuber/ngx_http_google_filter_module">ngx_http_google_filter_module</a>的wiki，证书的获取方法参考了<a target="_blank" rel="noopener" href="https://imququ.com/post/letsencrypt-certificate.html">Let&#39;s Encrypt，免费好用的 HTTPS 证书</a>，至于nginx的HTTPS安全部份则参考了<a target="_blank" rel="noopener" href="https://imququ.com/post/my-nginx-conf.html">Nginx 配置之完整篇</a>。经过本人实践记录下来而成。附上自己的配置文件<a target="_blank" rel="noopener" href="https://gist.github.com/lixingcong/276ae24f8a0bedd147ac7489f3c58fc2">nginx.conf</a>，可以参考一下。</p>
+<p>另外有个不依赖http_google_filter_module的纯nginx配置文件<a target="_blank" rel="noopener" href="https://github.com/arnofeng/ngx_google_deployment/blob/master/nginx.conf">nginx.conf</a>，实际上这个conf更具有一般性，读懂它配置，理论上可以代理任意网站，例如草榴。</p>
+<p>文中的MY_DOMAIN.COM即自己的域名，注意替换</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/html/" rel="tag"># html</a>
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/07/20/compile-with-no-doc-for-shadowsocks/" rel="prev" title="不编译shadowsocks的文档">
+                  <i class="fa fa-chevron-left"></i> 不编译shadowsocks的文档
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/08/28/test-vps-memory/" rel="next" title="测试VPS真实内存">
+                  测试VPS真实内存 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

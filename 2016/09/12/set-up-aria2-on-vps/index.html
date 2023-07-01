@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="充分利用VPS大硬盘、大流量的特点，让服务器进行BT&#x2F;磁力&#x2F;HTTP下载，并实现web资源管理器：文件上传下载，一举两得。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="aria2+yaaw离线下载">
+<meta property="og:url" content="http://lixingcong.github.io/2016/09/12/set-up-aria2-on-vps/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="充分利用VPS大硬盘、大流量的特点，让服务器进行BT&#x2F;磁力&#x2F;HTTP下载，并实现web资源管理器：文件上传下载，一举两得。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/aria2/aria2.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/aria2/yaaw.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/aria2/eXtplorer.png">
+<meta property="article:published_time" content="2016-09-12T16:49:21.000Z">
+<meta property="article:modified_time" content="2016-09-12T16:49:21.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="openwrt">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/aria2/aria2.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/09/12/set-up-aria2-on-vps/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/09/12/set-up-aria2-on-vps/","path":"2016/09/12/set-up-aria2-on-vps/","title":"aria2+yaaw离线下载"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>aria2+yaaw离线下载 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#aria2"><span class="nav-number">1.</span> <span class="nav-text">aria2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E6%88%8F"><span class="nav-number">1.1.</span> <span class="nav-text">前戏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-number">1.2.</span> <span class="nav-text">开机自启</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#yaaw"><span class="nav-number">2.</span> <span class="nav-text">yaaw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eXtplorer"><span class="nav-number">3.</span> <span class="nav-text">eXtplorer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#web%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">web文件管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E5%8A%9F%E8%83%BD"><span class="nav-number">3.2.</span> <span class="nav-text">上传文件功能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#openwrt"><span class="nav-number">4.</span> <span class="nav-text">openwrt</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#aria2-1"><span class="nav-number">4.1.</span> <span class="nav-text">aria2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#USB"><span class="nav-number">4.2.</span> <span class="nav-text">USB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#yaaw-1"><span class="nav-number">4.3.</span> <span class="nav-text">yaaw</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/09/12/set-up-aria2-on-vps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="aria2+yaaw离线下载 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          aria2+yaaw离线下载<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/set-up-aria2-on-vps.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年9月13日 00:49:21" itemprop="dateCreated datePublished" datetime="2016-09-13T00:49:21+08:00">2016年9月13日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>充分利用VPS大硬盘、大流量的特点，让服务器进行BT&#x2F;磁力&#x2F;HTTP下载，并实现web资源管理器：文件上传下载，一举两得。</p>
+<span id="more"></span>
+
+<p>特别提醒：使用美国&#x2F;加拿大的VPS进行电影下载是违法的，主机商可以随时查出你的下载记录，等着被商家封号吧。请买其它版权法管得松的国家VPS进行离线下载。</p>
+<blockquote>
+<p>System: ubuntu 16.04 x64<br>RAM: 256M<br>Reverse proxy: nginx 1.10.1</p>
+</blockquote>
+<h2 id="aria2"><a href="#aria2" class="headerlink" title="aria2"></a>aria2</h2><h3 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h3><p>最简单的apt</p>
+<pre><code>apt install aria2
+</code></pre>
+<p>新建一个拥有者为www-data的目录，用于存放aria2的设置，初始化某些文件，这里选用*&#x2F;var&#x2F;www&#x2F;downloads*作为下载默认目录</p>
+<pre><code>mkdir /home/www-data
+mkdir /home/www-data/aria2
+mkdir /var/www/downloads
+
+cd /home/www-data/aria2
+touch aria2.session
+</code></pre>
+<p>使用这个配置文件<a href="/attachments/aria2/aria2.conf">aria2.conf</a>启动，下载后放在*&#x2F;home&#x2F;www-data&#x2F;aria2*下面</p>
+<p>为了安全起见，不用root权限运行aria2。修改完后更改拥有者www-data</p>
+<pre><code>chown -R www-data:www-data /home/www-data/aria2
+chown -R www-data:www-data /var/www/downloads
+</code></pre>
+<p>测试一下使用该文件能否启动</p>
+<pre><code>aria2c --conf-path=/home/www-data/aria2/aria2.conf
+</code></pre>
+<p><img src="/images/aria2/aria2.png"></p>
+<h3 id="开机自启"><a href="#开机自启" class="headerlink" title="开机自启"></a>开机自启</h3><p>下载init.d脚本：<a href="/attachments/aria2/aria2">点我下载</a>，保存位置为&#x2F;etc&#x2F;init.d&#x2F;aria2，并添加可执行权限</p>
+<pre><code>chmod a+x /etc/init.d/aria2
+</code></pre>
+<p>测试一下能否启动</p>
+<pre><code>killall aria2c
+/etc/init.d/aria2 start
+</code></pre>
+<p>可以加入到系统自动启动</p>
+<pre><code>vi /etc/rc.local
+# 添加 /etc/init.d/aria2 start
+</code></pre>
+<h2 id="yaaw"><a href="#yaaw" class="headerlink" title="yaaw"></a>yaaw</h2><p>这个是配合aria2实现web前端控制，纯静态html页面，在客户端javscript实现所有功能。</p>
+<pre><code>cd /var/www/
+git clone https://github.com/binux/yaaw
+</code></pre>
+<p>在nginx.conf中的server标签中添加合适的location，指向index.html。实现访问xxx.com&#x2F;yaaw即可打开页面</p>
+<pre><code>location ^~ /yaaw &#123;
+    alias /var/www/yaaw/;
+&#125;
+</code></pre>
+<p>重载nginx，测试一下网站能否打开</p>
+<pre><code>nginx -s reload
+</code></pre>
+<p><img src="/images/aria2/yaaw.png"></p>
+<p>第一次会出现Internal server error，正常，因为没有设置RPC地址。在网站右侧“设置”修改jsonrpc为正确的地址，正确值应该是</p>
+<pre><code>http://xxx.com:6800/jsonrpc
+</code></pre>
+<p>修改正确就可以登陆服务器实现下载文件到vps了，更多设置参考<a target="_blank" rel="noopener" href="http://aria2c.com/usage.html">yaaw设置帮助</a></p>
+<h2 id="eXtplorer"><a href="#eXtplorer" class="headerlink" title="eXtplorer"></a>eXtplorer</h2><h3 id="web文件管理"><a href="#web文件管理" class="headerlink" title="web文件管理"></a>web文件管理</h3><p>光有下载还不行，还需要文件管理。实现web界面的删除文件&#x2F;下载&#x2F;上传等基本功能。</p>
+<pre><code>apt install php php-cgi php-json php-xml php-mbstring
+</code></pre>
+<p>下载<a target="_blank" rel="noopener" href="http://extplorer.net/projects/extplorer/files">eXtplorer</a>，解压到&#x2F;var&#x2F;www&#x2F;eXtplorer目录</p>
+<p>同样为了安全起见，使用较低权限的www-data</p>
+<pre><code>chown -R www-data:www-data /var/www/eXtplorer
+</code></pre>
+<p>在nginx添加一个virtual-server</p>
+<pre><code>vi nginx.conf
+# http标签内增加:
+
+fastcgi_buffers 8 16k;
+fastcgi_buffer_size 32k;
+fastcgi_connect_timeout 300;
+fastcgi_send_timeout 300;
+fastcgi_read_timeout 300;
+
+
+vi sites-enabled/defualt
+# server标签增加:
+
+root /var/www/eXtplorer/;
+index index.php index.html index.htm;
+
+location / &#123;
+    try_files $uri $uri/ /index.html;
+&#125;
+
+location ~ \.php$ &#123;
+    fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include fastcgi_params;
+&#125;
+</code></pre>
+<p>遇到的各种502 Bad Gateway错误、404错误请自己解决。一般都是权限问题，只要保证 <em>php-fpm的执行者</em>与<em>nginx的执行者</em> 都是<em>www-data</em>就不会出错。</p>
+<p>重启nginx服务，打开浏览器看看能不能进入界面。这样就可以实网页端管理文件。</p>
+<p>貌似第一次进入的密码、帐号都是admin，及时更改密码，如无法更改密码请核实eXtplorer拥有者权限。</p>
+<p><img src="/images/aria2/eXtplorer.png"></p>
+<p>把aria2下载的东西全部在这里eXtplorer下载到自己电脑，还是很不错的</p>
+<h3 id="上传文件功能"><a href="#上传文件功能" class="headerlink" title="上传文件功能"></a>上传文件功能</h3><p>eXtplorer已经集成了。最好设置一下默认最大允许上传文件大小，否则上传超大文件提示413错误:<em>Request Entity Too Large</em></p>
+<p>nginx部份</p>
+<pre><code>vi /etc/nginx/nginx.conf
+# http标签内修改
+# Content-Length的最大值限制，默认1MB，这里改为1GB
+client_max_body_size 1024m;
+</code></pre>
+<p>php部份</p>
+<pre><code>vi /etc/php/7.0/fpm/php.ini
+# 是否允许通过HTTP上传文件的开关。默认为ON即是开
+file_uploads = on
+# 允许上传文件大小的最大值。默认为2M
+upload_max_filesize = 100m 望文生意，即
+# 表单POST给PHP的所能接收的最大值，包括表单里的所有值。默认为8M
+post_max_size = 8m
+# 传至服务器上存储临时文件的地方，如果没指定就会用系统默认的临时文件夹
+upload_tmp_dir = /home/tmp_upload
+</code></pre>
+<p>一般来说，设置好上述四个参数后，在网络正常的情况下，上传&lt;&#x3D;8M的文件是不成问题的</p>
+<p>但如果要上传&gt;8M的大文件的话，只设置上述四项还不一定能行的通。除非你的网络真有100Mbps的上传高速，否则你还得继续设置下面的参数。</p>
+<pre><code># 每个PHP页面运行的最大时间值(秒)，默认30秒
+max_execution_time 600
+# 每个PHP页面接收数据所需的最大时间，默认60秒
+max_input_time 600
+# 每个PHP页面所吃掉的最大内存，默认8M
+memory_limit 8m
+</code></pre>
+<p>这样就可以使用自己的私有云了，存点小电影，老司机偶尔开开车还是不错的！远离国产云存储服务，向8秒教育宣传片say bye bye，从这里开始！！</p>
+<h2 id="openwrt"><a href="#openwrt" class="headerlink" title="openwrt"></a>openwrt</h2><p>VPS端下载完毕，接下来就使用openwrt上面的aria2将文件以HTTP下载方式拖回来。</p>
+<h3 id="aria2-1"><a href="#aria2-1" class="headerlink" title="aria2"></a>aria2</h3><p>从openwrt的官方feed中可以编译出aria2，我选用较新的aria2 1.27.1版本，老版本不稳定。容易bus error。</p>
+<pre><code>make menuconfig
+# 选择 Network-&gt;File Trans-&gt;Aria2，勾选编译BT和Metalink模块。
+make package/aria2/compile -j4 V=99
+</code></pre>
+<p>安装aria2后测试一下能否命令行下载文件</p>
+<pre><code>cd /tmp
+ariac http://ipv4.download.thinkbroadband.com/5MB.zip
+</code></pre>
+<p>没问题就使用上文的aria2.conf略作修改（比如修改pre-located参数，下载目录等，session文件位置），直接在路由使用相同的命令启动</p>
+<pre><code>aria2c --conf-path=/root/aria2.conf -D
+</code></pre>
+<h3 id="USB"><a href="#USB" class="headerlink" title="USB"></a>USB</h3><p>openwrt安装以下packages</p>
+<pre><code>opkg install \
+  kmod-usb-storage \
+  kmod-fs-ext4 \
+  kmod-fs-vfat \
+  block-mount \
+  kmod-nls-utf8 \
+  kmod-nls-iso8859-1 \
+  kmod-nls-cp437
+</code></pre>
+<p>LEDE安装：</p>
+<pre><code>opkg install \
+  kmod-usb-storage \
+  kmod-fs-ext4 \
+  kmod-fs-vfat \
+  block-mount \
+  kmod-usb-ohci \
+  kmod-usb-uhci \
+  mkf2fs \
+  f2fsck
+</code></pre>
+<p>插入U盘挂载：</p>
+<pre><code>mkdir /mnt/sda1
+mount /dev/sda1 /mnt/sda1
+</code></pre>
+<h3 id="yaaw-1"><a href="#yaaw-1" class="headerlink" title="yaaw"></a>yaaw</h3><p>可以将上文的yaaw文件夹放入&#x2F;root&#x2F;。然后直接创建一个虚拟server:</p>
+<pre><code>vi /etc/config/uhttpd
+# 添加
+config uhttpd &#39;yaaw&#39;
+list listen_http &#39;0.0.0.0:333&#39;
+list listen_http &#39;[::]:333&#39;
+option home &#39;/root/yaaw&#39;
+option max_requests &#39;3&#39;
+option http_keepalive &#39;20&#39;
+option tcp_keepalive &#39;1&#39;
+</code></pre>
+<p>重启uhttp即可访问yaaw前端，地址<code>http://192.168.1.1:333</code>。无需复杂的页面设置。</p>
+<pre><code>/etc/init.d/uhttpd restart
+</code></pre>
+<p>若要访问路由器上面的aria2，可以在yaaw右侧的配置，修改jsonrpc为合适的地址。</p>
+<pre><code>http://192.168.1.1:6800/jsonrpc
+</code></pre>
+<p>下一步是，直接将VPS上面已经离线下载好的文件通过路由器<code>aria2+yaaw</code>下载到本地。</p>
+<p>服务端使用Nginx新建一个dl虚拟server作为HTTP服务器:</p>
+<pre><code>server &#123;
+    server_name files.xxxx.com;
+    listen 80;
+    location / &#123;
+        root /var/www/downloads;
+        autoindex on;
+        autoindex_localtime on;
+        autoindex_exact_size off;
+    &#125;
+&#125;
+</code></pre>
+<p>浏览器直接打开 <a target="_blank" rel="noopener" href="http://files.xxxx.com/">http://files.xxxx.com</a> 可以直接获得离线下载地址。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+              <a href="/tags/openwrt/" rel="tag"># openwrt</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/28/test-vps-memory/" rel="prev" title="测试VPS真实内存">
+                  <i class="fa fa-chevron-left"></i> 测试VPS真实内存
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/10/03/openwrt-port-forward/" rel="next" title="NAT穿透和内网访问">
+                  NAT穿透和内网访问 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

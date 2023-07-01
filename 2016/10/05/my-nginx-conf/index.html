@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="自己网站的nginx配置，减少重复编译nginx查找资料耗费的时间。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的nginx配置">
+<meta property="og:url" content="http://lixingcong.github.io/2016/10/05/my-nginx-conf/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="自己网站的nginx配置，减少重复编译nginx查找资料耗费的时间。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-10-05T12:38:55.000Z">
+<meta property="article:modified_time" content="2016-10-05T12:38:55.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="html">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/10/05/my-nginx-conf/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/10/05/my-nginx-conf/","path":"2016/10/05/my-nginx-conf/","title":"我的nginx配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>我的nginx配置 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">2.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97"><span class="nav-number">2.1.</span> <span class="nav-text">各个模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx"><span class="nav-number">2.2.</span> <span class="nav-text">nginx</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">反向代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E7%BD%91%E9%A1%B5"><span class="nav-number">3.2.</span> <span class="nav-text">压缩网页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E5%8D%87ssl%E5%AE%89%E5%85%A8%E7%AD%89%E7%BA%A7"><span class="nav-number">3.3.</span> <span class="nav-text">提升ssl安全等级</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/10/05/my-nginx-conf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="我的nginx配置 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我的nginx配置<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/my-nginx-conf.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年10月5日 20:38:55" itemprop="dateCreated datePublished" datetime="2016-10-05T20:38:55+08:00">2016年10月5日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>自己网站的nginx配置，减少重复编译nginx查找资料耗费的时间。</p>
+<span id="more"></span>
+<p>更新日期：2022年12月01日</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>较高的压缩率，加快网页传输</li>
+<li>https安全性提高</li>
+</ul>
+<p>最终选用了以下nginx模块</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/yaoweibin/ngx_http_substitutions_filter_module">ngx_http_substitutions_filter_module</a></td>
+<td>正则表达式</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/google/ngx_brotli">ngx_brotli</a></td>
+<td>谷歌开源压缩brotli库</td>
+</tr>
+</tbody></table>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>在这个目录下工作：</p>
+<pre><code>mkdir ~/nginx_my &amp;&amp; cd nginx_my
+</code></pre>
+<h3 id="各个模块"><a href="#各个模块" class="headerlink" title="各个模块"></a>各个模块</h3><pre><code>cd ~/nginx_my
+git clone https://github.com/google/ngx_brotli
+cd ngx_brotli
+git submodule update --init
+
+cd ~/nginx_my
+git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+</code></pre>
+<h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>编译</p>
+<pre><code>cd ~/nginx_my
+
+# nginx
+NGINX_VER=1.22.1
+wget http://nginx.org/download/nginx-$NGINX_VER.tar.gz
+tar xf nginx-$NGINX_VER.tar.gz
+</code></pre>
+<p>openssl取最新版</p>
+<pre><code>OPENSSL_VER=3.0.7
+wget https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz
+tar xf openssl-$OPENSSL_VER.tar.gz
+</code></pre>
+<p>安装依赖。至于依赖什么，取决于编译nginx开启的模块。即下文的configure参数。</p>
+<pre><code>apt install -y \
+  libgeoip-dev \
+  libgd-dev \
+  libxslt1-dev \
+  zlib1g-dev \
+  libpcre3-dev
+</code></pre>
+<p>configure参数控制要编译哪些模块</p>
+<pre><code># 切换到Nginx源码目录
+cd ~/nginx_my/nginx-$NGINX_VER
+
+./configure \
+--with-cc-opt=&#39;-O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2&#39; --with-ld-opt=&#39;-Wl,-Bsymbolic-functions -Wl,-z,relro&#39; \
+--conf-path=/etc/nginx/nginx.conf \
+--with-debug \
+--with-pcre-jit \
+--with-http_ssl_module \
+--with-http_stub_status_module \
+--with-http_realip_module \
+--with-http_auth_request_module \
+--with-http_addition_module \
+--with-http_dav_module \
+--with-http_geoip_module \
+--with-http_gunzip_module \
+--with-http_gzip_static_module \
+--with-http_image_filter_module \
+--with-http_v2_module \
+--with-http_sub_module \
+--with-http_xslt_module \
+--with-stream \
+--with-stream_ssl_module \
+--with-stream_ssl_preread_module \
+--with-threads \
+--without-mail_pop3_module \
+--without-mail_imap_module \
+--without-mail_smtp_module \
+--with-openssl=../openssl-$OPENSSL_VER \
+--with-openssl-opt=&#39;enable-tls1_3 enable-ec_nistp_64_gcc_128 enable-weak-ssl-ciphers&#39; \
+--add-module=../ngx_http_substitutions_filter_module \
+--add-module=../ngx_brotli
+</code></pre>
+<p>以上的configure意义是</p>
+<ul>
+<li>没有指定prefix，采用系统默认的前缀目录，如&#x2F;usr&#x2F;local&#x2F;</li>
+<li>指定配置文件路径为&#x2F;etc&#x2F;nginx&#x2F;nginx.conf</li>
+<li>开启basic_auth等模块，关闭邮件模块</li>
+<li>指定好openssl源码目录，开启TLS1.3加密套件</li>
+<li>添加几个额外的模块</li>
+</ul>
+<p>直接编译即可</p>
+<pre><code>make &amp;&amp; make install
+</code></pre>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>参考<a href="/2016/07/31/nginx-reverse-proxy-for-google/">这篇文章</a>，可以非常傻瓜化的部署反代。</p>
+<h3 id="压缩网页"><a href="#压缩网页" class="headerlink" title="压缩网页"></a>压缩网页</h3><p>修改&#x2F;etc&#x2F;nginx&#x2F;nginx.conf达到基本的gzip效果</p>
+<pre><code>gzip  on;
+gzip_vary          on;
+gzip_comp_level    6;
+gzip_buffers       16 8k;
+gzip_min_length    1k;
+gzip_proxied       any;
+gzip_disable       &quot;msie6&quot;;
+gzip_http_version  1.0;
+gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+</code></pre>
+<p>再加上谷歌的黑科技brotli压缩</p>
+<pre><code>brotli             on;
+brotli_comp_level  6;
+brotli_types       text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
+</code></pre>
+<h3 id="提升ssl安全等级"><a href="#提升ssl安全等级" class="headerlink" title="提升ssl安全等级"></a>提升ssl安全等级</h3><p>前提是网站有HTTPS部署，且对相关概念有基本了解。可以自行参考<a target="_blank" rel="noopener" href="https://imququ.com/">imququ大神博客</a>，学习基本的https部署方法！</p>
+<p>一、自定义生成密钥交换，取代nginx默认的weak exchange</p>
+<p>这个diffie-hellman算法是用来干啥的：作用就是让访问的者浏览器和你的服务器能安全的交换密钥，具体原理就自行谷歌吧，你不能强迫数学渣渣来给你解释密码学的东西是不是？总之nginx默认采用1024位的diffie-hellman，强度太低太危险，容易被别有用心的黑客叔叔破解，自己生成一个4096位的去替换掉就好啦。</p>
+<pre><code># 如果你的机器cpu性能不够强大，耗时很长，可以用 2048 位
+# 我的笔记本（i5 3317u）跑4096位，跑了二十分钟。。。直接拖到VPS上面/root/
+openssl dhparam -out dhparam.pem 4096
+</code></pre>
+<p>nginx.conf中的server标签中添加</p>
+<pre><code>ssl_dhparam /root/dhparam.pem;
+</code></pre>
+<p>二、手动指定优先TLS1.3 chacha20</p>
+<p>推荐的加密套件设置，详见CloudFlare的仓库 <a target="_blank" rel="noopener" href="https://github.com/stardock/nginxtls13">https://github.com/stardock/nginxtls13</a></p>
+<pre><code>ssl_protocols TLSv1.3 TLSv1.2;
+ssl_ciphers ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-GCM-SHA256;
+ssl_conf_command Options PrioritizeChaCha;
+ssl_conf_command Ciphersuites TLS_CHACHA20_POLY1305_SHA256;
+ssl_prefer_server_ciphers on;
+ssl_session_cache shared:SSL:10m;
+</code></pre>
+<p>验证cipher是否生效</p>
+<pre><code>curl https://example.com -v
+</code></pre>
+<p>输出结果中的cipher suite可以看到TLS-CHACHA20-POLY1305-SHA256等字样</p>
+<p>三、设置跨站response header</p>
+<pre><code>add_header X-Frame-Options SAMEORIGIN;
+add_header X-Content-Type-Options nosniff;
+add_header X-XSS-Protection 1;
+</code></pre>
+<p>四、强制HSTS</p>
+<p>新建一个http服务器，强制跳转到https:</p>
+<pre><code>server_name xxx.com
+listen 80;
+location / &#123;
+    rewrite ^(.*)$  https://$host$1 permanent;
+&#125;
+</code></pre>
+<p>在https服务器中添加</p>
+<pre><code>add_header Strict-Transport-Security &quot;max-age=31536000;&quot; always;
+</code></pre>
+<p>有兴趣可以加入google chrome的Preload List里面，将从浏览器自动强制使用https。需要申请，审批需要几天。但是加进去preload list后很难从其中移除，需要发邮件移除。。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/html/" rel="tag"># html</a>
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/03/openwrt-port-forward/" rel="prev" title="NAT穿透和内网访问">
+                  <i class="fa fa-chevron-left"></i> NAT穿透和内网访问
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/11/15/anki-doc/" rel="next" title="Anki理解笔记">
+                  Anki理解笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

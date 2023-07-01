@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。    书名 作者 下载地址    Classic Shell Scripting Arnold R. &amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Coo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shell简单的文本处理">
+<meta property="og:url" content="http://lixingcong.github.io/2015/10/31/sed/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。    书名 作者 下载地址    Classic Shell Scripting Arnold R. &amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Coo">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-10-31T14:13:37.000Z">
+<meta property="article:modified_time" content="2015-10-31T14:13:37.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="shell">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/10/31/sed/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/10/31/sed/","path":"2015/10/31/sed/","title":"shell简单的文本处理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>shell简单的文本处理 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#grep"><span class="nav-number">1.</span> <span class="nav-text">grep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sed"><span class="nav-number">2.</span> <span class="nav-text">sed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tr"><span class="nav-number">3.</span> <span class="nav-text">tr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cut"><span class="nav-number">4.</span> <span class="nav-text">cut</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#join"><span class="nav-number">5.</span> <span class="nav-text">join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#awk"><span class="nav-number">6.</span> <span class="nav-text">awk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sort"><span class="nav-number">7.</span> <span class="nav-text">sort</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fmt"><span class="nav-number">8.</span> <span class="nav-text">fmt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wc"><span class="nav-number">9.</span> <span class="nav-text">wc</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/10/31/sed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="shell简单的文本处理 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          shell简单的文本处理<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/sed.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年10月31日 22:13:37" itemprop="dateCreated datePublished" datetime="2015-10-31T22:13:37+08:00">2015年10月31日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。</p>
+<table>
+<thead>
+<tr>
+<th>书名</th>
+<th>作者</th>
+<th>下载地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Classic Shell Scripting</td>
+<td>Arnold R. &amp; Nelson H.F.B</td>
+<td><a href="">暂无</a></td>
+</tr>
+<tr>
+<td>Advanced Bash-Scripting Guide</td>
+<td>Mendel Cooper</td>
+<td><a target="_blank" rel="noopener" href="http://www.tldp.org/LDP/abs/abs-guide.pdf">PDF</a></td>
+</tr>
+</tbody></table>
+<h2 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h2><p>打印出某行。</p>
+<span id="more"></span>
+
+<pre><code>ifconfig | grep 127.0.0.1
+</code></pre>
+<p>使用正则表达式BRE或者ERE匹配行：</p>
+<pre><code>ifconfig | grep &#39;\([0-9]*\)\.&#39;
+ifconfig | grep -e &#39;[0-9]*\.&#39;
+</code></pre>
+<p>在文件下查找含有某个字符串的文件：（find string in files）</p>
+<pre><code>grep -rnw &#39;/home/ubuntu&#39; -e &quot;pattern_to_find&quot;
+    
+</code></pre>
+<p>相关文章：<a href="/2015/10/29/RE_POSIX/">正则表达式学习</a></p>
+<h2 id="sed"><a href="#sed" class="headerlink" title="sed"></a>sed</h2><p>加载多个命令需要-e参数。每一个-e后面跟者一个命令<br>定界符可以是逗号，也可以分号，总之不要跟替换内容重复。<br>启用overwrite模式，将改动写入到源文件: -i 参数<br>启用ERE表达式 -r 参数。但并不是完整支持ERE，比如：无法使用\d匹配数字，可以用[:alnum:]代替</p>
+<p>++sed默认只对一行进行一次匹配。++</p>
+<ul>
+<li><p>若要一行内多次匹配，要加上g，比如</p>
+<pre><code>  sed &#39;s/hello/hi/g&#39; test.txt
+  
+</code></pre>
+</li>
+<li><p>若跨行搜索，使用以下命令将所有换行符替换成逗号</p>
+<pre><code>  sed &#39;:a;&#123;N;s/\n/,/&#125;;ba&#39;
+</code></pre>
+</li>
+</ul>
+<p>上面这是一种label的用法，参考<a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/1251999/how-can-i-replace-a-newline-n-using-sed">这篇文章</a></p>
+<p>备份&#x2F;home&#x2F;ubuntu的目录结构到&#x2F;tmp&#x2F;backup</p>
+<pre><code>mkdir /tmp/backup
+find /home/ubuntu -type d -print |
+sed &#39;s;/home/ubuntu;/temp/backup/;&#39; |
+sed &#39;s;/^/mkdir /&#39; |
+sh -x
+</code></pre>
+<p>删掉空行</p>
+<pre><code>sed &#39;/^$/d&#39; ./1.txt # d命令是删除整行，不是删除pattern
+</code></pre>
+<p>从文件加载命令</p>
+<pre><code># use global replace because in a line
+echo &quot;s/fuck/love/g&quot; &gt; config  
+echo &quot;I fuck you because I love you, So I love you and fucking you&quot; &gt; text
+sed -f config ./text
+</code></pre>
+<p>仅显示匹配(类似grep)</p>
+<pre><code>printf &quot;one\ntwo\nthree\nfour\none\n&quot; &gt; text
+sed -n &#39;/one/p&#39; ./text
+</code></pre>
+<p>匹配特定行</p>
+<ul>
+<li><p>提及两位人名：</p>
+<pre><code>  printf &quot;Tom wants to sleep.\nBut Tom has to finish task.\n&quot; &gt; text
+  sed &#39;/Tom/ s//&amp; and Jerry/g&#39; ./text
+</code></pre>
+</li>
+<li><p>指定打印哪些行</p>
+<pre><code>  sed -n &#39;10,24p&#39; /etc/passwd
+</code></pre>
+</li>
+<li><p>仅替换范围内的行</p>
+<pre><code>  # 从含games那行到proxy那行进行替换
+  sed &#39;/games/,/proxy/ s/usr/ffffffffffffff/g&#39; /etc/passwd
+</code></pre>
+</li>
+<li><p>将命令应用于不匹配的某些行</p>
+<pre><code>  # 不匹配games的所有行进行替换操作
+  sed &#39;/games/ !s/usr/xxxxxxxxxxxxxxxxxx/g&#39; /etc/passwd
+</code></pre>
+</li>
+</ul>
+<p>小把戏：匹配NULL (由于*表示重复0~INF次)</p>
+<pre><code>echo abc | sed &#39;s/b*/1&#39;
+结果：1abc
+</code></pre>
+<h2 id="tr"><a href="#tr" class="headerlink" title="tr"></a>tr</h2><p>进行替换、压缩和删除。它可以将一组字符变成另一组字符。<br>++注意是一组字符，不是一个字符串++</p>
+<p>选项</p>
+<pre><code>-c或——complerment：取代所有不属于第一字符集的字符
+-d或——delete：删除所有属于第一字符集的字符
+-s或--squeeze-repeats：把连续重复的字符以单独一个字符表示
+-t或--truncate-set1：先删除第一字符集较第二字符集多出的字符。
+</code></pre>
+<p>大写转小写</p>
+<pre><code>echo &quot;HELLO WORLD&quot; | tr &#39;A-Z&#39; &#39;a-z&#39;
+</code></pre>
+<p>&#39;A-Z&#39; 和 &#39;a-z&#39;都是集合，集合是可以自己制定的，例如：&#39;ABD-}&#39;、&#39;bB.,&#39;、&#39;a-de-h&#39;、&#39;a-c0-9&#39;都属于集合，集合里可以使用&#39;\n&#39;、&#39;\t&#39;，可以可以使用其他ASCII字符。</p>
+<p>将制表符转换为空格</p>
+<pre><code>cat text | tr &#39;\t&#39; &#39; &#39;
+</code></pre>
+<p>将制表符转换为空格</p>
+<pre><code>cat text | tr &#39;\t&#39; &#39; &#39; 
+</code></pre>
+<p>字符集补集，不在补集中的所有字符被删除</p>
+<pre><code>echo aa.,a 1 b#$bb 2 c*/cc 3 ddd 4 | tr -d -c &#39;0-9 \n&#39;
+</code></pre>
+<p>此例中，补集中包含了数字0~9、空格和换行符\n，所以没有被删除，其他字符全部被删除了。 </p>
+<p>用tr压缩字符，可以压缩输入中重复的字符</p>
+<pre><code>echo &quot;thissss is a text linnnnnnne.&quot; | tr -s &#39; sn&#39;
+# this is a text line. 
+</code></pre>
+<p>删除Windows文件“造成”的&#39;^M&#39;字符</p>
+<pre><code>cat file | tr -s &quot;\r&quot; &quot;\n&quot; &gt; new_file 或 cat file | tr -d &quot;\r&quot; &gt; new_file
+</code></pre>
+<h2 id="cut"><a href="#cut" class="headerlink" title="cut"></a>cut</h2><p>字段提取。<br>取出字段：</p>
+<pre><code>cut -d : -f 1,5 /etc/passwd | head
+cut -d : -f 6 /etc/passwd | tail
+</code></pre>
+<h2 id="join"><a href="#join" class="headerlink" title="join"></a>join</h2><p>连接字段</p>
+<pre><code>printf &quot;#Sales\njoe\t200\njane\t300\nhreman\t150\nchris\t450\n&quot; &gt; text1
+printf &quot;#Quotas\njoe\t49\njane\t54\nhreman\t20\nchris\t49\n&quot; &gt; text2
+# 删掉注释，然后排序
+sed &#39;/^#/d&#39; text1 | sort &gt; text1.sort
+sed &#39;/^#/d&#39; text2 | sort &gt; text2.sort
+# 以第一个字段作结合
+join text1.sort text2.sort
+</code></pre>
+<h2 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h2><p>分为mawk gawk 等几个版本，用法大同小异。下面以ubuntu内置的mawk为例。<br>注意目前的ubuntu内置mawk版本是1.3.3，是很老的版本，bug：不支持posix正则表达式字符集，比如[:alnum:]，因此想要用posix，就得<a target="_blank" rel="noopener" href="http://invisible-island.net/mawk/">更新mawk</a>。<br>编译安装后要更新一下软链接。</p>
+<pre><code>sudo ln -sf /usr/local/bin/mawk /usr/bin/awk
+</code></pre>
+<p>awk的一般语法</p>
+<pre><code>awk pattern &#123; action &#125; #如果模式匹配，执行action
+awk pattern            #如果模式匹配，打印它
+awk         &#123; action &#125; #针对每条记录，执行action
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>awk变量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FILENAME</td>
+<td>当前输入文件名称</td>
+</tr>
+<tr>
+<td>FNR</td>
+<td>输入文件的记录数</td>
+</tr>
+<tr>
+<td>FS</td>
+<td>分隔符，支持正则表达式</td>
+</tr>
+<tr>
+<td>NF</td>
+<td>当前记录的字段数</td>
+</tr>
+<tr>
+<td>NR</td>
+<td>在工作job中的记录数</td>
+</tr>
+<tr>
+<td>OFS</td>
+<td>输出字段分隔符</td>
+</tr>
+<tr>
+<td>ORS</td>
+<td>输出记录分隔符</td>
+</tr>
+<tr>
+<td>RS</td>
+<td>输入记录分隔符，默认&#39;\n&#39;</td>
+</tr>
+</tbody></table>
+<p>++awk是在文字缓冲区逐行处理++<br>打印非空行：</p>
+<pre><code>awk &#39;NF &gt; 0 &#123;print $0&#125;&#39;
+</code></pre>
+<p>实现cut取出字段,-F指定分隔符</p>
+<pre><code>awk -F: &#39;&#123;print &quot;User-name:&quot;,$1,&quot;,but real name is&quot;,$5&#125;&#39; /etc/passwd | head
+# 改动一下，-v设置**为输出分隔符
+awk -F: -v &#39;OFS=**&#39; &#39;&#123;print $1,$5&#125;&#39; /etc/passwd | head
+</code></pre>
+<p>将每行的回车符替换为逗号，并将所有行合并到一行</p>
+<pre><code>awk &#39;&#123;printf&quot;%s,&quot;,$0&#125;&#39;  #没有跨行概念
+</code></pre>
+<p>提取中国路由表，项目<a target="_blank" rel="noopener" href="https://github.com/fivesheep/chnroutes">chnroute</a>的源码</p>
+<pre><code># ipv4.txt 文件内容
+apnic|CN|ipv4|43.242.220.0|1024|20140904|allocated
+apnic|IN|ipv4|43.242.228.0|1024|20140904|assigned
+apnic|HK|ipv4|43.242.232.0|1024|20140904|assigned
+apnic|MN|ipv4|43.242.240.0|1024|20140905|allocated
+apnic|CN|ipv4|43.242.252.0|1024|20140905|allocated
+# 执行
+cat ipv4.txt |
+awk -F\| &#39;/CN\|ipv4/ &#123; printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) &#125;&#39;
+</code></pre>
+<p>注意：-F为重新定义默认分隔符，匹配Pattern为正则表达式CN|ipv4，输出分隔符分隔的字段，并进行数学对数运算</p>
+<p>在一个列表中调换第二、第三列</p>
+<pre><code># list.txt 文件
+姓名	学号	成绩
+张三	23	23
+李四	22	49
+老王	33	66
+赵爷	44	22
+# 执行：
+awk -F&#39;\t&#39; -v OFS=&#39;\t&#39; &#39;&#123; print $1, $3, $2 &#125;&#39; list.txt
+</code></pre>
+<p>将单换行符的文本换成双换行：</p>
+<pre><code>awk &#39;&#123; print $0 &quot;\n&quot; &#125;&#39; list.txt
+# 等价于 sed -e &#39;s/$/\n/g&#39; list.txt
+</code></pre>
+<p>将双换行符的文本换成单换行：</p>
+<pre><code>awk &#39;BEGIN &#123; RS=&quot;\n*\n&quot; &#125; &#123; print &#125;&#39; list.txt
+</code></pre>
+<p>支持类似c语言的各种逻辑语句：</p>
+<pre><code>awk &#39;BEGIN &#123;for(x=0;x&lt;=1.0;x+=0.05)print x&#125;&#39;
+</code></pre>
+<p>结合Shell产生随机数：</p>
+<pre><code>#! /bin/bash
+for k in $(seq 1 5); do
+    awk &#39;BEGIN&#123;
+               srand()
+               for(k=1;k&lt;5;k++)
+                   printf(&quot;%.5f\t&quot;,rand())
+               print &quot;&quot;
+              &#125;&#39;
+    sleep 1
+done
+</code></pre>
+<h2 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h2><p>排序。<br>修饰符如下：</p>
+<table>
+<thead>
+<tr>
+<th>字母</th>
+<th>说明</th>
+<th>字母</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>b</td>
+<td>忽略开头空白</td>
+<td>g</td>
+<td>以一般的符号数字进行比较，仅用于GNU</td>
+</tr>
+<tr>
+<td>d</td>
+<td>字典顺序</td>
+<td>i</td>
+<td>忽略无法打印的字符</td>
+</tr>
+<tr>
+<td>f</td>
+<td>不分大小写</td>
+<td>n</td>
+<td>以整数进行比较</td>
+</tr>
+<tr>
+<td>r</td>
+<td>倒序</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>还是passwd文件。这东西能玩一年</p>
+<pre><code># -t分隔符 -k表示从第几个字段到第几个字段为key
+# -k2.4,5.6表示从第二个字段的第四个字符开始比较，一直比到第五字段第六字符
+sort -t: -k1,1 /etc/passwd
+
+# -k3nr修饰符表示第三字段，按数字，反向排序
+sort -t: -k3nr /etc/passwd
+
+# 先按第四个字段进行排序，若具有相同第四字段，再以第三个字段进行排序
+sort -t: -k4n -k3n /etc/passwd
+</code></pre>
+<p>文本块排序：<br>假设text为如下内容：</p>
+<pre><code># SORTKEY: Schlob, Hans Jürgen
+Hans Jürgen Schlob
+Unter den Linden 78
+D-10117 Berlin
+Germany
+
+# SORTKEY: Jones, Adrian
+Adrian Jones
+371 Montgomery Park Road
+Henley-on-Thames RG9 4AJ
+UK
+
+# SORTKEY: Brown, Kim
+Kim Brown
+1841 S Main Street
+Westchester, NY 10502
+USA
+</code></pre>
+<p>先用awk处理标识符。再处理键值，恢复原样：</p>
+<pre><code>cat text | awk -v RS=&quot;&quot; &#39;&#123;gsub(&quot;\n&quot; , &quot;^Z&quot;); print &#125;&#39; |
+sort -f |
+awk -v ORS=&quot;\n\n&quot; &#39;&#123;gsub(&quot;\^Z&quot;,&quot;\n&quot;);print &#125;&#39; |
+grep -v &#39;sort&#39;
+</code></pre>
+<p>排序后看看是否重复：</p>
+<pre><code>printf &quot;three\none\ntwo\nthree\nfour\none\nthree\n&quot; &gt; text
+# 显示去掉重复的、排序后记录
+sort latin-numbers | uniq
+# 显示计数
+sort latin-numbers | uniq -c
+# 仅显示重复记录
+sort latin-numbers | uniq -d
+# 仅显示未出现重复
+sort latin-numbers | uniq -u
+</code></pre>
+<h2 id="fmt"><a href="#fmt" class="headerlink" title="fmt"></a>fmt</h2><p>打开ubuntu的默认字典，格式化段落为30个字为一行：</p>
+<pre><code>sed -n &#39;999,1020p&#39; /usr/share/dict/words | fmt -w 30
+</code></pre>
+<h2 id="wc"><a href="#wc" class="headerlink" title="wc"></a>wc</h2><p>计数，words count</p>
+<pre><code>echo &quot;hello world, i am the king of the world.&quot; &gt; text
+cat text | wc -c  #字节数
+cat text | wc -l  #行数
+cat text | wc -w  #数词
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+              <a href="/tags/shell/" rel="tag"># shell</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/10/31/git/" rel="prev" title="Git读书笔记">
+                  <i class="fa fa-chevron-left"></i> Git读书笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/12/17/shadowvpn-conf-lixingcongv2/" rel="next" title="我的ShadowVPN配置记录v2">
+                  我的ShadowVPN配置记录v2 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="利用VPS自行搭建Twidere API和Thumbor图片代理，实现免开启shadowsocks上推特，可以无痛看图。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自建Twidere API">
+<meta property="og:url" content="http://lixingcong.github.io/2017/02/07/twidere-api/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="利用VPS自行搭建Twidere API和Thumbor图片代理，实现免开启shadowsocks上推特，可以无痛看图。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/twidere-api/twidere.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/twidere-api/api.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/twidere-api/api-proxy.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/twidere-api/thumbor.png">
+<meta property="article:published_time" content="2017-02-07T13:22:30.000Z">
+<meta property="article:modified_time" content="2017-02-07T13:22:30.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="twitter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/twidere-api/twidere.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2017/02/07/twidere-api/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2017/02/07/twidere-api/","path":"2017/02/07/twidere-api/","title":"自建Twidere API"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>自建Twidere API | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Twidere%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Twidere简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7API"><span class="nav-number">2.</span> <span class="nav-text">申请API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E4%BB%A3API"><span class="nav-number">3.</span> <span class="nav-text">反代API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E4%BB%A3%E5%9B%BE%E7%89%87"><span class="nav-number">4.</span> <span class="nav-text">反代图片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">4.1.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B2%E6%AD%A2%E6%BB%A5%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">防止滥用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E5%8F%8D%E4%BB%A3thumbor"><span class="nav-number">4.3.</span> <span class="nav-text">nginx反代thumbor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E5%9B%BE%E7%89%87"><span class="nav-number">4.4.</span> <span class="nav-text">压缩图片</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2017/02/07/twidere-api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="自建Twidere API | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自建Twidere API<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/twidere-api.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017年2月7日 21:22:30" itemprop="dateCreated datePublished" datetime="2017-02-07T21:22:30+08:00">2017年2月7日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>利用VPS自行搭建Twidere API和Thumbor图片代理，实现免开启shadowsocks上推特，可以无痛看图。</p>
+<span id="more"></span>
+
+<h2 id="Twidere简介"><a href="#Twidere简介" class="headerlink" title="Twidere简介"></a>Twidere简介</h2><p>开源，免费的第三方推特客户端，非常强大，比官方客户端好用一百倍！</p>
+<p>作者是跟我同龄的宅撩，在推特中文圈有不少人气~</p>
+<p><img src="/images/twidere-api/twidere.png"></p>
+<h2 id="申请API"><a href="#申请API" class="headerlink" title="申请API"></a>申请API</h2><p>去<a target="_blank" rel="noopener" href="https://apps.twitter.com/">推特API管理界面</a>新建一个APP，命名随意，比如</p>
+<pre><code>Twidere-2017
+</code></pre>
+<p>然后其它空白随意填写，callback URL可以不填。</p>
+<p>将获得的下面两个值记下来，后面登陆Twidere需要使用。</p>
+<pre><code>Consumer Key (API Key)
+Consumer Secret (API Secret)
+</code></pre>
+<p>按图将上面两个值，填入客户端（API地址使用默认即可）</p>
+<p><img src="/images/twidere-api/api.png"></p>
+<p>退出帐号测试是否能重新登陆。如果成功证明自己的API创建成功，以后使用Twidere发推会显示小尾巴</p>
+<pre><code>来自Twidere-2017
+</code></pre>
+<h2 id="反代API"><a href="#反代API" class="headerlink" title="反代API"></a>反代API</h2><p>测试环境：ubuntu 16.04.1 RAM 128MB</p>
+<p>我这次居然拿年付5.99刀的搬瓦工绝版货做测试...醉了</p>
+<p>用nginx 新建一个HTTPS网站（强烈建议不适用HTTP传输，会被墙）。关于如何获得SSL证书可以参考<a href="/2016/07/31/nginx-reverse-proxy-for-google/#Let%E2%80%99s-Encrypt%E8%AF%81%E4%B9%A6">这篇文章</a></p>
+<pre><code>server &#123;
+    server_name proxy.yyy.com;
+    listen 443 ssl;
+    ssl_certificate /tmp/fullchain.pem;
+    ssl_certificate_key /tmp/domain.key;
+    resolver 8.8.8.8;
+    location ~ ^/domain\.([\w\d]+)/(.*) &#123;
+        proxy_pass  https://$1.twitter.com/$2$is_args$args;
+        proxy_cookie_domain twitter.com $server_name;
+    &#125;
+&#125;
+</code></pre>
+<p>那么将下面填入即可完成反代api转发器。</p>
+<pre><code>https://proxy.yyy.com/domain.[DOMAIN]
+</code></pre>
+<p><img src="/images/twidere-api/api-proxy.png"></p>
+<p>退出帐号测试是否能重新登陆。如果成功证明自己的API代理创建成功，以后登陆推特将不用使用ss，免翻x墙上推特。</p>
+<h2 id="反代图片"><a href="#反代图片" class="headerlink" title="反代图片"></a>反代图片</h2><p>使用api反代时候，若不使用ss，有时候会不显示图片，原因是Twidere默认API无法加载图片。可以搭建Thumbor实现图片反代。</p>
+<h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><p>安装依赖</p>
+<pre><code>apt-get install \
+         python-pip python-opencv \
+         libjpeg-dev libpng-dev libwebp-dev libtiff-dev libjasper-dev \
+         libgtk2.0-dev python-numpy python-pycurl python-tornado webp
+</code></pre>
+<p>从源码编译，如果编译过程中有依赖未满足请自行解决。</p>
+<pre><code>git clone https://github.com/thumbor/thumbor
+cd thumbor
+python setup.py install
+</code></pre>
+<p>测试一下是否安装成功</p>
+<pre><code>thumbor --help
+</code></pre>
+<p>拷贝一份默认配置作为config</p>
+<pre><code>cp thumbor/thumbor.conf ~/
+</code></pre>
+<p>修改配置。参考这个<a target="_blank" rel="noopener" href="https://github.com/TwidereProject/Twidere-Thumbor-Heroku/blob/master/thumbor.conf">Twidere-Thumbor配置文件模板</a>。根据实际修改，比如我是这样</p>
+<pre><code>vi ~/thumbor.conf
+
+# 增加
+HTTP_LOADER_FORWARD_USER_AGENT=True
+
+# 修改
+STORAGE = &#39;thumbor.storages.no_storage&#39;
+</code></pre>
+<p>保存配置，测试一下：</p>
+<pre><code># 监听7777端口
+thumbor -c ~/thumbor.conf -p 7777
+</code></pre>
+<p>注意在vps上面打开7777端口的入站ACCEPT</p>
+<pre><code>iptables -A INPUT -p tcp --dport 7777 -j ACCEPT
+</code></pre>
+<p>本地测试一下。假设vps地址为55.55.55.55</p>
+<pre><code>wget -O - &quot;http://55.55.55.55:7777/unsafe/300x200/http://www.waterfalls.hamilton.ca/images/Waterfall_Collage_home_sm1.jpg&quot; &gt; /dev/null
+</code></pre>
+<p>如果没有错误就证明搭建差不多了。</p>
+<h3 id="防止滥用"><a href="#防止滥用" class="headerlink" title="防止滥用"></a>防止滥用</h3><p>为了被有心人滥用，我加上了密钥。防止被恶意调用。</p>
+<pre><code>vi ~/thumbor.conf
+# 修改
+SECURITY_KEY = &quot;password&quot;
+ALLOW_UNSAFE_URL = False
+</code></pre>
+<p>这样就不能使用unsafe方式访问图片了，必须使用加密后的地址访问图片，密钥这里设置为&#39;password&#39;。对应生成合法的地址</p>
+<pre><code># 使用内置工具生成一个合法地址
+thumbor-url -k &quot;password&quot; http://www.waterfalls.hamilton.ca/images/Waterfall_Collage_home_sm1.jpg
+
+# 输出结果
+/Ohtvvloypfk_auC-7malm5Tw6Gw=/http%3A//www.waterfalls.hamilton.ca/images/Waterfall_Collage_home_sm1.jpg
+</code></pre>
+<p>运行thumbor后，继续本地测试一下</p>
+<pre><code>wget -O - &quot;http://55.55.55.55:7777/Ohtvvloypfk_auC-7malm5Tw6Gw=/http%3A//www.waterfalls.hamilton.ca/images/Waterfall_Collage_home_sm1.jpg&quot; &gt; /dev/null
+</code></pre>
+<p>测试完毕后，每次都得指定端口访问，看起来较麻烦，建议使用nginx反代（下文）</p>
+<h3 id="nginx反代thumbor"><a href="#nginx反代thumbor" class="headerlink" title="nginx反代thumbor"></a>nginx反代thumbor</h3><p>在https服务器的server标签内，添加一个location根目录(&#x2F;)，作为thumbor代理。</p>
+<pre><code>location / &#123;
+    proxy_set_header Host localhost;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass http://127.0.0.1:7777$request_uri;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+&#125;
+</code></pre>
+<p>使用screen 或者 supervisor等方式在后台运行thumbor，监听7777端口。重启nginx</p>
+<pre><code>screen -dmS &quot;thumbor_screen&quot; thumbor -c ~/thumbor.conf -p 7777 -i 127.0.0.1
+nginx -s reload
+</code></pre>
+<p>本地测试一下</p>
+<pre><code>wget -O - &quot;https://proxy.yyy.com/Ohtvvloypfk_auC-7malm5Tw6Gw=/http%3A//www.waterfalls.hamilton.ca/images/Waterfall_Collage_home_sm1.jpg&quot; &gt; /dev/null
+</code></pre>
+<p>这样就可以把Thumbor服务器地址和密钥填入Twidere实现免翻x墙刷出图片了。</p>
+<pre><code># 地址
+https://proxy.yyy.com/
+# 密钥
+password
+</code></pre>
+<p><img src="/images/twidere-api/thumbor.png"></p>
+<p>实际测试结果</p>
+<table>
+<thead>
+<tr>
+<th>网络</th>
+<th>是否使用Thumbor代理</th>
+<th>加载图片速度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关闭ss</td>
+<td>否</td>
+<td>非常慢</td>
+</tr>
+<tr>
+<td>关闭ss</td>
+<td>是</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>开启ss</td>
+<td>否</td>
+<td>快</td>
+</tr>
+<tr>
+<td>开启ss</td>
+<td>是</td>
+<td>一般</td>
+</tr>
+</tbody></table>
+<p>由此可以看出，最佳表现为：在开启ss情况下关闭thumbor，或者在没有ss情况下开启thumbor。</p>
+<p>注意thumbor无法代理视频文件。遇到视频打不开也是正常。。。</p>
+<h3 id="压缩图片"><a href="#压缩图片" class="headerlink" title="压缩图片"></a>压缩图片</h3><p>压缩图片可以加快加载速度。节省流量。但是对VPS资源消耗较大，在我的垃圾搬瓦工上面运行有可能被suspend。请根据需求开启。推荐内存256M以上机子使用</p>
+<p>去<a target="_blank" rel="noopener" href="https://github.com/bobbus/image-optim-buildpack/tree/master/vendor/image-optim">image-optim-buildpack项目</a>下载jpegtran等二进制文件，假设放置在</p>
+<pre><code>/usr/local/bin/jpegtran
+</code></pre>
+<p>记得设置可执行权限</p>
+<pre><code>chmod a+x /usr/local/bin/jpegtran
+</code></pre>
+<p>那么修改thumbor.conf文件</p>
+<pre><code>OPTIMIZERS = [
+    &#39;thumbor.optimizers.jpegtran&#39;
+]
+JPEGTRAN_PATH = &#39;/usr/local/bin/jpegtran&#39;
+</code></pre>
+<p>重载thumbor，看看是不是加载图片快了一点？</p>
+<p>可以进一步开启WEBP格式压缩。也可以指定WEBP压缩比率。</p>
+<pre><code>AUTO_WEBP = True
+
+QUALITY = 40
+WEBP_QUALITY = 40
+</code></pre>
+<p>设置最大尺寸，分辨率过大将裁剪图片</p>
+<pre><code>MAX_WIDTH = 800
+MAX_HEIGHT = 600
+</code></pre>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>Twidere是一个无比强大的推特客户端，最近上线了一系列付费功能，我第一时间购买了，同步功能还是不错的。</p>
+<p>总体来说，这个客户端让我有一个放弃使用iOS的理由，因为目前来说还是安卓专版！！！其实宅撩正在紧张开发iOS版本了，也是一个好消息！</p>
+<p>大家可以去官方主页关注项目进展！</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/TwidereProject">https://github.com/TwidereProject</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/twitter/" rel="tag"># twitter</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/02/01/lede-toolchain/" rel="prev" title="获得LEDE的工具链">
+                  <i class="fa fa-chevron-left"></i> 获得LEDE的工具链
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/04/03/setup-git-server/" rel="next" title="搭建git服务器">
+                  搭建git服务器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

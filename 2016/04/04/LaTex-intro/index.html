@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="如果用写代码的方式创造公式的话，那就可以装逼了！本文是我翻译自LaTex数学符号手册">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LaTex数学公式语法">
+<meta property="og:url" content="http://lixingcong.github.io/2016/04/04/LaTex-intro/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="如果用写代码的方式创造公式的话，那就可以装逼了！本文是我翻译自LaTex数学符号手册">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/LaTex-intro/view.png">
+<meta property="article:published_time" content="2016-04-04T07:05:54.000Z">
+<meta property="article:modified_time" content="2016-04-04T07:05:54.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="html">
+<meta property="article:tag" content="LaTex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/LaTex-intro/view.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/04/04/LaTex-intro/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/04/04/LaTex-intro/","path":"2016/04/04/LaTex-intro/","title":"LaTex数学公式语法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>LaTex数学公式语法 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">符号定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.1.</span> <span class="nav-text">操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E5%87%8F%E4%B9%98%E9%99%A4"><span class="nav-number">1.1.1.</span> <span class="nav-text">加减乘除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%82%E8%BF%90%E7%AE%97"><span class="nav-number">1.1.2.</span> <span class="nav-text">幂运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97"><span class="nav-number">1.1.3.</span> <span class="nav-text">逻辑运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%9D%E5%AF%B9%E5%80%BC"><span class="nav-number">1.1.4.</span> <span class="nav-text">绝对值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%BC%8F"><span class="nav-number">1.1.5.</span> <span class="nav-text">分式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%BF%90%E7%AE%97"><span class="nav-number">1.1.6.</span> <span class="nav-text">其他运算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB"><span class="nav-number">1.2.</span> <span class="nav-text">关系</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A4%E7%AD%89"><span class="nav-number">1.2.1.</span> <span class="nav-text">判等</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9B%86%E5%90%88"><span class="nav-number">1.2.2.</span> <span class="nav-text">集合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">存在</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%8C%E8%85%8A%E5%AD%97%E6%AF%8D"><span class="nav-number">1.3.</span> <span class="nav-text">希腊字母</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%AD%E5%A4%B4"><span class="nav-number">1.4.</span> <span class="nav-text">箭头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9C%81%E7%95%A5%E5%8F%B7"><span class="nav-number">1.5.</span> <span class="nav-text">省略号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%B4%E9%A1%B6%E7%AC%A6%E5%8F%B7"><span class="nav-number">1.6.</span> <span class="nav-text">头顶符号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%AC%E5%8F%B7"><span class="nav-number">1.7.</span> <span class="nav-text">括号</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E6%8B%AC%E5%8F%B7"><span class="nav-number">1.7.1.</span> <span class="nav-text">标准括号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%96%E6%95%B4%E5%87%BD%E6%95%B0"><span class="nav-number">1.7.2.</span> <span class="nav-text">取整函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E6%A0%BC"><span class="nav-number">1.8.</span> <span class="nav-text">空格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%AC%A6%E5%8F%B7"><span class="nav-number">1.9.</span> <span class="nav-text">其他符号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E6%A0%87%E4%B8%8E%E4%B8%8B%E6%A0%87"><span class="nav-number">2.1.</span> <span class="nav-text">上标与下标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E5%88%92%E7%BA%BF%E4%B8%8B%E5%88%92%E7%BA%BF"><span class="nav-number">2.2.</span> <span class="nav-text">上划线下划线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%BC%8F-1"><span class="nav-number">2.3.</span> <span class="nav-text">分式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B9%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">根式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%82%E5%92%8C-%E6%B1%82%E7%A7%AF-%E6%B1%82%E6%9E%81%E9%99%90"><span class="nav-number">2.5.</span> <span class="nav-text">求和 求积 求极限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%82%E5%BE%AE%E7%A7%AF%E5%88%86-%E5%81%8F%E5%AF%BC"><span class="nav-number">2.6.</span> <span class="nav-text">求微积分 偏导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%82%E6%A8%A1"><span class="nav-number">2.7.</span> <span class="nav-text">求模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0"><span class="nav-number">2.8.</span> <span class="nav-text">三角函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5"><span class="nav-number">2.9.</span> <span class="nav-text">矩阵</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/04/04/LaTex-intro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="LaTex数学公式语法 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LaTex数学公式语法<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/LaTex-intro.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年4月4日 15:05:54" itemprop="dateCreated datePublished" datetime="2016-04-04T15:05:54+08:00">2016年4月4日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>如果用写代码的方式创造公式的话，那就可以装逼了！本文是我翻译自<a target="_blank" rel="noopener" href="https://www.artofproblemsolving.com/wiki/index.php/LaTeX:Symbols">LaTex数学符号手册</a></p>
+<span id="more"></span>
+<p>在浏览器中使用Latex，使用Mathjax库</p>
+<blockquote>
+<p>MathJax是一套开源js库，它并不是将公式转化为一个图片，而是在浏览器端通过位置控制、字体、大小来显示一个公式。支持LaTeX数学公式。</p>
+</blockquote>
+<p>对于hexo博客框架：首先更改next主题中的mathjax库的URL，MathJax2.4版有些许bug：显示尾随的竖线。</p>
+<pre><code>vi themes/next/layout/_scripts/third-party/mathjax.swig
+从
+if config.language === &#39;zh-Hans&#39;
+到配对的endif标签
+替换为固定的js链接：
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>使用两个美元符号开始和结束，代表公式居中显示，使用一个美元符号，则不居中</p>
+<p>右键某个生成的图案，可以查看Mathjax在网页上的源码，快速知道latex源码</p>
+<p><img src="/images/LaTex-intro/view.png"></p>
+<h2 id="符号定义"><a href="#符号定义" class="headerlink" title="符号定义"></a>符号定义</h2><h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="加减乘除"><a href="#加减乘除" class="headerlink" title="加减乘除"></a>加减乘除</h4><table>
+<thead>
+<tr>
+<th>加</th>
+<th>语法</th>
+<th>减</th>
+<th>语法</th>
+<th>乘</th>
+<th>语法</th>
+<th>除</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$+$</td>
+<td>+</td>
+<td>$-$</td>
+<td>-</td>
+<td>$\times$</td>
+<td>\times</td>
+<td>$\div$</td>
+<td>\div</td>
+</tr>
+</tbody></table>
+<h4 id="幂运算"><a href="#幂运算" class="headerlink" title="幂运算"></a>幂运算</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$a^x$</td>
+<td>a^x</td>
+<td>$a^{xyz}$</td>
+<td>a^{xyz}</td>
+<td>$\sqrt{x}$</td>
+<td>\sqrt{x}</td>
+<td>$\sqrt[n]{x}$</td>
+<td>\sqrt[n]{x}</td>
+</tr>
+</tbody></table>
+<h4 id="逻辑运算"><a href="#逻辑运算" class="headerlink" title="逻辑运算"></a>逻辑运算</h4><table>
+<thead>
+<tr>
+<th>异或</th>
+<th>语法</th>
+<th>或</th>
+<th>语法</th>
+<th>与</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\oplus$</td>
+<td>\oplus</td>
+<td>$\vee$</td>
+<td>\vee</td>
+<td>$\wedge$</td>
+<td>\wedge</td>
+</tr>
+</tbody></table>
+<h4 id="绝对值"><a href="#绝对值" class="headerlink" title="绝对值"></a>绝对值</h4><p>直接插入竖线|即可，使用\left和\right标签指定竖线的垂直长度。</p>
+<p>$\left| \sum_i \vec{v}_i \left|\Delta t_i\right|  \right|$</p>
+<pre><code>代码：\left| \sum_i \vec&#123;v&#125;_i \left|\Delta t_i\right|  \right|
+</code></pre>
+<h4 id="分式"><a href="#分式" class="headerlink" title="分式"></a>分式</h4><p>参考本文下方的“分式”一节，这里简单说说语法</p>
+<p>$(\frac{a}{x} )^2$  语法：(\frac{a}{x} )^2</p>
+<p>上面的表达式效果是：右边的上标没有对齐，因此可以改进一下：</p>
+<p>$\left(\frac{a}{x} \right)^2$ 语法：\left(\frac{a}{x} \right)^2</p>
+<h4 id="其他运算"><a href="#其他运算" class="headerlink" title="其他运算"></a>其他运算</h4><p>详见下文操作</p>
+<table>
+<thead>
+<tr>
+<th>求和</th>
+<th>语法</th>
+<th>积分</th>
+<th>语法</th>
+<th>积分</th>
+<th>语法</th>
+<th>求积</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\sum$</td>
+<td>\sum</td>
+<td>$\int$</td>
+<td>\int</td>
+<td>$\oint$</td>
+<td>\oint</td>
+<td>$\prod$</td>
+<td>\prod</td>
+</tr>
+</tbody></table>
+<h3 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h3><h4 id="判等"><a href="#判等" class="headerlink" title="判等"></a>判等</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$&#x3D;$</td>
+<td>&#x3D;</td>
+<td>$\not&#x3D;$</td>
+<td>\not&#x3D;</td>
+<td>$\approx$</td>
+<td>\approx</td>
+<td>$\equiv$</td>
+<td>\equiv</td>
+</tr>
+<tr>
+<td>$&lt;$</td>
+<td>&lt;</td>
+<td>$&gt;$</td>
+<td>&gt;</td>
+<td>$\le$</td>
+<td>\le</td>
+<td>$\ge$</td>
+<td>\ge</td>
+</tr>
+<tr>
+<td>$\ll$</td>
+<td>\ll</td>
+<td>$\gg$</td>
+<td>\gg</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\in$</td>
+<td>\in</td>
+<td>$\ni$</td>
+<td>\ni</td>
+</tr>
+<tr>
+<td>$\subset$</td>
+<td>\subset</td>
+<td>$\supset$</td>
+<td>\supset</td>
+</tr>
+<tr>
+<td>$\subseteq$</td>
+<td>\subseteq</td>
+<td>$\supseteq$</td>
+<td>\supseteq</td>
+</tr>
+</tbody></table>
+<h4 id="存在"><a href="#存在" class="headerlink" title="存在"></a>存在</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\exists$</td>
+<td>\exists</td>
+<td>$\forall$</td>
+<td>\forall</td>
+</tr>
+</tbody></table>
+<h3 id="希腊字母"><a href="#希腊字母" class="headerlink" title="希腊字母"></a>希腊字母</h3><p>直接根据拼写输入即可，小写共有22个，大写8个：大写的是小写语法首字母大写。不全部列出了。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>小写</td>
+<td>$\alpha$</td>
+<td>\alpha</td>
+<td>$\beta$</td>
+<td>\beta</td>
+<td>$\gamma$</td>
+<td>\gamma</td>
+</tr>
+<tr>
+<td>大写</td>
+<td>$\Phi$</td>
+<td>\Phi</td>
+<td>$\Omega$</td>
+<td>\Omega</td>
+<td>$\Delta$</td>
+<td>\Delta</td>
+</tr>
+</tbody></table>
+<h3 id="箭头"><a href="#箭头" class="headerlink" title="箭头"></a>箭头</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\gets$</td>
+<td>\gets</td>
+<td>$\to$</td>
+<td>\to</td>
+<td>$\Leftarrow$</td>
+<td>\Leftarrow</td>
+<td>$\Rightarrow$</td>
+<td>\Reftarrow</td>
+<td>$\Leftrightarrow$</td>
+<td>\Leftrightarrow</td>
+</tr>
+</tbody></table>
+<h3 id="省略号"><a href="#省略号" class="headerlink" title="省略号"></a>省略号</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\dots$</td>
+<td>\dots</td>
+<td>$\cdots$</td>
+<td>\cdots</td>
+</tr>
+</tbody></table>
+<h3 id="头顶符号"><a href="#头顶符号" class="headerlink" title="头顶符号"></a>头顶符号</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\hat{x}$</td>
+<td>\hat{x}</td>
+<td>$\bar{x}$</td>
+<td>\bar{x}</td>
+<td>$\vec{x}$</td>
+<td>\vec{x}</td>
+</tr>
+<tr>
+<td>$\dot{x}$</td>
+<td>\dot{x}</td>
+<td>$\ddot{x}$</td>
+<td>\ddot{x}</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="括号"><a href="#括号" class="headerlink" title="括号"></a>括号</h3><h4 id="标准括号"><a href="#标准括号" class="headerlink" title="标准括号"></a>标准括号</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$($</td>
+<td>(</td>
+<td>$)$</td>
+<td>)</td>
+<td>$[$</td>
+<td>[</td>
+<td>$]$</td>
+<td>]</td>
+</tr>
+</tbody></table>
+<h4 id="取整函数"><a href="#取整函数" class="headerlink" title="取整函数"></a>取整函数</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\lfloor$</td>
+<td>\lfloor</td>
+<td>$\rfloor$</td>
+<td>\rfloor</td>
+</tr>
+<tr>
+<td>$\lceil$</td>
+<td>\lceil</td>
+<td>$\rceil$</td>
+<td>\rceil</td>
+</tr>
+</tbody></table>
+<h3 id="空格"><a href="#空格" class="headerlink" title="空格"></a>空格</h3><p>LaTex默认是省略空格，要输入空格就得自己输入命令，mu是一个数学单位。</p>
+<table>
+<thead>
+<tr>
+<th>效果</th>
+<th>说明</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$a \quad b$</td>
+<td>空格宽度是当前字宽(18mu)</td>
+<td>\quad</td>
+</tr>
+<tr>
+<td>$a , b$</td>
+<td>空格宽度是3mu</td>
+<td>,</td>
+</tr>
+<tr>
+<td>$a : b$</td>
+<td>空格宽度是4mu</td>
+<td>:</td>
+</tr>
+<tr>
+<td>$a ; b$</td>
+<td>空格宽度是5mu</td>
+<td>;</td>
+</tr>
+<tr>
+<td>$a ! b$</td>
+<td>空格宽度是-3mu(向左缩)</td>
+<td>\!</td>
+</tr>
+<tr>
+<td>$a \ b$</td>
+<td>空格宽度是标准空格键效果</td>
+<td>在\后面敲一个空格</td>
+</tr>
+<tr>
+<td>$a \qquad b$</td>
+<td>空格宽度是36mu</td>
+<td>\qquad</td>
+</tr>
+</tbody></table>
+<h3 id="其他符号"><a href="#其他符号" class="headerlink" title="其他符号"></a>其他符号</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\infty$</td>
+<td>\infty</td>
+<td>$\triangle$</td>
+<td>\triangle</td>
+<td>$\angle$</td>
+<td>\angle</td>
+</tr>
+<tr>
+<td>$\checkmark$</td>
+<td>\checkmark</td>
+<td>$\nabla$</td>
+<td>\nabla</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><h3 id="上标与下标"><a href="#上标与下标" class="headerlink" title="上标与下标"></a>上标与下标</h3><p>使用{..}来告诉MathJax上下表的位置在哪，是谁是大括号</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$2^2$</td>
+<td>2^2</td>
+<td>$a_i$</td>
+<td>a_i</td>
+</tr>
+<tr>
+<td>$2^{23}$</td>
+<td>2^{23}</td>
+<td>$n_{i-1}$</td>
+<td>n_{i-1}</td>
+</tr>
+<tr>
+<td>$a^{i+1}_3$</td>
+<td>a^{i+1}_3</td>
+<td>$x^{3^2}$</td>
+<td>x^{3^2}</td>
+</tr>
+<tr>
+<td>$2^{a_i}$</td>
+<td>2^{a_i}</td>
+<td>$2^a_i$</td>
+<td>2^a_i</td>
+</tr>
+</tbody></table>
+<h3 id="上划线下划线"><a href="#上划线下划线" class="headerlink" title="上划线下划线"></a>上划线下划线</h3><table>
+<thead>
+<tr>
+<th>上</th>
+<th>语法</th>
+<th>下</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\overline{a+bi}$</td>
+<td>\overline{a+bi}</td>
+<td>$\underline{431}$</td>
+<td>\underline{431}</td>
+</tr>
+</tbody></table>
+<h3 id="分式-1"><a href="#分式-1" class="headerlink" title="分式"></a>分式</h3><p>有两种尺寸：frac和drac</p>
+<table>
+<thead>
+<tr>
+<th>尺寸较小</th>
+<th>因此适合打印</th>
+<th>尺寸适中</th>
+<th>用于显示器展示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>符号</td>
+<td>语法</td>
+<td>符号</td>
+<td>语法</td>
+</tr>
+<tr>
+<td>$\frac{1}{2}$</td>
+<td>\frac{1}{2}</td>
+<td>$\dfrac{1}{2}$</td>
+<td>\dfrac{1}{2}</td>
+</tr>
+<tr>
+<td>$\frac{2}{x+2}$</td>
+<td>\frac{2}{x+2}</td>
+<td>$\dfrac{2}{x+2}$</td>
+<td>\dfrac{2}{x+2}</td>
+</tr>
+<tr>
+<td>$\frac{1+\frac{1}{x}}{3x + 2}$</td>
+<td>\frac{1+\frac{1}{x}}{3x + 2}</td>
+<td>$\dfrac{1+\frac{1}{x}}{3x + 2}$</td>
+<td>\dfrac{1+\frac{1}{x}}{3x + 2}</td>
+</tr>
+</tbody></table>
+<p>连续（嵌套）使用：cfrac</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\cfrac{2}{1+\cfrac{2}{1+\cfrac{2}{1+\cfrac{2}{1}}}}$</td>
+<td>\cfrac{2}{1+\cfrac{2}{1+\cfrac{2}{1+\cfrac{2}{1}}}}</td>
+</tr>
+</tbody></table>
+<h3 id="根式"><a href="#根式" class="headerlink" title="根式"></a>根式</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\sqrt(2)$</td>
+<td>\sqrt(2)</td>
+<td>$\sqrt{2}$</td>
+<td>\sqrt{2}</td>
+</tr>
+<tr>
+<td>$\sqrt{x+y}$</td>
+<td>\sqrt{x+y}</td>
+<td>$\sqrt{x+\frac{1}{2}}$</td>
+<td>\sqrt{x+\frac{1}{2}}</td>
+</tr>
+<tr>
+<td>$\sqrt[3]{3}$</td>
+<td>\sqrt[3]{3}</td>
+<td>$\sqrt[n]{x}$</td>
+<td>\sqrt[n]{x}</td>
+</tr>
+</tbody></table>
+<h3 id="求和-求积-求极限"><a href="#求和-求积-求极限" class="headerlink" title="求和 求积 求极限"></a>求和 求积 求极限</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\sum_{i&#x3D;1}^{\infty}\frac{1}{i}$</td>
+<td>\sum_{i&#x3D;1}^{\infty}\frac{1}{i}</td>
+</tr>
+<tr>
+<td>$\prod_{n&#x3D;1}^5\frac{n}{n-1}$</td>
+<td>\prod_{n&#x3D;1}^5\frac{n}{n-1}</td>
+</tr>
+<tr>
+<td>$\lim_{x\to\infty}\frac{1}{x}$</td>
+<td>\lim_{x\to\infty}\frac{1}{x}</td>
+</tr>
+</tbody></table>
+<h3 id="求微积分-偏导"><a href="#求微积分-偏导" class="headerlink" title="求微积分 偏导"></a>求微积分 偏导</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\frac{d}{dx}\left(x^2\right) &#x3D; 2x$</td>
+<td>\frac{d}{dx}\left(x^2\right) &#x3D; 2x</td>
+</tr>
+<tr>
+<td>$\int 2x,dx &#x3D; x^2+C$</td>
+<td>\int 2x,dx &#x3D; x^2+C</td>
+</tr>
+<tr>
+<td>$\frac{\partial^2U}{\partial x^2} + \frac{\partial^2U}{\partial y^2}$</td>
+<td>\frac{\partial^2U}{\partial x^2} + \frac{\partial^2U}{\partial y^2}</td>
+</tr>
+</tbody></table>
+<h3 id="求模"><a href="#求模" class="headerlink" title="求模"></a>求模</h3><p>$9\equiv 3 \pmod{6}$   —— 语法：9\equiv 3 \pmod{6}</p>
+<h3 id="三角函数"><a href="#三角函数" class="headerlink" title="三角函数"></a>三角函数</h3><p>直接输入正常书写的符号即可，不全列举</p>
+<table>
+<thead>
+<tr>
+<th>余弦</th>
+<th>语法</th>
+<th>反余弦</th>
+<th>语法</th>
+<th>双曲余弦</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\cos$</td>
+<td>\cos</td>
+<td>$\arccos$</td>
+<td>\arccos</td>
+<td>$\cosh$</td>
+<td>\cosh</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>语法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$\cos^2 x +\sin^2 x &#x3D; 1$</td>
+<td>\cos^2 x +\sin^2 x &#x3D; 1</td>
+</tr>
+<tr>
+<td>$\cos 90^\circ &#x3D; 0$</td>
+<td>\cos 90^\circ &#x3D; 0</td>
+</tr>
+</tbody></table>
+<h3 id="矩阵"><a href="#矩阵" class="headerlink" title="矩阵"></a>矩阵</h3><p>注意：换行<code>\\\\</code>实际转义后变成的是<code>\\</code></p>
+<p>右击该公式，然后查看Tex语法。。。。不知道为什么贴上来代码总是被强制识别成LaTex代码...</p>
+<p>$\left[ \begin{matrix} 1 &amp; 5 &amp; 12 \\ -1 &amp; 9 &amp; 0 \\ 0 &amp; 9 &amp; 1+i \end{matrix} \right]$</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/html/" rel="tag"># html</a>
+              <a href="/tags/LaTex/" rel="tag"># LaTex</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/03/Cryptography-I-week-6/" rel="prev" title="Cryptography解题报告：Factor the RSA modulus">
+                  <i class="fa fa-chevron-left"></i> Cryptography解题报告：Factor the RSA modulus
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/04/12/beautifulsoul/" rel="next" title="BeautifulSoul笔记">
+                  BeautifulSoul笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

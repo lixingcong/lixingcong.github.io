@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="我的读书笔记，学习shell的强大的文件进程管理命令。    书名 作者 下载地址    Classic Shell Scripting Arnold R. &amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Cooper PDF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shell命令：文件与进程">
+<meta property="og:url" content="http://lixingcong.github.io/2016/01/22/shell-commands-files-processes/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="我的读书笔记，学习shell的强大的文件进程管理命令。    书名 作者 下载地址    Classic Shell Scripting Arnold R. &amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Cooper PDF">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-22T07:26:18.000Z">
+<meta property="article:modified_time" content="2016-01-22T07:26:18.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="shell">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/01/22/shell-commands-files-processes/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/01/22/shell-commands-files-processes/","path":"2016/01/22/shell-commands-files-processes/","title":"shell命令：文件与进程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>shell命令：文件与进程 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ls"><span class="nav-number">1.</span> <span class="nav-text">ls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ln"><span class="nav-number">2.</span> <span class="nav-text">ln</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cd"><span class="nav-number">3.</span> <span class="nav-text">cd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-number">4.</span> <span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xargs"><span class="nav-number">5.</span> <span class="nav-text">xargs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#df"><span class="nav-number">6.</span> <span class="nav-text">df</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#diff"><span class="nav-number">7.</span> <span class="nav-text">diff</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#patch"><span class="nav-number">8.</span> <span class="nav-text">patch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pgp"><span class="nav-number">9.</span> <span class="nav-text">pgp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kill"><span class="nav-number">10.</span> <span class="nav-text">kill</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#trap"><span class="nav-number">11.</span> <span class="nav-text">trap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#umask"><span class="nav-number">12.</span> <span class="nav-text">umask</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/01/22/shell-commands-files-processes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="shell命令：文件与进程 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          shell命令：文件与进程<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/shell-commands-files-processes.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年1月22日 15:26:18" itemprop="dateCreated datePublished" datetime="2016-01-22T15:26:18+08:00">2016年1月22日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>我的读书笔记，学习shell的强大的文件进程管理命令。</p>
+<table>
+<thead>
+<tr>
+<th>书名</th>
+<th>作者</th>
+<th>下载地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Classic Shell Scripting</td>
+<td>Arnold R. &amp; Nelson H.F.B</td>
+<td><a href="">暂无</a></td>
+</tr>
+<tr>
+<td>Advanced Bash-Scripting Guide</td>
+<td>Mendel Cooper</td>
+<td><a target="_blank" rel="noopener" href="http://www.tldp.org/LDP/abs/abs-guide.pdf">PDF</a></td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+<h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>列出文件列表，等价于windows的dir<br>ll命令列出当前的文件属性</p>
+<pre><code>[root@www ~]# ls -l
+-rw-r--r--	  1		root	users	6845 Jun 25 08:53 install.log
+# 输出结果格式化一下，如下表：
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>-rw-r--r--</th>
+<th>1</th>
+<th>root</th>
+<th>users</th>
+<th>6845</th>
+<th>Jun 25 08:53</th>
+<th>install.log</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0123456789</td>
+<td>link</td>
+<td>owner</td>
+<td>group</td>
+<td>size</td>
+<td>access date</td>
+<td>filename</td>
+</tr>
+</tbody></table>
+<p>注释<br>0：文件类型：</p>
+<ul>
+<li>d:目录</li>
+<li>-:文件</li>
+<li>l:链接</li>
+<li>b:ram设备</li>
+<li>c:串行设备</li>
+</ul>
+<p>1～9:拥有者权限，所属群组权限，其他人权限<br>权限掩码，<a href="#umask">看这里</a></p>
+<p>link：文件硬链接数或目录子目录数，在<a href="#ln">这里</a>看看</p>
+<p>chgrp:改变文件所属群组<br>chowm:改变文件拥有者<br>chmod:改变文件权限（suid,sgid,sbit）<br>以上三个命令都要求改变后的用户或群存在于系统中&#x2F;etc&#x2F;passwd或group</p>
+<p>chmod 可以使用数字形式或者符号形式：</p>
+<pre><code>chmod 777 filename
+chmod a+x filename
+</code></pre>
+<p>其中a+x格式化一下：</p>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>+</th>
+<th>x</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+</tr>
+</tbody></table>
+<p>注释</p>
+<ul>
+<li>1:可选u g o a分别对应拥有者(user)，组(group)，其他用户(others)，全部(all)</li>
+<li>2:可选+ - &#x3D; 分别对应加入，除去，设定</li>
+<li>3:可选r w x分别对应读写执行</li>
+</ul>
+<p>显示当前的文件夹名称：</p>
+<pre><code>pwd
+</code></pre>
+<p>显示当前文件夹绝对路径，加上-P 参数</p>
+<p>pwd对应系统变量PWD</p>
+<p>@ruanyf的奇淫技巧：有关显示目录的命令：</p>
+<ul>
+<li><p>只显示普通目录，不显示隐藏目录</p>
+<p>  ls -d *&#x2F;<br>  ls -F | grep &#x2F;<br>  ls -l | grep ^d</p>
+</li>
+<li><p>只显示隐藏目录，不显示普通目录</p>
+<p>  ls -d .*&#x2F;</p>
+</li>
+<li><p>显示所有目录，不显示文件</p>
+<p>  find -maxdepth 1 -type d</p>
+</li>
+</ul>
+<h2 id="ln"><a href="#ln" class="headerlink" title="ln"></a>ln</h2><p>实现文件符号链接，硬链接。相当于windows的mklink</p>
+<pre><code>ln [-sf] 来源文件(夹)src 目标文件(夹)dest
+</code></pre>
+<p>选项与参数：<br>-s  ：通常采用符号链接，如果不加任何参数就进行连结，那就是hard link，-s 就是symbolic link，<br>-f  ：如果 目标文件 存在时，就主动的将目标文件直接移除后再创建！</p>
+<p>注意【SRC】和【DEST】需要写全绝对路径，否则提示</p>
+<pre><code>Too many levels of symbolic links!
+</code></pre>
+<p>建立软链接就是建立了一个新文件。当访问链接文件时，系统就会发现他是个链接文件，它读取链接文件找到真正要访问的文件。建立硬链接会获得与原文件等同的地位。</p>
+<p>博客上面ls命令提到的第二个字段link的含义如下：</p>
+<p>一、如果是一个普通文件：</p>
+<p>那么这一字段表示,这个文件所具有的硬链接数,即这个文件总共有多少个文件名.查看第一个文件:</p>
+<pre><code>-rw-r--r-- 1 root root 1581 11月 24 18:14 aaa.cfg
+</code></pre>
+<p>第2字段的值为1,说明这个文件只有aaa.cfg这一个文件名.即只有一个指向该链接的硬链接.<br>如果我用ln,做一个指向该文件的硬链接再查看该文件,该搜索文件的第2字段就会变成2:</p>
+<pre><code>[root@ubuntu]# ln aaa.cfg aaa.cfg.hardlink 
+[root@ubuntu]# ls -l 
+总用量 4071 
+-rw-r--r-- 2 root root 1581 11月 24 18:14 aaa.cfg 
+-rw-r--r-- 2 root root 1581 11月 24 18:14 aaa.cfg.hardlink
+</code></pre>
+<p>此时,aaa.cfg 和aaa.cfg.hardlink 称为互为硬链接.他们指向同一个文件,无论是修改哪一个文件,另一个里也做相应的变化,因为实际上他们指向同一个文件.<br>可以查看它的文件节点(inode) </p>
+<pre><code>ls -i aaa.cfg
+</code></pre>
+<p>互为硬链接的文件具有相同的文件节点. 以下是验证实验:</p>
+<pre><code>[root@ubuntu]# ls -i aaa.cfg 
+18102 aaa.cfg 
+[root@ubuntu]# ls -i aaa.cfg.hardlink 
+18102 aaa.cfg.hardlink
+</code></pre>
+<p>可以看到,这两个文件具有相同的文件节点号:18102<br>如果你知道一个文件有多个文件名,如何查找他的其他文件名分布在什么地方呢?<br>可以先用ls -i 获得它的节点号,然后用find查找，若具有多个文件名,我要查找与它互为硬链接的文件:</p>
+<pre><code>[root@gucuiwen devices]# ls -i /etc/sysconfig/networking/devices/ifcfg-eth0 
+147181 /etc/sysconfig/networking/devices/ifcfg-eth0
+</code></pre>
+<p>得到它的节点号为 147181，再用find查找:</p>
+<pre><code>[root@ubuntu]# find /etc -inum 147181 
+/etc/sysconfig/networking/devices/ifcfg-eth0 
+/etc/sysconfig/networking/profiles/default/ifcfg-eth0
+</code></pre>
+<p>这样就得到了同一个文件的不同文件名的位置.</p>
+<p>二、如果是一个目录：</p>
+<p>link字段表示该目录所含子目录的个数.<br>新建一个空目录,这个目录的第二字段就是2,表示该目录下有两个子目录.有一个指向它本身的子目录&quot;.&quot; 和指向它上级目录的子目录&quot;..&quot;,这两个默认子目录是隐藏的.用ls -a可以看到.<br>每次在目录下新建一个子目录,该目录第2字段的值就增1,但是新建一个普通文件该字段值不增加.</p>
+<h2 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h2><p>经典的命令，(Change Dir)</p>
+<p>建议配合使用压栈出栈的方式cd：</p>
+<pre><code>cd ~
+pushd .ssh/
+# 这样打开了.ssh文件夹，并把上一次的位置入栈
+popd
+# 返回到～，出栈了
+</code></pre>
+<h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><p>搜索当前文件夹，并以ascii顺序排序结果：</p>
+<pre><code>find | LC_ALL=C sort
+</code></pre>
+<p>搜索文件夹，使用ls的风格显示结果，以第11个字段【文件名】进行排序</p>
+<pre><code>find -ls | sort -k11
+</code></pre>
+<p>寻找&quot;o&quot;开头的文件，排除目录：</p>
+<pre><code>find &#39;o&#39; -type f
+</code></pre>
+<p>搜索我的目录下大于1MB的文件:</p>
+<pre><code>find /home/ubuntu -size +1024k
+</code></pre>
+<p>搜索大小在1k~1M的文件：-a代表AND逻辑与，同样-o代表OR</p>
+<pre><code>find . -size +1k -a -size -1024k
+</code></pre>
+<p>搜索空文件：</p>
+<pre><code>find . -size 0
+</code></pre>
+<p>搜索符号链接</p>
+<pre><code>find -L /var/www/ -xtype l
+</code></pre>
+<p>其他选项：-ctime是inode变更时间，-atime访问时间，-mtime修改时间。</p>
+<p>寻找文件，类似的命令 locate，支持通配符搜索</p>
+<p>还有个很实用的命令：type 能搜索到当前命令的别名，类型，还有指向位置</p>
+<pre><code>type cd &amp;&amp; type gcc &amp;&amp; type ll &amp;&amp; type foorbar
+cd is a shell builtin
+gcc is /usr/bin/gcc
+ll is alias of ‘ls -alF’
+sh: type: foorbar: could not found
+</code></pre>
+<p>还有个常用的命令：file，判断文件类型</p>
+<pre><code>file /etc/passwd
+# /etc/passwd: ASCII text
+file /tmp/sogou-qimpanel-cell
+# /tmp/sogou-qimpanel-cell: socket
+file /dev/sda
+# /dev/sda: block special
+</code></pre>
+<p>在文件中查找字符串：(Finds string in files)</p>
+<pre><code>grep -rnw &#39;/home/ubuntu&#39; -e &quot;pattern_to_find&quot;
+</code></pre>
+<h2 id="xargs"><a href="#xargs" class="headerlink" title="xargs"></a>xargs</h2><p>防止A命令的结果为空时，作为参数输入到B命令出错。<br>例如下列命令，当搜索不到结果时会使得grep报错：</p>
+<pre><code>grep POSIX /dev/null $(find /usr/include -type f)
+</code></pre>
+<p>使用xargs防止这种错误发生，遇到空结果时候不执行grep：</p>
+<pre><code>find /usr/include -type f | xargs grep POSIX /dev/null
+</code></pre>
+<h2 id="df"><a href="#df" class="headerlink" title="df"></a>df</h2><p>是Disk Free的缩写。查看磁盘分区用量</p>
+<p>使用-h (human-readable)查看简洁的摘要：</p>
+<pre><code>df -h
+#结果
+文件系统        容量  已用  可用 已用% 挂载点
+udev            3.9G  4.0K  3.9G    1% /dev
+tmpfs           788M  1.3M  786M    1% /run
+/dev/sdb5       4.8G 1020M  3.6G   22% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+none            5.0M     0  5.0M    0% /run/lock
+tmpfs           512M  128M  385M   25% /run/shm
+</code></pre>
+<p>类似的命令是du (Disk Usage)，告诉你的磁盘用量</p>
+<pre><code>du /tmp
+# 结果
+4	/tmp/.ICE-unix
+52	/tmp/.org.chromium.Chromium.ucrnZv/html
+12	/tmp/.org.chromium.Chromium.ucrnZv/css/viewer-toc
+16	/tmp/.org.chromium.Chromium.ucrnZv/css/column
+</code></pre>
+<p>同样支持 -h (huaman-readable)选项。<br>du的原理就是深入查找文件，将每个文件空间求和输出。</p>
+<h2 id="diff"><a href="#diff" class="headerlink" title="diff"></a>diff</h2><p>比较文件，git里面也是集成了一个diff，感觉比系统自带的好用，因为有彩色显示。这里就不介绍git diff了。</p>
+<p>使用diff的惯例：把旧文件作为参数第一个。</p>
+<pre><code># 1.txt文件
+hello world
+i am tony
+i live in China
+
+# 2.txt文件
+hello world
+add a line
+I am Tony
+Now I am sleepy
+</code></pre>
+<p>执行比较</p>
+<pre><code>diff 1.txt 2.txt
+# 结果
+2,3c2,4     # 表示旧文件的2~3行发生变化(c符号)，变成新文件的2~4行
+&lt; i am tony  # 左箭头表示旧文件
+&lt; i live in China.
+---          # 分隔新旧文件
+&gt; add a line   # 右箭头代表新文件
+&gt; I am Tony
+&gt; Now I am sleepy
+</code></pre>
+<p>c代表change a代表add d代表delete。</p>
+<p>建议使用-u参数，接近git diff的输出风格：</p>
+<pre><code>diff -u 1.txt 2.txt
+# 结果
+--- 1.txt	2016-01-22 19:12:27.838666220 +0800
++++ 2.txt	2016-01-22 19:12:41.914666098 +0800
+@@ -1,3 +1,4 @@  # 原文件的1~3行在输出结果前面3行
+                 # 新文件的1~4行为输出结果是结果除去掉减号内容
+ hello world
+-i am tony
+-i live in China
++add a line
++I am Tony
++Now I am sleepy
+</code></pre>
+<h2 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h2><p>执行由diff命令比较结果的改动，自动完成差异更改。通常用于程序员之间交流代码，很方便的对同一份代码进行比较修改。</p>
+<pre><code>diff -c old.txt new.txt &gt; /tmp/patch.dif
+cp old.txt /tmp
+cd /tmp
+patch &lt; patch.dif # 这个patch直接对源文件生效，改动覆盖原文件
+cat old.txt
+</code></pre>
+<p>patch尽可能地套用不同之处，然后报告失败的地方，由你手动处理</p>
+<h2 id="pgp"><a href="#pgp" class="headerlink" title="pgp"></a>pgp</h2><p>通常下载完毕，首先检验md5：</p>
+<pre><code>md5sum ubuntu.iso
+</code></pre>
+<p>但是并不能保证是发布者原封不动的发布的，当黑客改动文件，并把改动后的MD5发布到网站上，也能进行欺骗，所以引入GPG签名保证文件是签名是正确的。</p>
+<p>在更新ubutnu软件包时，开发者首先公布他的pgp公钥，然后让用户下载。</p>
+<pre><code>wget -O- http://shadowsocks.org/debian/1D27208A.gpg | sudo apt-key add -
+</code></pre>
+<p>pgp这部分暂时没资料，不过感觉和openssl一块用进行加密是完全可以的。</p>
+<h2 id="kill"><a href="#kill" class="headerlink" title="kill"></a>kill</h2><p>PID：进程id<br>PPID：父进程id<br>相关命令： pgrep pkill trap</p>
+<pre><code>pgrep netscape # 寻找netspace的PID
+pkill -HUP netspace
+pkill -TERM netspace
+pkill -KILL netspace
+# 上面三个命令不建议，因为进程名称不是唯一的。误杀。
+</code></pre>
+<p>使用kill杀死进程 pid</p>
+<h2 id="trap"><a href="#trap" class="headerlink" title="trap"></a>trap</h2><p>假设有个脚本，模拟后台运行：trap语句被触发：当后面的信号到达时</p>
+<pre><code># loop.sh
+#! /bin/sh
+trap &#39;echo ignoring HUP&#39; HUP
+trap &#39;echo Terminating on USR1; exit 1&#39; USR1
+
+while true; do
+    sleep 2
+    date &gt; /dev/null
+done
+</code></pre>
+<p>执行：</p>
+<pre><code>sh ./boop.sh &amp;
+# 24444
+kill -HUP 24444
+# Ingoring HUP
+kill -USR1
+# Terminating on USR1
+[1] + Done(1)
+</code></pre>
+<p>试试向他发出其他信号：</p>
+<pre><code>sh ./loop.sh &amp;
+# 22222
+kill -CHLD 22222
+jobs
+[1] + Running sh ./loop.sh &amp;
+kill -PIPE 22222
+[1] + Broken Pipe ./loop.sh &amp;
+</code></pre>
+<p>原来一个broken pipe信号就杀死他了。。<br>试一下默认的kill信号：</p>
+<pre><code>sh ./loop.sh &amp;
+# 11111
+kill 11111   # 默认是TERM信号
+[1] + Done sh ./loop.sh &amp;
+</code></pre>
+<p>经过我的无数次实验，发现使用trap被触发后，调用trap前的一条命令会被退出，然后执行trap所在那行的命令：</p>
+<pre><code># 1.sh内容
+#! /bin/bash
+trap &#39;echo in trap..; sleep 5; exit(0)&#39; 2   # 信号2代表SIGINT就是Ctrl+C
+2.sh
+
+# 2.sh内容
+while true; do echo from 2.sh!; sleep 1; done
+</code></pre>
+<p>实验过程：<br>在A终端执行1.sh，屏幕不断输出from 2.sh，另外开一个终端B</p>
+<pre><code>ps aux | grep 2.sh
+</code></pre>
+<p>发现有2行输出（2.sh 和 grep auto 2.sh），在A终端按Ctrl+C，触发trap命令。接下来5秒时间内，可以在终端B执行上面这句ps aux发现已经没有2.sh的进程了。证明了我的猜想。</p>
+<h2 id="umask"><a href="#umask" class="headerlink" title="umask"></a>umask</h2><p>umask值一共有4组数字，其中第1组数字用于定义特殊权限，我们一般不予考虑，与一般权限有关的是后3组数字。</p>
+<p>默认情况下，对于目录，用户所能拥有的最大权限是777；对于文件，用户所能拥有的最大权限是目录的最大权限去掉执行权限，即666。因为x执行权限对于目录是必须的，没有执行权限就无法进入目录，而对于文件则不必默认赋予x执行权限。</p>
+<p>对于root用户，他的umask值是022。</p>
+<p>当root用户创建目录时，默认的权限就是用最大权限777去掉相应位置的umask值权限，即对于所有者不必去掉任何权限，对于所属组要去掉w权限，对于其他用户也要去掉w权限，所以目录的默认权限就是755</p>
+<p>当root用户创建文件时，默认的权限则是用最大权限666去掉相应8421权重的umask值，即文件的默认权限是644</p>
+<p>Q:如果将umask值设为0003，那么此时创建的目录或文件的默认权限是多少？</p>
+<p>A:正确的结果应该是：目录的默认权限是774，文件的默认权限是664。在计算默认权限时，不是用十进制的最大权限直接减去umask值，要以二进制考虑。将umask值所对应的相应位置的权限去掉，这样才能得到正确的结果。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+              <a href="/tags/shell/" rel="tag"># shell</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/01/21/ssh-key-usage/" rel="prev" title="ssh-key用法">
+                  <i class="fa fa-chevron-left"></i> ssh-key用法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/29/python-requests-lib/" rel="next" title="python的requests库">
+                  python的requests库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

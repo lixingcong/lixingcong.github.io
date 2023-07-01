@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="LEDE&#x2F;OpenWrt下的单线多拨和负载平衡，记下以后有可能跳进去的坑，减少走弯路概率。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="macvlan单线多拨+mwan3负载平衡">
+<meta property="og:url" content="http://lixingcong.github.io/2018/04/13/mwan3-macvlan-notes/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="LEDE&#x2F;OpenWrt下的单线多拨和负载平衡，记下以后有可能跳进去的坑，减少走弯路概率。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/mwan3-macvlan/interface-wan.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/mwan3-macvlan/interface-wan2.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/mwan3-macvlan/firewall-cover.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/mwan3-macvlan/interface-wan-metric.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/mwan3-macvlan/mwan3-interface.png">
+<meta property="article:published_time" content="2018-04-13T07:46:24.000Z">
+<meta property="article:modified_time" content="2018-04-13T07:46:24.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="openwrt">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/mwan3-macvlan/interface-wan.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2018/04/13/mwan3-macvlan-notes/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2018/04/13/mwan3-macvlan-notes/","path":"2018/04/13/mwan3-macvlan-notes/","title":"macvlan单线多拨+mwan3负载平衡"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>macvlan单线多拨+mwan3负载平衡 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%88%8F"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1"><span class="nav-number">2.</span> <span class="nav-text">虚拟网卡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.</span> <span class="nav-text">创建虚拟接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%8B%A8%E5%8F%B7%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.</span> <span class="nav-text">创建拨号接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%98%B2%E7%81%AB%E5%A2%99%E8%A7%84%E5%88%99"><span class="nav-number">2.3.</span> <span class="nav-text">测试防火墙规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%B7%83%E7%82%B9"><span class="nav-number">2.4.</span> <span class="nav-text">设置跃点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%B9%B3%E8%A1%A1"><span class="nav-number">3.</span> <span class="nav-text">负载平衡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.1.</span> <span class="nav-text">添加接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%88%90%E5%91%98"><span class="nav-number">3.2.</span> <span class="nav-text">添加成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%AD%96%E7%95%A5"><span class="nav-number">3.3.</span> <span class="nav-text">添加策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1%E8%A7%84%E5%88%99"><span class="nav-number">3.4.</span> <span class="nav-text">添加路由规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4"><span class="nav-number">3.5.</span> <span class="nav-text">故障排除</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2018/04/13/mwan3-macvlan-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="macvlan单线多拨+mwan3负载平衡 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          macvlan单线多拨+mwan3负载平衡<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/mwan3-macvlan-notes.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018年4月13日 15:46:24" itemprop="dateCreated datePublished" datetime="2018-04-13T15:46:24+08:00">2018年4月13日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>LEDE&#x2F;OpenWrt下的单线多拨和负载平衡，记下以后有可能跳进去的坑，减少走弯路概率。</p>
+<span id="more"></span>
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><p>多拨可以是单线多拨，也可以是多个物理WAN同时拨号。它们的区别是：</p>
+<ul>
+<li>单线多拨一般使用macvlan虚拟出网卡</li>
+<li>多个物理WAN同时拨号用不同的interface直接获取WAN ip</li>
+<li>若LAN口有空闲，也可以利用OpenWrt的VLAN交换机划分多余的LAN口为单独的VLAN，配置成WAN实现多个物理WAN</li>
+</ul>
+<p>手上的破路由MT7620只有一个WAN，默认情况下只能获取到一个WAN ip</p>
+<p>所以这里只讨论单线多拨。后面两种情况（物理WAN）比较容易配置，可以参考其它资料。</p>
+<h2 id="虚拟网卡"><a href="#虚拟网卡" class="headerlink" title="虚拟网卡"></a>虚拟网卡</h2><p>安装macvlan内核模块，实现虚拟网卡</p>
+<pre><code>opkg install kmod-macvlan
+</code></pre>
+<p>先确定物理WAN是哪个物理接口，下图为我的路由器WAN的物理接口为eth0.2，所以命令的$WAN_INTF为eth0.2</p>
+<p><img src="/images/mwan3-macvlan/interface-wan.png"></p>
+<h3 id="创建虚拟接口"><a href="#创建虚拟接口" class="headerlink" title="创建虚拟接口"></a>创建虚拟接口</h3><p>创建一个临时的虚拟接口veth0（关机后会失效veth0）</p>
+<pre><code># 替换为你的WAN物理接口
+export WAN_INTF=eth0.2
+
+ip link add link $WAN_INTF name veth0 type macvlan
+ifconfig veth0 up
+</code></pre>
+<p>若要想创建永久的虚拟网卡接口，可以写入到系统配置中（关机重启仍然保留veth0）</p>
+<pre><code>vi /etc/config/network
+
+# 添加内容
+config device &#39;veth0&#39;
+    option name &#39;veth0&#39;
+    option ifname &#39;eth0.2&#39;
+    option type &#39;macvlan&#39;
+</code></pre>
+<p>接着可以基于这个veth0接口创建WAN2接口了</p>
+<h3 id="创建拨号接口"><a href="#创建拨号接口" class="headerlink" title="创建拨号接口"></a>创建拨号接口</h3><p>在Luci界面的Network-&gt;Interfaces里面，点击Add new interface，配置物理接口为veth0，新接口这里名为wan2</p>
+<p><img src="/images/mwan3-macvlan/interface-wan2.png"></p>
+<p>对其配置DHCP&#x2F;PPPoE等，测试获取到正常IP，方可进行下一步。</p>
+<pre><code>ifconfig
+
+# 可以看到获取到IP
+veth0     Link encap:Ethernet  HWaddr xx:xx:F3:0A:79:5C  
+      inet addr:192.168.2.122  Bcast:192.168.2.255  Mask:255.255.255.0
+      inet6 addr: fe80::34ae:f3ff:fe0a:795c/64 Scope:Link
+      UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+      RX packets:101169 errors:0 dropped:174 overruns:0 frame:0
+      TX packets:5424 errors:0 dropped:0 overruns:0 carrier:0
+      collisions:0 txqueuelen:1 
+      RX bytes:10191279 (9.7 MiB)  TX bytes:611389 (597.0 KiB)
+</code></pre>
+<h3 id="测试防火墙规则"><a href="#测试防火墙规则" class="headerlink" title="测试防火墙规则"></a>测试防火墙规则</h3><p>我们把WAN（原来的接口）关掉：在Luci界面的Network-&gt;Interfaces里面，WAN右侧的Stop，排除原来WAN的影响。</p>
+<p>防火墙中Covered Networks勾选新的接口，使得LAN发往WAN2的数据包具备Masquerad的SNAT能力。</p>
+<p><img src="/images/mwan3-macvlan/firewall-cover.png"></p>
+<p>在局域网任意主机测试一下，能否打开任意网页。此时是单纯用WAN2上网，排除WAN的接口。测试能上网，方可进行下一步。</p>
+<p>我们把WAN（原来的接口）重新恢复，在Luci界面的Network-&gt;Interfaces里面，WAN右侧的Connect</p>
+<h3 id="设置跃点"><a href="#设置跃点" class="headerlink" title="设置跃点"></a>设置跃点</h3><p>对WAN2和WAN两个接口设置不同的跃点，例如10,20。</p>
+<p><img src="/images/mwan3-macvlan/interface-wan-metric.png"></p>
+<h2 id="负载平衡"><a href="#负载平衡" class="headerlink" title="负载平衡"></a>负载平衡</h2><p>如果你事先得知ISP多拨后按端口限速，那多拨后没法叠加网速，负载平衡就没必要了。</p>
+<p>安装mwan3</p>
+<pre><code>opkg install mwan3 luci-app-mwan3
+</code></pre>
+<p>前往在Luci界面的Network-&gt;Load Balancing。在Configuration下面四个标签内，默认的配置全部删掉。</p>
+<ul>
+<li>interface</li>
+<li>Members</li>
+<li>Policies</li>
+<li>Rules</li>
+</ul>
+<p>删掉配置的目的是，很多情况下，路由器实际接口都跟MWAN3默认配置不一致。当然若你是高手，可以不删除，手动配置。</p>
+<p>下文将按照从上到下的顺序配置好MWAN3</p>
+<ol>
+<li>interface</li>
+<li>Members</li>
+<li>Policies</li>
+<li>Rules</li>
+</ol>
+<h3 id="添加接口"><a href="#添加接口" class="headerlink" title="添加接口"></a>添加接口</h3><p>定位到MWAN3的interface标签，将wan和wan2分别填入，点击Add，配置ping的服务器就可以了。其它保持默认配置。</p>
+<p><img src="/images/mwan3-macvlan/mwan3-interface.png"></p>
+<h3 id="添加成员"><a href="#添加成员" class="headerlink" title="添加成员"></a>添加成员</h3><p>基于接口，配置某一接口的跃点与权重组合值。</p>
+<p>定位到MWAN3的Members标签，这里以添加WAN接口的权重跃点1，权重2为例，我把这个规则命名为wan_m1_w2</p>
+<p>将wan_m1_w2填入，点击Add，直接指定接口wan，跃点，权重即可。</p>
+<p>路由优先发往跃点值较小的接口。跃点值相同的接口，按权重走路由。</p>
+<p>我建立了几个成员，仅供参考</p>
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>接口</th>
+<th>跃点</th>
+<th>权重</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>wan_m1_w2</td>
+<td>wan</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>wan2_m1_w2</td>
+<td>wan2</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>wan2_m1_w1</td>
+<td>wan2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<h3 id="添加策略"><a href="#添加策略" class="headerlink" title="添加策略"></a>添加策略</h3><p>基于成员，配置某一策略的路由走法</p>
+<p>定位到MWAN3的Polices标签</p>
+<p>我们创建一个走负载平衡的策略，即wan与wan2跃点一样，且权重一样。我把这个策略命名为balance</p>
+<p>将balance填入，点击Add</p>
+<p>将MemberUsed设为两个：wan_m1_w2和wan2_m1_w2，把LastResorted设为Unreachablbe。这样完成了一个最简单的策略。</p>
+<p>同理，我们也可以创建一个只走wan2的策略，我把这个策略命名为wan2_only</p>
+<p>将wan2_only填入，点击Add</p>
+<p>将MemberUsed设为：wan2_m1_w2，把LastResorted设为Unreachablbe。</p>
+<h3 id="添加路由规则"><a href="#添加路由规则" class="headerlink" title="添加路由规则"></a>添加路由规则</h3><p>基于策略，可以配置某个协议&#x2F;IP的路由。</p>
+<p>定位到MWAN3的Rules标签</p>
+<p>添加一个默认规则，走wan2_only的策略，我把这个策略命名为default_route</p>
+<p>将default_route填入，点击Add，把Policy assigned指定为wan2_only即可。</p>
+<p>同理，我们可以指定自己Shadowsocks服务器（比如3.4.5.6）走负载均衡的策略，我把这个策略命名为ss_route</p>
+<p>将ss_route填入，点击Add，把Destination address设为3.4.5.6&#x2F;32，把Policy assigned指定为balance即可。</p>
+<h3 id="故障排除"><a href="#故障排除" class="headerlink" title="故障排除"></a>故障排除</h3><p>如果在MWAN3中看到红色的警告&#x2F;错误，请善于使用搜索，确保无警告无错误。</p>
+<p>测试下载大文件，进入Network-&gt;interfaces，对于负载平衡的策略，理论上可以看到wan和wan2接口的收发流量均有变化。</p>
+<p>至于网速是否有叠加效果，还是取决于ISP。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://acris.me/2017/06/25/Load-balancing-multiple-PPPoE-on-LEDE/">LEDE使用macvlan和mwan3实现单线多拨</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/openwrt/" rel="tag"># openwrt</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/04/08/arp-binding-on-lede/" rel="prev" title="LEDE下绑定静态ARP">
+                  <i class="fa fa-chevron-left"></i> LEDE下绑定静态ARP
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/05/25/dante-socks5/" rel="next" title="dante搭建socks5代理">
+                  dante搭建socks5代理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

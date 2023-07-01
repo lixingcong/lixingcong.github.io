@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这次的编程题目(题目链接)难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Padding Oracle Attack">
+<meta property="og:url" content="http://lixingcong.github.io/2016/03/13/Cryptography-I-week-4/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="这次的编程题目(题目链接)难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/crypro_coursera_I/cbc_oracle_attack_1.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/crypro_coursera_I/cbc_oracle_attack_2.png">
+<meta property="article:published_time" content="2016-03-13T12:46:07.000Z">
+<meta property="article:modified_time" content="2016-03-13T12:46:07.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/crypro_coursera_I/cbc_oracle_attack_1.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/03/13/Cryptography-I-week-4/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/03/13/Cryptography-I-week-4/","path":"2016/03/13/Cryptography-I-week-4/","title":"Cryptography解题报告：Padding Oracle Attack"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cryptography解题报告：Padding Oracle Attack | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%AF%86%E6%96%87%E6%94%BB%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">选择密文攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">源代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/03/13/Cryptography-I-week-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cryptography解题报告：Padding Oracle Attack | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cryptography解题报告：Padding Oracle Attack<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/Cryptography-I-week-4.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年3月13日 20:46:07" itemprop="dateCreated datePublished" datetime="2016-03-13T20:46:07+08:00">2016年3月13日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>这次的编程题目<a target="_blank" rel="noopener" href="http://blog.csdn.net/csh1989/article/details/38457377">(题目链接)</a>难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！</p>
+<span id="more"></span>
+<p>解题思路就是视频<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=evrgQkULQ5U">7-6 CBC padding attacks.mp4</a>中定位到(6:00)的讲解，一开始很不理解，我就照自己的思路写了一个程序，然后万般无奈调试得出的答案是错误的无意义的printable string，最后参考了很多代码才写出来的。囧rz</p>
+<p>基本原理就是“选择密文攻击”，假设Attacker手上有了两个block尺寸的密文c[0]和c[1]，他可以篡改c[0]的末尾几个字节的值达到强行修改明文m[1]的末尾字节，这个是由于CBC工作原理决定的。</p>
+<p><img src="/images/crypro_coursera_I/cbc_oracle_attack_1.png"><br><img src="/images/crypro_coursera_I/cbc_oracle_attack_2.png"></p>
+<h2 id="选择密文攻击"><a href="#选择密文攻击" class="headerlink" title="选择密文攻击"></a>选择密文攻击</h2><p>假设Attacker要解密出m[1]最后一个字节的数据，他只需要猜0～255，假设他猜的值为guess</p>
+<ol>
+<li><p>选择guess值，将c[0]最后一个字节的与guess异或。</p>
+<pre><code> guess = new_guess in 0...255
+ data&#39; = xor(c[0], guess)
+ 
+</code></pre>
+</li>
+<li><p>进行padding，因为只需要最后一个字节，根据padding规则将最后一个字节异或0x01</p>
+<pre><code> data_with_pad&#39; = xor(data&#39;, 0x01)
+</code></pre>
+<p> 分析：</p>
+<ul>
+<li>若guess&#x3D;&#x3D;data，则在step 1 得到的结果是0x00，进行step 2 则会将m[1]最后一个字节的数据变成0x01，这样服务器会成功解密，由于padding引起明文发生变化，传入网站参数不存在，返回404错误。</li>
+<li>若guess!&#x3D;data，则padding不合法，服务端解密失败，返回403拒绝Attacker的连接。</li>
+<li>若很偶然的猜对，有一定概率返回200代码，需要特殊处理。</li>
+</ul>
+</li>
+<li><p>将修改后的data_with_pad与c[1]发给服务器。观察返回的错误代码，若是404错误，可以记下来该值，就是m[1]的最后一个字节的值。</p>
+</li>
+<li><p>将guess值另存为新的变量，例如bingo,嵌入到c[0]（使用异或的方式），留给下一轮（破解第二字节）使用。</p>
+<pre><code> c[0]&#39; = xor(c[0], [00...00] || bingo)
+</code></pre>
+</li>
+<li><p>继续破解第二个字节：选择新的guess in (0~255)，与data异或</p>
+<pre><code> guess = new_guess in 0...255
+ guess = [00...00] || guess || [00]  # 将guess移位到倒数第二个字节处
+ data&#39; = xor(c[0]&#39;, guess)
+</code></pre>
+</li>
+<li><p>进行padding，注意，因为是想解出第二个字节，故最后两个字节都要进行padding操作</p>
+<pre><code> data_with_pad&#39; = xor(data&#39;, 0x0202)
+</code></pre>
+</li>
+<li><p>同样data_with_pad和c[1]发送给服务器观察返回错误代码，同样步骤记下正确的bingo值。</p>
+<pre><code> c[0]&#39;&#39; = xor(c[0]&#39;, [00...00] || bingo || [00] )
+ 
+</code></pre>
+</li>
+<li><p>继续选择第三字节穷举，然后padding 0x030303，得到正确值记下来供下一轮。。如此循环下去直到第16字节解出来。</p>
+<pre><code> guess = new_guess in 0...255
+ guess = [00...00] || guess || [0000]  # 将guess移位到倒数第三个字节处
+ data&#39;&#39; = xor(c[0]&#39;&#39;, guess)
+ data_with_pad&#39;&#39; = xor(data&#39;, 0x030303)
+ c[0]&#39;&#39;&#39; = xor(c[0]&#39;, [00...00] || bingo || [0000] )
+</code></pre>
+</li>
+</ol>
+<p>其他要点：</p>
+<blockquote>
+<p>1、解出每一个字节都要存放下来，否则影响后面字节的padding。造成“只能破解一个字节”而无法进行下去。<br>2、异或操作需要一步一步进行，便于查错。<br>3、对最后一个block进行猜时候，留意【padding_number&#x3D;0x01和guess&#x3D;0x01同时满足】的情况：xor(pad, guess)&#x3D;0x00，则穷举不会奏效，没有达到强行修改m[1]末尾的效果。这是巨坑，我纠结了好久，写出一个检查padding有效性的检测方法，大家可以看看<br>4、遇到200代码情况要注意了，也许是遇到了padding_num&#x3D;guess的情况，导致解密成功<br>5、实际上，每次查询不需要全部发送ciphertext过去，只需要发送c[0]和[1]，即：只需要2个block即可解出一个block<br>6、什么encode和decode用法需要铭记于心，贯穿整个课程。还有注意代码的可读性，使用模块化设计，方便调试和阅读。</p>
+</blockquote>
+<h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><p>参考了<a target="_blank" rel="noopener" href="https://github.com/chavaone/coursera-crypto-scripts/blob/master/Problems4/oracle.py">@chavaone</a>的代码（他的代码中，解第三个block的方法很牵强，没有说服力，居然是靠猜的！），我增加了几个功能，耗时一天，终于完成我的代码了：庆祝！</p>
+<pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import requests
+host_crypto = &#39;http://crypto-class.appspot.com/po?er=&#39;
+ct = &#39;f20bdba6ff29eed7b046d1df9fb7000058b1ffb4210a580f748b4ac714c001bd4a61044426fb515dad3f21f18aa577c0bdf302936266926ff37dbf7035d5eeb4&#39;
+printable_chars = range(32, 128)
+padding_chars = range(1, 17)
+
+def query(q):
+    url = host_crypto + q
+    req = requests.get(url)
+    if req.status_code == 404 :
+        return True   # good padding
+    return False   # bad padding
+
+def int2hex(i):
+    &#39;&#39;&#39;整数转成十六进制，返回字符串形式，xx，这种方法要记下来放到日志&#39;&#39;&#39;
+    return hex(i)[2:] if len(hex(i)[2:]) == 2 else &#39;0&#39; + hex(i)[2:]
+
+def exor_pad(i):
+    &#39;&#39;&#39;输入一个1~16整数，返回一个长度16Byte，前导0，后面用i进行padding的字符串&#39;&#39;&#39;
+    assert(i &gt; 0)
+    assert(i &lt;= 16)
+    return  &#39;00&#39; * (16 - i) + int2hex(i) * i
+
+def exor_g(g, pos):
+    &#39;&#39;&#39;输入guess值，还有需要异或的位置(0~15)，返回一个长度16的前导0、后缀0、中间某一Byte为guess值的字符串&#39;&#39;&#39;
+    assert(pos &gt;= 0)
+    assert(pos &lt; 16)
+    return &#39;00&#39; * (15 - pos) + int2hex(g) + &#39;00&#39; * pos
+
+def refill_zero(s):
+    &#39;&#39;&#39;填充前导0，返回长度32的字符串&#39;&#39;&#39;
+    return &#39;0&#39; * (32 - len(s)) + s
+
+def strxor(a, b):
+    &#39;&#39;&#39;xor two strings of different lengths&#39;&#39;&#39;
+    if len(a) &gt; len(b):
+        return &quot;&quot;.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a[:len(b)], b)])
+    else:
+        return &quot;&quot;.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
+
+def hexexor(s1, s2):
+    &#39;&#39;&#39;输入的是两个字符串，输出他们异或后的字符串&#39;&#39;&#39;
+    # 先decode，将字符串转成Byte数据类型，再异或，异或结果后重新编码为字符串
+    return strxor(s1.decode(&quot;hex&quot;), s2.decode(&quot;hex&quot;)).encode(&quot;hex&quot;)
+
+def test_a_byte(found_msg, pos, dictinary_, iv, ct, is_padding = False):
+    # 功能：穷举一个字节，破解得到明文
+    # 输入found_msg为之前已经找到的字符串
+    # pos为需要穷举的字节位置：从后开始计数1~16
+    # dicitionay为穷举字典：int型范围0~255
+    # iv为需要进行异或的字符串，ct为待解密的密文
+    # is_padding是检查密文的Padding有效性时候用到，默认false
+    pad = exor_pad(pos)
+    lastmsg = refill_zero(found_msg.encode(&quot;hex&quot;))
+    getletter = False
+    possible_padding = []
+    # 字典破解，我有两个字典：ascii字符和padding集合
+    for guess in dictinary_:
+        gpad = exor_g(guess, pos - 1)
+        # 是把猜想值和lastmsg做异或运算，能否破解成功依赖Lastmsg的正确性。
+        if query(hexexor(lastmsg, hexexor(iv, hexexor(gpad, pad))) + ct):
+            getletter = True
+            new_msg = int2hex(guess).decode(&quot;hex&quot;) + found_msg
+            if is_padding:
+                possible_padding.append(guess)
+            else:
+                return new_msg
+    if is_padding:
+        return possible_padding
+    if getletter == False:
+        return None
+
+if __name__ == &#39;__main__&#39;:
+    blocks = ()   # 含四个元素，每个元素是长度32的字符串，使用tuple的目的是“不可变”的特性
+    while ct:
+        blocks = blocks + (ct[:32],)
+        ct = ct[32:]
+
+    b = input(&quot;input block number to crack:\n#(1~3)&quot;)
+    iv = blocks[b - 1]   # 截取待破解的前一个block作为IV，其他block都可以丢弃了
+    block = blocks[b]
+
+    # 测试最后字节的Padding是否有效
+    is_last_block = False
+    if b == 3:
+        is_last_block = True
+    if is_last_block:
+        possible_paddings = test_a_byte(&#39;&#39;, 1, padding_chars, iv, block, True)
+        # 测试经过第一轮筛选处理的padding是否有效
+        for i in possible_paddings:
+            print &quot;possible padding size is:&quot;, i
+            msg = chr(i) * i
+            start_byte = i + 1
+            if test_a_byte(msg, start_byte, printable_chars, iv, block) != None:
+                print &quot;good padding size is:&quot;, i
+                break
+    else:
+        msg = &#39;&#39;
+        start_byte = 1
+
+    # 对选定的block进行16字节的逐个字节破解
+    for pos in range(start_byte, 17):
+        is_found = test_a_byte(msg, pos, printable_chars, iv, block)
+        if is_found:
+            msg = is_found
+            print &quot;%r&quot; % msg
+        else:
+            print &quot;can&#39;t found the last #%d byte&quot; % pos
+            exit(0)
+    if is_last_block and msg:
+        print &quot;After cutting padding off, the last block is:\n%r&quot; % msg[:-(start_byte - 1)]
+</code></pre>
+<p>答案</p>
+<pre><code>The Magic Words are Squeamish Ossifrage
+</code></pre>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="http://seffyvon.github.io/cryptography/2014/08/20/CBC-Padding-Oracle-Attacks">CBC-Padding-Oracle-Attacks Standford Coursera</a><br><a target="_blank" rel="noopener" href="http://mooc.guokr.com/note/9413/">MOOC总结密码学assignment</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/03/11/install-ubuntu-on-gpt/" rel="prev" title="GPT分区表上硬盘安装ubuntu">
+                  <i class="fa fa-chevron-left"></i> GPT分区表上硬盘安装ubuntu
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/03/14/eclipse-configure-notes/" rel="next" title="我的eclipse配置">
+                  我的eclipse配置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

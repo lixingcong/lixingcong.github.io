@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="人工翻译网上找到的Modbus协议文档，讲述不同封包的格式RTU&#x2F;ASCII&#x2F;TCP，大端存储，功能码。附加自己在工作中对协议的理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Modbus协议学习笔记">
+<meta property="og:url" content="http://lixingcong.github.io/2020/02/12/modbus-frame/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="人工翻译网上找到的Modbus协议文档，讲述不同封包的格式RTU&#x2F;ASCII&#x2F;TCP，大端存储，功能码。附加自己在工作中对协议的理解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/modbus-frame/modbus-u32-abcd.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/modbus-frame/modbus-tcp-adu.png">
+<meta property="article:published_time" content="2020-02-12T06:46:03.000Z">
+<meta property="article:modified_time" content="2020-02-12T06:46:03.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="翻译">
+<meta property="article:tag" content="协议">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/modbus-frame/modbus-u32-abcd.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2020/02/12/modbus-frame/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2020/02/12/modbus-frame/","path":"2020/02/12/modbus-frame/","title":"Modbus协议学习笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Modbus协议学习笔记 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%97%E8%8A%82%E5%BA%8F"><span class="nav-number">1.</span> <span class="nav-text">数据字节序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8%E4%BD%8D%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.</span> <span class="nav-text">8位数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16%E4%BD%8D%E6%95%B0%E6%8D%AE"><span class="nav-number">1.2.</span> <span class="nav-text">16位数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#32%E4%BD%8D%E6%95%B0%E6%8D%AE"><span class="nav-number">1.3.</span> <span class="nav-text">32位数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#64%E4%BD%8D%E6%95%B0%E6%8D%AE"><span class="nav-number">1.4.</span> <span class="nav-text">64位数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDU"><span class="nav-number">2.</span> <span class="nav-text">PDU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PDU%E4%B8%8EADU%E5%85%B3%E7%B3%BB"><span class="nav-number">2.1.</span> <span class="nav-text">PDU与ADU关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%B8%A7PDU"><span class="nav-number">2.2.</span> <span class="nav-text">请求帧PDU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E5%BA%94%E5%B8%A7PDU"><span class="nav-number">2.3.</span> <span class="nav-text">回应帧PDU</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">数据传输模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ASCII"><span class="nav-number">3.1.</span> <span class="nav-text">ASCII</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RTU"><span class="nav-number">3.2.</span> <span class="nav-text">RTU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP"><span class="nav-number">3.3.</span> <span class="nav-text">TCP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5"><span class="nav-number">3.4.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">常见功能码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%B8%83%E5%B0%94%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">读写布尔型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E7%BA%BF%E5%9C%88"><span class="nav-number">4.1.1.</span> <span class="nav-text">读多个线圈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%8D%95%E4%B8%AA%E7%BA%BF%E5%9C%88"><span class="nav-number">4.1.2.</span> <span class="nav-text">写单个线圈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%A4%9A%E4%B8%AA%E7%BA%BF%E5%9C%88"><span class="nav-number">4.1.3.</span> <span class="nav-text">写多个线圈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E7%A6%BB%E6%95%A3%E8%BE%93%E5%85%A5"><span class="nav-number">4.1.4.</span> <span class="nav-text">读多个离散输入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%9916%E4%BD%8D"><span class="nav-number">4.2.</span> <span class="nav-text">读写16位</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E8%BE%93%E5%85%A5%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">4.2.1.</span> <span class="nav-text">读多个输入寄存器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">4.2.2.</span> <span class="nav-text">读多个保持寄存器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%8D%95%E4%B8%AA%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">4.2.3.</span> <span class="nav-text">写单个保持寄存器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%A4%9A%E4%B8%AA%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">4.2.4.</span> <span class="nav-text">写多个保持寄存器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2020/02/12/modbus-frame/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Modbus协议学习笔记 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Modbus协议学习笔记<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/modbus-frame.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020年2月12日 14:46:03" itemprop="dateCreated datePublished" datetime="2020-02-12T14:46:03+08:00">2020年2月12日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>人工翻译网上找到的Modbus协议文档，讲述不同封包的格式RTU&#x2F;ASCII&#x2F;TCP，大端存储，功能码。附加自己在工作中对协议的理解。</p>
+<span id="more"></span>
+<p>Modbus协议是通讯协议，广泛应用在设备之间的主从通讯。主站发送requset，从站作为response。</p>
+<blockquote>
+<p>主站为master或者poll，从站为slave。</p>
+</blockquote>
+<p>在标准的modbus系统中，只有一个master设备，和最多247个slave设备（<a target="_blank" rel="noopener" href="https://www.picotech.com/library/oscilloscopes/modbus-serial-protocol-decoding">信息来源</a>）</p>
+<p>每个slave设备有一个唯一的地址，用一个字节表示，0表示广播地址，其余地址(1~247，最大支持247个slave设备)为其它设备所用。地址将出现在modbus帧中，用于区分本帧是发给哪个slave设备，地址有时候被称为slave ID，下文用slave ID来表示这个值。</p>
+<p>Modbus协议与底层物理层无关。其底层物理层常是RS232，RS422或RS485实现，也使用TCP或者UDP通讯。</p>
+<h2 id="数据字节序"><a href="#数据字节序" class="headerlink" title="数据字节序"></a>数据字节序</h2><h3 id="8位数据"><a href="#8位数据" class="headerlink" title="8位数据"></a>8位数据</h3><p>建议使用16位数据表示，因为Modbus协议最小数据都是16位的，若强行使用8位数据可能有数组越界风险，如<code>char u8[11]</code>由于是11字节，Modbus读写按照16位对齐，那么最后字节容易越界。</p>
+<p>如果采用一个Modbus地址（u16数据）表示一个8位数据，那么就浪费了一个字节的通讯空间。本质上与直接使用寄存器没有什么区别。还不如直接使用u16数据类型，能表示的数值范围更大（65535比255要大不少）。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">unsigned</span> char  numbers[<span class="number">4</span>] = &#123;<span class="number">0</span>x12, <span class="number">0</span>x34, <span class="number">0</span>x56, <span class="number">0</span>x78&#125;;</span><br><span class="line"><span class="attribute">unsigned</span> short regs[<span class="number">4</span>]    = &#123;numbers[<span class="number">0</span>], numbers[<span class="number">1</span>], numbers[<span class="number">2</span>], numbers[<span class="number">3</span>]&#125;;</span><br><span class="line"><span class="attribute">writeMultiRegister</span>(regs, <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<p>如果采用一个Modbus地址（u16数据）表示两个8位数据，这样就不会有内存浪费。那么常用函数就是memcpy(dst, src, size)，这样的应用场景有以下两种：</p>
+<ul>
+<li>字符串的传输</li>
+<li>紧凑型的结构体的传输（前提是发送方与接收方的字节序一致）</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字符串的传输</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">char</span>  str[<span class="number">4</span>] = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">short</span> regs[<span class="number">2</span>];</span><br><span class="line">assert(<span class="keyword">sizeof</span>(regs) &gt;= <span class="keyword">sizeof</span>(str));</span><br><span class="line">memcpy(regs, str, <span class="keyword">sizeof</span>(str));</span><br><span class="line">writeMultiRegister(regs, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 紧凑型结构体传输</span></span><br><span class="line"><span class="keyword">struct</span> Data &#123;</span><br><span class="line">    <span class="type">int</span>   a;</span><br><span class="line">    <span class="type">float</span> b;</span><br><span class="line">&#125;;</span><br><span class="line">Data data;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">short</span> regs[<span class="number">4</span>];</span><br><span class="line">assert(<span class="keyword">sizeof</span>(regs) &gt;= <span class="keyword">sizeof</span>(data));</span><br><span class="line">memcpy(regs, data, <span class="keyword">sizeof</span>(data));</span><br><span class="line">writeMultiRegister(regs, <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="16位数据"><a href="#16位数据" class="headerlink" title="16位数据"></a>16位数据</h3><p>Modbus官方<a target="_blank" rel="noopener" href="http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf">协议文档</a>中有一段话：</p>
+<blockquote>
+<p><strong>Data Encoding</strong>: Modbus uses a big-Endian representation for addresses and data items. This means<br>that when a numerical quantity larger than a single byte is transmitted, the most<br>significant byte is sent first.</p>
+</blockquote>
+<p>在Modbus数据帧中，存储格式是大端，即对一个u16（unsigned short）的寄存器，值为0x1234，参考我的<a href="/attachments/modbus-frame/modbus-big-endian.c">用C实现对u16大端编码解码</a>，对应char数组应该是：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">u8</span> data[<span class="number">2</span>]=&#123;<span class="number">0</span>x12, <span class="number">0</span>x34&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>在下文<a href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F">数据传输模式</a>内提到的封包步骤，需要遵循这个大端存储的规定。</p>
+<h3 id="32位数据"><a href="#32位数据" class="headerlink" title="32位数据"></a>32位数据</h3><p>在满足<strong>u16寄存器存储遵循以上大端字节序</strong>条件下，也就是确保用03H功能码读取多个寄存器，每个u16值都是正确的，我们来考虑u32数据类型：</p>
+<p>32位数据常见以下几种</p>
+<ul>
+<li>long</li>
+<li>int32&#x2F;uint32</li>
+<li>float</li>
+</ul>
+<p>这里以无符号32位整数为例，u32需要用到两个u16寄存器，值分别为0x1234和0x5678，我们将这两个寄存器定义为</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">u16</span> reg[<span class="number">2</span>]=&#123;<span class="number">0</span>x1234, <span class="number">0</span>x5678&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>两个寄存器内，从左到右四个字节定义为ABCD，即<code>A=12, B=34, C=56, D=78</code>。获取这四个字节的正确方法应该是用右移操作符，而不是扔一个8位指针指向这reg地址。与<a href="/attachments/modbus-frame/modbus-big-endian.c">用C实现对u16大端编码解码</a>对应一致的操作，下面代码用CPP验证一下。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="comment">// https://github.com/stephane/libmodbus/blob/master/src/modbus-data.c</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	std::cout &lt;&lt; std::hex &lt;&lt; std::showbase;</span><br><span class="line"></span><br><span class="line">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">short</span> reg[<span class="number">2</span>] = &#123;<span class="number">0x1234</span>, <span class="number">0x5678</span>&#125;;</span><br><span class="line">	<span class="type">const</span> <span class="type">char</span>           name[] = <span class="string">&quot;ABCD&quot;</span>;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; <span class="string">&quot;There are two U16 registers: reg[0]=&quot;</span> &lt;&lt; reg[<span class="number">0</span>] &lt;&lt; <span class="string">&quot;, reg[1]=&quot;</span> &lt;&lt; reg[<span class="number">1</span>] &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl &lt;&lt; <span class="string">&quot;On Little-Endian PC, use u8 pointer to get ABCD is wrong:&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span>* p8 = (<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span>*) (reg);</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; ++i)</span><br><span class="line">		std::cout &lt;&lt; name[i] &lt;&lt; <span class="string">&quot;=&quot;</span> &lt;&lt; (<span class="type">int</span>) *(p8++) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl &lt;&lt; <span class="string">&quot;Please use right-shift and bitwise-AND to get ABCD:&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; name[<span class="number">0</span>] &lt;&lt; <span class="string">&quot;=&quot;</span> &lt;&lt; (<span class="type">int</span>) (reg[<span class="number">0</span>] &gt;&gt; <span class="number">8</span>) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; name[<span class="number">1</span>] &lt;&lt; <span class="string">&quot;=&quot;</span> &lt;&lt; (<span class="type">int</span>) (reg[<span class="number">0</span>] &amp; <span class="number">0xff</span>) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; name[<span class="number">2</span>] &lt;&lt; <span class="string">&quot;=&quot;</span> &lt;&lt; (<span class="type">int</span>) (reg[<span class="number">1</span>] &gt;&gt; <span class="number">8</span>) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; name[<span class="number">3</span>] &lt;&lt; <span class="string">&quot;=&quot;</span> &lt;&lt; (<span class="type">int</span>) (reg[<span class="number">1</span>] &amp; <span class="number">0xff</span>) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对A、B、C、D的四种组合有ABCD、CDBA、BADC、DCBA。那么对于这两个寄存器的值，会有四种不同的编码解码结果：</p>
+<table>
+<thead>
+<tr>
+<th>u32的字节序</th>
+<th>字母组合</th>
+<th>十六进制</th>
+<th>十进制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Big-endian</td>
+<td>ABCD</td>
+<td>0x12345678</td>
+<td>305419896</td>
+</tr>
+<tr>
+<td>Little-endian</td>
+<td>DCBA</td>
+<td>0x78563412</td>
+<td>2018915346</td>
+</tr>
+<tr>
+<td>Big-endian swap bytes</td>
+<td>BADC</td>
+<td>0x34127856</td>
+<td>873625686</td>
+</tr>
+<tr>
+<td>Little-endian swap bytes</td>
+<td>CDAB</td>
+<td>0x56781234</td>
+<td>1450709556</td>
+</tr>
+</tbody></table>
+<p>在仿真器软件Modbus Slave 6.2.0设置Format菜单中，对于long数据（32位），就有如下图几种解析两个寄存器的方式（7.0以上版本界面可能没有ABCD字样，但是是同样的表示）：</p>
+<p><img src="/images/modbus-frame/modbus-u32-abcd.png"></p>
+<p>因此在实际应用中，若使用两个寄存器来表示一个32位的数据，必须让master和slave都要采用同一套表示方法，否则得出的结果是错误的。</p>
+<blockquote>
+<p>最常用的场合：x86架构采用Little-Endian数据表示法，即上文的DCBA组合。</p>
+</blockquote>
+<h3 id="64位数据"><a href="#64位数据" class="headerlink" title="64位数据"></a>64位数据</h3><p>64位数据常见以下几种</p>
+<ul>
+<li>int64&#x2F;uint64</li>
+<li>double</li>
+</ul>
+<p>64位数据需要四个寄存器：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">u16 reg[<span class="number">4</span>]=&#123;<span class="number">0</span>x0123, <span class="number">0</span>x4567, <span class="number">0</span>x89ab, <span class="number">0</span>xcdef&#125;;</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> A=<span class="number">01</span>, B=<span class="number">23</span>, C=<span class="number">45</span>, D=<span class="number">67</span></span><br><span class="line"><span class="regexp">//</span> E=<span class="number">89</span>, F=ab, G=cd, H=ef </span><br></pre></td></tr></table></figure>
+
+<p>与32位类似，这里就不重复讲，一表胜千言：</p>
+<table>
+<thead>
+<tr>
+<th>u64的字节序</th>
+<th>字母组合</th>
+<th>十六进制</th>
+<th>十进制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Big-endian</td>
+<td>ABCDEFGH</td>
+<td>0x0123456789abcdef</td>
+<td>8.1985529e+16</td>
+</tr>
+<tr>
+<td>Little-endian</td>
+<td>HGFEDCBA</td>
+<td>0xefcdab8967452301</td>
+<td>1.7279656e+19</td>
+</tr>
+<tr>
+<td>Big-endian swap bytes</td>
+<td>BADCFEHG</td>
+<td>0x23016745ab89efcd</td>
+<td>2.5224108e+18</td>
+</tr>
+<tr>
+<td>Little-endian swap bytes</td>
+<td>GHEFCDAB</td>
+<td>0xcdef89ab45670123</td>
+<td>1.4839231e+19</td>
+</tr>
+</tbody></table>
+<p>同理，若使用四个寄存器来表示一个64位的数据，必须让master和slave都要采用同一套表示方法。</p>
+<blockquote>
+<p>最常用的场合：x86架构采用Little-Endian数据表示法，即上文的HGFEDCBA组合。</p>
+</blockquote>
+<h2 id="PDU"><a href="#PDU" class="headerlink" title="PDU"></a>PDU</h2><p>Protocol Data Units简称PDU，是Modbus协议帧最小单元，由“功能码”+“数据”两个字段组成。</p>
+<h3 id="PDU与ADU关系"><a href="#PDU与ADU关系" class="headerlink" title="PDU与ADU关系"></a>PDU与ADU关系</h3><p>PDU封包完成后，对PDU进行更高一层的封包叫ADU，ADU直接发送给目标设备。</p>
+<p>他们两者关系是：</p>
+<ul>
+<li>PDU &#x3D; Function Code + Data</li>
+<li>ADU(ASCII或RTU) &#x3D; Slave ID + PDU + Error check</li>
+<li>ADU(TCP) &#x3D; MBAP + PDU</li>
+</ul>
+<h3 id="请求帧PDU"><a href="#请求帧PDU" class="headerlink" title="请求帧PDU"></a>请求帧PDU</h3><p>请求帧PDU的“功能码”字段，用于指示从设备要执行哪种操作。不同的功能码，“数据”字段有不同定义</p>
+<p>以03H功能码为例，请求帧PDU的“数据”字段需要包含以下信息：</p>
+<ul>
+<li>起始寄存器地址</li>
+<li>要读多少个寄存器</li>
+</ul>
+<h3 id="回应帧PDU"><a href="#回应帧PDU" class="headerlink" title="回应帧PDU"></a>回应帧PDU</h3><p>以03H功能码为例</p>
+<p>如果从站能正确处理请求，response的“功能码”字段与requset功能码一致，回应帧PDU“数据”字段需要包含以下信息：</p>
+<ul>
+<li>有几个寄存器</li>
+<li>这几个寄存器的内容</li>
+</ul>
+<p>正常的回复<code>0x03, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03</code>，返回了4个寄存器的内容。</p>
+<p>如果slave不能处理请求，或者发生错误，则slave会将错误代码替代原来的功能码回复给master端。错误代码的存在意义是让master端确认消息有效。</p>
+<p>回应帧PDU的“功能码”字段错误码为request功能号的最高bit置1得到。因此大于0x80的功能号都是错误功能号。“数据”字段需要包含以下信息</p>
+<ul>
+<li>错误代码，参见<a target="_blank" rel="noopener" href="http://www.simplymodbus.ca/exceptions.htm">Modbus Execptions</a></li>
+</ul>
+<p>常见的错误代码有：不支持的功能号（01H），错误的地址（02H）</p>
+<p>出现错误的回复如<code>0x83 0x01</code></p>
+<h2 id="数据传输模式"><a href="#数据传输模式" class="headerlink" title="数据传输模式"></a>数据传输模式</h2><p>数据传输这过程，又叫ADU封包，此时不考虑PDU。</p>
+<p>常见的三种传输模式（transmission mode）为ASCII、RTU、TCP</p>
+<h3 id="ASCII"><a href="#ASCII" class="headerlink" title="ASCII"></a>ASCII</h3><p>数据每个字节(8bit)会被编码成两个字节(16bit)的ASCII字符。使用LRC作为校验和。</p>
+<table>
+<thead>
+<tr>
+<th>有效码元</th>
+<th>hex值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#39;0&#39;-&#39;9&#39;</td>
+<td>30H-31H</td>
+</tr>
+<tr>
+<td>&#39;A&#39;-&#39;F&#39;</td>
+<td>41H-46H</td>
+</tr>
+</tbody></table>
+<p>该传输模式的主要优点是易于人类阅读究竟传输了什么字节，便于调试。</p>
+<p>采用ASCII编码的ADU帧结构如下表</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>起始</th>
+<th>slave ID</th>
+<th>功能码</th>
+<th>数据N字节</th>
+<th>LRC</th>
+<th>末尾</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帧内容</td>
+<td>&#39;:&#39;</td>
+<td>2个ASCII</td>
+<td>2个ASCII</td>
+<td>2N个ASCII</td>
+<td>2个ASCII</td>
+<td>&#39;\r\n&#39;</td>
+</tr>
+</tbody></table>
+<p>每一帧以冒号（:）字符（3AH）开头，并以回车换行符（CRLF）作为结束（0DH和0AH）。</p>
+<p>封包步骤</p>
+<ol>
+<li>封装好PDU，即功能码加数据</li>
+<li>将slaveID插到PDU首部，得到的二进制数据（称为A流）</li>
+<li>A流作为LRC的输入，得到LRC。<a href="/attachments/modbus-frame/modbus-crc-lrc.cpp">点击下载LRC实现</a></li>
+<li>将LRC追加到A流末尾，得到B流</li>
+<li>将B流逐字节编码为ASCII字符，得到C流</li>
+<li>将冒号(:)和CRLF(0x0D0A)分别加到C流头部尾部，完成封包</li>
+</ol>
+<h3 id="RTU"><a href="#RTU" class="headerlink" title="RTU"></a>RTU</h3><p>数据直接为二进制内容，报文必须以连续流的形式发送。使用CRC作为校验和。</p>
+<p>采用RTU编码的ADU帧结构如下表</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>起始</th>
+<th>slave ID</th>
+<th>功能码</th>
+<th>数据N字节</th>
+<th>CRC</th>
+<th>末尾</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帧内容</td>
+<td>3.5字符时间</td>
+<td>1字节</td>
+<td>1字节</td>
+<td>N字节</td>
+<td>2字节</td>
+<td>3.5字符时间</td>
+</tr>
+</tbody></table>
+<p>上表提到的字符时间对于串口传输有要求</p>
+<ul>
+<li>整个消息帧必须作为连续流传输。 如果在完成帧之前发生超过1.5个字符时间的静默间隔，则接收设备将丢弃未完成的消息，并假定下一个字节将是新消息的地址字段。</li>
+<li>如果新消息在前一条消息之后的3.5个字符时间之前开始，则接收设备将认为它是前一条消息的延续。会返回modbus错误。</li>
+</ul>
+<p>封包步骤</p>
+<ol>
+<li>封装好PDU，即功能码加数据</li>
+<li>将slaveID插到PDU首部，得到的二进制数据（称为A流）</li>
+<li>A流作为CRC的输入，得到一个16bit的CRC。<a href="/attachments/modbus-frame/modbus-crc-lrc.cpp">点击下载CRC实现</a></li>
+<li>将CRC追加到A流末尾（注意Modbus协议规定CRC封包规则是小端序，即u16的低字节位放在内存地址前面），完成封包</li>
+</ol>
+<h3 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h3><p>基于以太网TCP&#x2F;IP的TCP传输模式，适用于TCP或者UDP连接，默认端口为502。</p>
+<p>要学习ModbusTCP，需要先了解MBAP包头，MBAP是ModbusTCP帧前7个字节。</p>
+<p>MBAP主要有以下几个字段</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>字节数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Transaction ID</td>
+<td>2</td>
+<td>事务ID，默认值0，通常在于并发通讯中，区分不同的事务。常用于master在某时刻并发发送多个请求，而不必每次请求都要按顺序阻塞等待slave回复的场合</td>
+</tr>
+<tr>
+<td>Protocol ID</td>
+<td>2</td>
+<td>协议ID，默认值0，用于区分自定义的协议，这个字段很像HTTP1.0、1.1、2.0的区别，用户可以根据值不同，自行实现特定的协议，如：<br>值0表示标准的Modbus TCP协议，类似HTTP1.0<br>值1表示用户实现加长版的数据帧，支持每帧10000字节传输，类似HTTP1.1<br>值2表示用户实现的一帧实现5个非连续的寄存器读取，类似HTTP2.0</td>
+</tr>
+<tr>
+<td>Length</td>
+<td>2</td>
+<td>表示从长度字段后开始计算，本帧有多少字节</td>
+</tr>
+<tr>
+<td>Unit ID</td>
+<td>1</td>
+<td>默认值0，类似于RTU中的Slave ID，用于非TCP&#x2F;IP协议栈的场合，如桥接网卡下的区分对端。在标准TCP&#x2F;IP协议下，此字段的值可以忽略，因为TCP&#x2F;IP模型默认已经是一对一通讯，不需要区分对端。</td>
+</tr>
+</tbody></table>
+<p>Modbus TCP数据帧实际上是PDU加上7字节的MBAP而成。下图的左下角展示了Modbus TCP与PDU的关系，图的右上方展示了如何从串口RTU&#x2F;ASCII帧去掉头部尾部得到PDU。</p>
+<p><img src="/images/modbus-frame/modbus-tcp-adu.png"></p>
+<p>帧格式</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>Tran. ID</th>
+<th>Prot. ID</th>
+<th>Length</th>
+<th>Unit ID</th>
+<th>功能码</th>
+<th>数据N字节</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帧内容</td>
+<td>2字节</td>
+<td>2字节</td>
+<td>2字节</td>
+<td>1字节</td>
+<td>1字节</td>
+<td>N字节</td>
+</tr>
+</tbody></table>
+<p>封包步骤</p>
+<ol>
+<li>封装好PDU，即功能码加数据</li>
+<li>封装好MBAP，其字段Transaction ID可以根据实际需要进行计数器自增</li>
+<li>MBAP放在PDU前，得到二进制流，完成封包</li>
+</ol>
+<p>备注</p>
+<ul>
+<li>Modbus TCP中PDU的编码方式，没有特别标明为ASCII还是RTU。为了提高传输效率，默认情况下为RTU，即直接二进制发送，而不经过复杂ASCII编码。</li>
+<li>Modbus TCP协议有几种变种，如Modbus RTU over TCP&#x2F;IP，其定义为Modbus TCP加上CRC末尾。不同变种可以参考<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Modbus#Protocol_versions">维基百科</a></li>
+</ul>
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>以功能号04H为例，假设欲读取的slave ID为16，起始寄存器地址0，读取个数为2。</p>
+<p>使用三种传输格式，均为大端存储，封包完成的二进制流对比：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>RTU</th>
+<th>ASCII</th>
+<th>TCP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>头部</td>
+<td></td>
+<td>&#39;:&#39;</td>
+<td>MBAP</td>
+</tr>
+<tr>
+<td>Slave ID</td>
+<td>0x0F</td>
+<td>&quot;0F&quot;</td>
+<td>0x0F</td>
+</tr>
+<tr>
+<td>功能号</td>
+<td>0x04</td>
+<td>&quot;04&quot;</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>起始地址H</td>
+<td>0x00</td>
+<td>&quot;00&quot;</td>
+<td>0x00</td>
+</tr>
+<tr>
+<td>起始地址L</td>
+<td>0x00</td>
+<td>&quot;00&quot;</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>寄存器个数H</td>
+<td>0x00</td>
+<td>&quot;00&quot;</td>
+<td>0x00</td>
+</tr>
+<tr>
+<td>寄存器个数L</td>
+<td>0x02</td>
+<td>&quot;02&quot;</td>
+<td>0x02</td>
+</tr>
+<tr>
+<td>校验和H</td>
+<td>0x71</td>
+<td>&quot;F9&quot;</td>
+<td></td>
+</tr>
+<tr>
+<td>校验和L</td>
+<td>0xCB</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>尾部</td>
+<td></td>
+<td>CRLF</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>上面表格来源：<a target="_blank" rel="noopener" href="https://www.modbustools.com/modbus.html">Function 04 (04hex) Read Input Registers</a></p>
+<h2 id="常见功能码"><a href="#常见功能码" class="headerlink" title="常见功能码"></a>常见功能码</h2><p>功能码基本上是根据PLC术语定义的。</p>
+<table>
+<thead>
+<tr>
+<th>PLC英文</th>
+<th>术语</th>
+<th>理解</th>
+<th>数据类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Coil</td>
+<td>线圈</td>
+<td>开关输出信号，可读写</td>
+<td>布尔型</td>
+</tr>
+<tr>
+<td>Discrete Input</td>
+<td>离散量</td>
+<td>输入信号，不能被写入</td>
+<td>布尔型</td>
+</tr>
+<tr>
+<td>Input Register</td>
+<td>输入寄存器</td>
+<td>只能读，不能被写入</td>
+<td>WORD,2字节</td>
+</tr>
+<tr>
+<td>Holding Register</td>
+<td>保持寄存器</td>
+<td>可读写</td>
+<td>WORD,2字节</td>
+</tr>
+</tbody></table>
+<p>我习惯按读取数据类型分类功能号。参考<a href="%5Bhttp://www.simplymodbus.ca/FC01.htm%5D(http://www.simplymodbus.ca/FC01.htm)">常见的功能号</a></p>
+<p>下表是读写布尔型（点击中文，电梯直达）：</p>
+<table>
+<thead>
+<tr>
+<th>功能十进制</th>
+<th>十六进制</th>
+<th>英文</th>
+<th>中文</th>
+<th>最小数据单位</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>01</td>
+<td>01</td>
+<td>Read Coils</td>
+<td><a href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E7%BA%BF%E5%9C%88">读多个线圈</a></td>
+<td>bit（布尔值）</td>
+</tr>
+<tr>
+<td>05</td>
+<td>05</td>
+<td>Write Single Coil</td>
+<td><a href="#%E5%86%99%E5%8D%95%E4%B8%AA%E7%BA%BF%E5%9C%88">写单个线圈</a></td>
+<td>bit（布尔值）</td>
+</tr>
+<tr>
+<td>15</td>
+<td>0F</td>
+<td>Write Multiple Coils</td>
+<td><a href="#%E5%86%99%E5%A4%9A%E4%B8%AA%E7%BA%BF%E5%9C%88">写多个线圈</a></td>
+<td>bit（布尔值）</td>
+</tr>
+<tr>
+<td>02</td>
+<td>02</td>
+<td>Read Discrete Inputs</td>
+<td><a href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E7%A6%BB%E6%95%A3%E8%BE%93%E5%85%A5">读多个离散输入</a></td>
+<td>bit（布尔值）</td>
+</tr>
+</tbody></table>
+<p>下表是读写16bit数据（点击中文，电梯直达）：</p>
+<table>
+<thead>
+<tr>
+<th>功能十进制</th>
+<th>十六进制</th>
+<th>英文</th>
+<th>中文</th>
+<th>最小数据单位</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>04</td>
+<td>04</td>
+<td>Read Input Registers</td>
+<td><a href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E8%BE%93%E5%85%A5%E5%AF%84%E5%AD%98%E5%99%A8">读多个输入寄存器</a></td>
+<td>16bit</td>
+</tr>
+<tr>
+<td>03</td>
+<td>03</td>
+<td>Read Holding Registers</td>
+<td><a href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8">读多个保持寄存器</a></td>
+<td>16bit</td>
+</tr>
+<tr>
+<td>06</td>
+<td>06</td>
+<td>Write Single Register</td>
+<td><a href="#%E5%86%99%E5%8D%95%E4%B8%AA%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8">写单个保持寄存器</a></td>
+<td>16bit</td>
+</tr>
+<tr>
+<td>16</td>
+<td>10</td>
+<td>Write Multiple Registers</td>
+<td><a href="#%E5%86%99%E5%A4%9A%E4%B8%AA%E4%BF%9D%E6%8C%81%E5%AF%84%E5%AD%98%E5%99%A8">写多个保持寄存器</a></td>
+<td>16bit</td>
+</tr>
+</tbody></table>
+<p>这些各种骚操作都是在PDU层，即只考虑“功能码”+“数据”，与ASCII和RTU等传输模式无关。</p>
+<p>当PDU构造好后，才进行对应的ASCII、RTU、TCP等通讯模式封包。</p>
+<h3 id="读写布尔型"><a href="#读写布尔型" class="headerlink" title="读写布尔型"></a>读写布尔型</h3><h4 id="读多个线圈"><a href="#读多个线圈" class="headerlink" title="读多个线圈"></a>读多个线圈</h4><p>功能号01H</p>
+<p>读取从20到56号的线圈状态</p>
+<p>master请求帧PDU</p>
+<pre><code>01 0014 0025
+</code></pre>
+<ul>
+<li>01: 功能号01H</li>
+<li>0014: 14H是20号，作起始地址</li>
+<li>0025: 25H是十进制37，20到56共有37个线圈。注意该字段有效的值范围为<code>0~2000</code></li>
+</ul>
+<p>slave回应帧PDU</p>
+<pre><code>01 05 CD6BB20E1B
+</code></pre>
+<ul>
+<li>01: 功能号01H</li>
+<li>05: 接下来有5个字节(37&#x2F;8&#x3D;5bytes)</li>
+<li>CD: 线圈 27 - 20 (1100 1101) 高位为线圈27，低位为线圈20</li>
+<li>6B: 线圈 35 - 28 (0110 1011)</li>
+<li>B2: 线圈 43 - 36 (1011 0010)</li>
+<li>0E: 线圈 51 - 44 (0000 1110) </li>
+<li>1B: 线圈 56 - 52 (0001 1011) 最后一字节仅提供低5位信息，其余位用0填充</li>
+</ul>
+<p>返回的线圈每字节的高位比特，表示线圈数较大的布尔值；低位比特，表示线圈较小的布尔值。如上回复中，线圈43为高电平，线圈36为低电平。</p>
+<h4 id="写单个线圈"><a href="#写单个线圈" class="headerlink" title="写单个线圈"></a>写单个线圈</h4><p>功能号05H</p>
+<p>写线圈173号，设置为高电平（ON）</p>
+<p>master请求帧PDU</p>
+<pre><code>05 00AD FF00
+</code></pre>
+<ul>
+<li>05: 功能号05H</li>
+<li>00AD: ADH对应十进制173，作起始地址</li>
+<li>FF00: 高电平，( FF00 &#x3D; ON,  0000 &#x3D; OFF )</li>
+</ul>
+<p>若slave回应正常，则返回与master请求的相同PDU给master</p>
+<pre><code>05 00AD FF00
+</code></pre>
+<h4 id="写多个线圈"><a href="#写多个线圈" class="headerlink" title="写多个线圈"></a>写多个线圈</h4><p>功能号0FH</p>
+<p>将线圈20到29写入新的值</p>
+<p>master请求帧PDU</p>
+<pre><code>0F 0014 000A 02 CD01
+</code></pre>
+<ul>
+<li>0F: 功能号0FH</li>
+<li>0014: 14H对应十进制20，作起始地址</li>
+<li>000A: 0AH对应十进制10，写入10个线圈（从20到29）。注意该字段有效的值范围为<code>0~1968</code></li>
+<li>02: 接下来有2个字节(10&#x2F;8&#x3D;2bytes)</li>
+<li>CD: 线圈 27 - 20 (1100 1101) 高位为线圈27，低位为线圈20</li>
+<li>01: 线圈 29 - 28 (0000 0001) 最后一字节仅提供低2位信息，其余位用0填充</li>
+</ul>
+<p>返回的线圈每字节的高位比特，表示线圈数较大的布尔值；低位比特，表示线圈较小的布尔值。如上请求中，线圈20为高电平，线圈21为低电平。</p>
+<p>slave回应帧PDU</p>
+<pre><code>0F 0014 000A
+</code></pre>
+<ul>
+<li>0F: 功能号0FH</li>
+<li>0014: 14H对应十进制20，作起始地址</li>
+<li>000A: 0AH对应十进制10，写入10个线圈（从20到29）</li>
+</ul>
+<h4 id="读多个离散输入"><a href="#读多个离散输入" class="headerlink" title="读多个离散输入"></a>读多个离散输入</h4><p>功能号02H</p>
+<p>PDU请求与答复，与<a href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E7%BA%BF%E5%9C%88">读多个线圈</a>操作一致。</p>
+<h3 id="读写16位"><a href="#读写16位" class="headerlink" title="读写16位"></a>读写16位</h3><h4 id="读多个输入寄存器"><a href="#读多个输入寄存器" class="headerlink" title="读多个输入寄存器"></a>读多个输入寄存器</h4><p>功能号04H</p>
+<p>读取2个输入寄存器的值，从8开始。</p>
+<p>master请求帧PDU</p>
+<pre><code>04 0008 0002
+</code></pre>
+<ul>
+<li>04: 功能号04H</li>
+<li>0008: 8H对应十进制8，作起始地址</li>
+<li>0002: 读取2个寄存器。注意该字段有效的值范围为<code>0~125</code></li>
+</ul>
+<p>slave回应帧PDU</p>
+<pre><code>04 04 000A0003
+</code></pre>
+<ul>
+<li>04: 功能号04H</li>
+<li>04: 接下来有4个字节，对应2个输入寄存器（16bit x 2 &#x3D; 32bit）</li>
+<li>000A: 输入寄存器8的值</li>
+<li>0003: 输入寄存器9的值</li>
+</ul>
+<h4 id="读多个保持寄存器"><a href="#读多个保持寄存器" class="headerlink" title="读多个保持寄存器"></a>读多个保持寄存器</h4><p>功能号为03H</p>
+<p>PDU请求与答复，与<a href="#%E8%AF%BB%E5%A4%9A%E4%B8%AA%E8%BE%93%E5%85%A5%E5%AF%84%E5%AD%98%E5%99%A8">读多个输入寄存器</a>操作一致。</p>
+<h4 id="写单个保持寄存器"><a href="#写单个保持寄存器" class="headerlink" title="写单个保持寄存器"></a>写单个保持寄存器</h4><p>功能号06H</p>
+<p>向保持寄存器1写入新的值</p>
+<p>master请求帧PDU</p>
+<pre><code>06 0001 0003
+</code></pre>
+<p>06: 功能号06H<br>0001: 1H对应十进制1，作起始地址<br>0003: 新的值</p>
+<p>若slave回应正常，则返回与master请求的相同PDU给master</p>
+<pre><code>06 0001 0003
+</code></pre>
+<h4 id="写多个保持寄存器"><a href="#写多个保持寄存器" class="headerlink" title="写多个保持寄存器"></a>写多个保持寄存器</h4><p>功能号10H</p>
+<p>向PLC保持寄存器1和2写入新的值。</p>
+<p>master请求帧PDU</p>
+<pre><code>10 0001 0002 04 000A 0102
+</code></pre>
+<p>10: 功能号10H<br>0001: 1H对应十进制1，作起始地址<br>0002: 寄存器个数&#x3D;2。注意该字段有效的值范围为<code>0~123</code><br>04: 接下来有4个字节 (2寄存器 x 2字节 &#x3D; 4)<br>000A: 寄存器 1 的新值<br>0102: 寄存器 2 的新值</p>
+<p>slave回应帧PDU</p>
+<pre><code>10 0001 0002
+</code></pre>
+<p>10: 功能号10H<br>0001: 1H对应十进制1，作起始地址<br>0002: 寄存器个数&#x3D;2</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><ul>
+<li>在PLC中，大部份地址1表示第一个线圈或者寄存器，而在PDU封包过程中，地址0表示第一个。因此实际可能有一定的偏移值，都是可以自定义的。</li>
+<li>如果整个主从设备都是自己设计，就无所谓什么读保持寄存器还是写保持寄存器，可能只用到两个功能号（03H和10H），如果是主从设备其中一个是别人做的，大家就必须要遵守Modbus通用协议了。</li>
+</ul>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="http://www.modbus.org/specs.php">MODBUS PROTOCOL</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.lammertbies.nl/comm/info/modbus">Modbus interface tutorial</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.prosoft-technology.com/kb/assets/intro_modbustcp.pdf">PDF - INTRODUCTION TO MODBUS TCP&#x2F;IP</a></p>
+<p>仿真软件:<a target="_blank" rel="noopener" href="https://www.modbustools.com/download.html">Modbus Tool</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag"># 翻译</a>
+              <a href="/tags/%E5%8D%8F%E8%AE%AE/" rel="tag"># 协议</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/18/proxy-behind-nginx/" rel="prev" title="nginx反代MTProxy和v2ray-plugin">
+                  <i class="fa fa-chevron-left"></i> nginx反代MTProxy和v2ray-plugin
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ssh-key用法">
+<meta property="og:url" content="http://lixingcong.github.io/2016/01/21/ssh-key-usage/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-21T13:13:37.000Z">
+<meta property="article:modified_time" content="2016-01-21T13:13:37.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shell">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/01/21/ssh-key-usage/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/01/21/ssh-key-usage/","path":"2016/01/21/ssh-key-usage/","title":"ssh-key用法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ssh-key用法 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#github"><span class="nav-number">1.</span> <span class="nav-text">github</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E8%AE%A4%E9%87%8D%E5%90%8Dkey"><span class="nav-number">1.1.</span> <span class="nav-text">确认重名key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90key"><span class="nav-number">1.2.</span> <span class="nav-text">生成key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%B7%BB%E5%8A%A0%E7%A7%81%E9%92%A5"><span class="nav-number">1.3.</span> <span class="nav-text">本地添加私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9C%E7%AB%AF%E6%B7%BB%E5%8A%A0%E5%85%AC%E9%92%A5"><span class="nav-number">1.4.</span> <span class="nav-text">远端添加公钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E6%9C%BA%E9%AA%8C%E8%AF%81%E7%99%BB%E5%BD%95"><span class="nav-number">1.5.</span> <span class="nav-text">联机验证登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E7%94%A8ssh%E6%8E%A8%E9%80%81"><span class="nav-number">1.6.</span> <span class="nav-text">改用ssh推送</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E7%99%BB%E9%99%86VPS"><span class="nav-number">2.</span> <span class="nav-text">自动登陆VPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TC%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2hexo"><span class="nav-number">3.</span> <span class="nav-text">TC自动部署hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GPG%E7%AD%BE%E5%90%8D"><span class="nav-number">4.</span> <span class="nav-text">GPG签名</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/01/21/ssh-key-usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ssh-key用法 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ssh-key用法<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/ssh-key-usage.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年1月21日 21:13:37" itemprop="dateCreated datePublished" datetime="2016-01-21T21:13:37+08:00">2016年1月21日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！</p>
+<span id="more"></span>
+<h2 id="github"><a href="#github" class="headerlink" title="github"></a>github</h2><p>生成ssh-key可以免密码进入仓库，参考<a target="_blank" rel="noopener" href="https://help.github.com/articles/generating-ssh-keys/">github官方教程</a></p>
+<h3 id="确认重名key"><a href="#确认重名key" class="headerlink" title="确认重名key"></a>确认重名key</h3><p>一、首先看看有没有之前生成的旧key</p>
+<pre><code>ls -al ~/.ssh
+</code></pre>
+<p>若有旧ssh-key，可以选择删除，也可以后来生成时候指定产生新文件名</p>
+<h3 id="生成key"><a href="#生成key" class="headerlink" title="生成key"></a>生成key</h3><pre><code># Generate public/private rsa key pair.
+ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;
+# passphrase可以不用设置，设置了的话，每次用ssh都要输入
+</code></pre>
+<p>假设生成的自定义ssh-key为私钥 ~&#x2F;.ssh&#x2F;id_rsa_github 和 公钥 id_rsa_github.pub。</p>
+<blockquote>
+<p>提示：ssh-keygen支持生成多种类型的key，如以下例子，详见ssh-keygen的帮助命令</p>
+</blockquote>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -<span class="built_in">t</span> rsa -b <span class="number">4096</span></span><br><span class="line">ssh-keygen -<span class="built_in">t</span> dsa</span><br><span class="line">ssh-keygen -<span class="built_in">t</span> ecdsa -b <span class="number">521</span></span><br><span class="line">ssh-keygen -<span class="built_in">t</span> <span class="symbol">ed25519</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="本地添加私钥"><a href="#本地添加私钥" class="headerlink" title="本地添加私钥"></a>本地添加私钥</h3><p>首先重新生成hostname</p>
+<pre><code>ssh-keygen -R github.com
+</code></pre>
+<p>使得ssh-agent后台运行：</p>
+<pre><code>eval &quot;$(ssh-agent -s)&quot;
+</code></pre>
+<p>出现Agent pid XXXX这样的提示之后：</p>
+<pre><code>ssh-add ~/.ssh/id_rsa_github
+</code></pre>
+<h3 id="远端添加公钥"><a href="#远端添加公钥" class="headerlink" title="远端添加公钥"></a>远端添加公钥</h3><p>打开公钥：【注意是公钥！！】</p>
+<pre><code>cat id_rsa_github.pub
+</code></pre>
+<p>将内容拷贝至<a target="_blank" rel="noopener" href="https://github.com/settings/ssh">https://github.com/settings/ssh</a>中，这个key成为完全控制每一个仓库commit权限，要谨慎保存，泄露的话你的github说不定仓库被人清空了。</p>
+<h3 id="联机验证登录"><a href="#联机验证登录" class="headerlink" title="联机验证登录"></a>联机验证登录</h3><pre><code>ssh -T git@github.com
+</code></pre>
+<p>添加到本机缓存中，然后github提示You&#39;ve successfully authenticated。<br>然后你的deploy key页面的钥匙图标变成绿色，代表可以使用了</p>
+<h3 id="改用ssh推送"><a href="#改用ssh推送" class="headerlink" title="改用ssh推送"></a>改用ssh推送</h3><p>修改你的本地仓库中的config</p>
+<pre><code>vi .git/config
+# 注释掉https
+# url = https://github.com/USERNAME/REPO_NAME.git
+# 更换为ssh,注意有个冒号
+url = git@github.com:USERNAME/REPO_NAME.git
+</code></pre>
+<p>+安全提示：+</p>
+<p><em>强烈建议每一个仓库对应一个key，而不是用一个权限无穷大的key，风险太大。<br>每个仓库的key可以在下面地址设置：</em></p>
+<pre><code>https://github.com/USERNAME/REPO_NAME/settings/keys
+</code></pre>
+<p>试一下git push，是不是可以自动推送了。</p>
+<h2 id="自动登陆VPS"><a href="#自动登陆VPS" class="headerlink" title="自动登陆VPS"></a>自动登陆VPS</h2><p>首先确保vps上面的iptables规则允许22端口入站出站</p>
+<p>PC机子执行</p>
+<pre><code>ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;
+</code></pre>
+<p>如私钥保存为~&#x2F;.ssh&#x2F;id_rsa_myhost，则修改config</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host myhost
+ User root
+ Hostname 111.222.111.222
+ Port 22
+ ServerAliveInterval 30
+ IdentityFile ~/.ssh/id_rsa_myhost
+ 
+</code></pre>
+<p>上传公钥到你的vps</p>
+<pre><code>scp ~/.ssh/id_rsa_myhost.pub root@111.222.111.222:/root/.ssh/
+</code></pre>
+<p>登陆到vps添加公钥记录</p>
+<pre><code>cd ~/.ssh
+cat id_rsa_myhost.pub &gt;&gt; authorized_keys
+service ssh restart
+</code></pre>
+<p>修改权限，防止被他人看见密钥内容</p>
+<pre><code># PC机子和VPS都要设置
+chmod 700 ~/.ssh/* 
+</code></pre>
+<p>这样在PC就能使用一句话登陆ssh或者scp传文件了</p>
+<pre><code>ssh myhost
+scp /tmp/test.txt myhost:/tmp/
+</code></pre>
+<p>安全设置：对于已经开启了公私鈅登陆的主机，可以禁用密码登陆，效果是：使用密码无权进入</p>
+<pre><code>vi /etc/ssh/sshd_config
+
+# 仅允许root用户使用公私鈅登陆（不允许密码登陆）
+PermitRootLogin prohibit-password
+
+# 禁止一切用户使用密码登陆（这个选项根据个人实际设置，默认值是yes）
+PasswordAuthentication no
+</code></pre>
+<h2 id="TC自动部署hexo"><a href="#TC自动部署hexo" class="headerlink" title="TC自动部署hexo"></a>TC自动部署hexo</h2><p>可以自动更新博客，这个TC原本的目的不是这样的。<br>TC原本是代码集成平台，居然用成了博客自动更新机，真是大材小用。</p>
+<p>首先关联github账户到travis-CI，然后勾选博客的源代码项目，不是github.io项目。<br>接下来完成ssh的绑定和.travis.yml修改</p>
+<p>在Cloud9上面的虚拟主机操作。因为集成了npm环境。</p>
+<p>安装travis：</p>
+<pre><code>gem install travis
+travis login --auto
+</code></pre>
+<p>上传密钥到cloud9，然后放到项目里面，例如我的项目是github.com&#x2F;aaa&#x2F;bbb，私钥名称id_rsa_github</p>
+<pre><code>mv id_rsa_github aaa/bbb/
+cd aaa/bbb
+touch .travis.yml
+travis encrypt-file id_rsa_github --add
+</code></pre>
+<p>最后把私钥删除了，留下了这个加密后的私钥。</p>
+<p>新建一个ssh配置文件：</p>
+<pre><code>vi ssh_config
+# # #
+Host github.com
+  User git
+  StrictHostKeyChecking no
+  IdentityFile ~/.ssh/id_rsa
+  IdentitiesOnly yes
+</code></pre>
+<p>修改travis脚本</p>
+<pre><code>vi .travis.yml
+# 输入内容
+language: node_js
+node_js:
+- 4.2 
+branches:
+only:
+- master
+- test
+before_install:
+- openssl aes-256-cbc -K $encrypted_f88d79a9e3f2_key -iv $encrypted_f88d79a9e3f2_iv -in .travis/id_rsa.enc -out ~/.ssh/id_rsa -d
+- chmod 600 ~/.ssh/id_rsa
+- eval $(ssh-agent)
+- ssh-add ~/.ssh/id_rsa
+- cp .travis/ssh_config ~/.ssh/config
+- mkdir temp_lxc
+- cd temp_lxc
+install:
+- npm install -g hexo-cli
+- npm install hexo --save
+- hexo init
+- npm install hexo-deployer-git --save
+before_script:
+- cp -R ../source ./
+- cp -R ../themes ./
+- cp ../_config.yml ./
+- git config --global user.name &#39;lixingcong&#39;
+- git config --global user.email &#39;lixingcong@live.com&#39;
+script:
+- hexo clean
+- hexo d -g
+</code></pre>
+<p>实际上，这个文件非常灵活，我是折腾很久才摸索出来的。每个人肯定不一样。我的是以自己的仓库改的，我的仓库地址：<a target="_blank" rel="noopener" href="https://github.com/lixingcong/my_hexo_blog">my_hexo_blog</a></p>
+<p>How to work? 向my_hexo_blog推送的同时，自动更新lixingcong.github.io。</p>
+<p>如果遇到问题，可以谷歌关键词“Travis CI Hexo”得到很多结果，可供参考</p>
+<h2 id="GPG签名"><a href="#GPG签名" class="headerlink" title="GPG签名"></a>GPG签名</h2><p>直接生成，填入正确信息，还有密码（可选），按<a target="_blank" rel="noopener" href="https://help.github.com/articles/generating-a-new-gpg-key/">Github官方教程</a>操作即可。</p>
+<pre><code>gpg --gen-key
+</code></pre>
+<p>生成过程需要大量随机字节。可以动鼠标还有打字。时不时在GPG生成界面按一下Enter提醒它。</p>
+<p>查看GPG</p>
+<pre><code>gpg --list-keys
+# 记下 第一行的公钥2048/A8F99211后面的这个A8F99211
+# 后面用到它：&lt;public GPG key&gt;
+</code></pre>
+<p>将公钥导入到github中，将本地提交打上tag</p>
+<pre><code>git config --global user.signingkey &lt;public GPG key&gt;
+</code></pre>
+<p>其中 &lt; public GPG key &gt;为上面你记下的公钥</p>
+<p>备份GPG：(包括公钥，私钥，信赖库)</p>
+<pre><code>gpg -a --export user@mail.com &gt; ~/public-gpg.key
+gpg -a --export-secret-keys user@mail.com &gt; ~/secret-gpg.key
+gpg --export-ownertrust &gt; ~/ownertrust.txt
+</code></pre>
+<p>还原GPG(导入私钥时自动导入公钥)</p>
+<pre><code>gpg --import ~/secret-gpg.key
+gpg --import-ownertrust ~/ownertrust.txt
+</code></pre>
+<p>git提交commit时候进行签名</p>
+<pre><code># 配置git
+git config --global user.signingkey &lt;public GPG key&gt;
+
+# 对tag进行GPG签名。参数-s
+git tag -a -s v2.0 -m &quot;SIGN-MY-TAG&quot;
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shell/" rel="tag"># shell</a>
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/01/17/shell-part-two/" rel="prev" title="Shell学习：基本语法">
+                  <i class="fa fa-chevron-left"></i> Shell学习：基本语法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/22/shell-commands-files-processes/" rel="next" title="shell命令：文件与进程">
+                  shell命令：文件与进程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

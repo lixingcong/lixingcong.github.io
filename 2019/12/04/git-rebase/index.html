@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="对rebase(变基)文档翻译、并转载部份博客，同时加入自己的理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git的rebase">
+<meta property="og:url" content="http://lixingcong.github.io/2019/12/04/git-rebase/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="对rebase(变基)文档翻译、并转载部份博客，同时加入自己的理解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/merge.webp">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/rebase.webp">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/basic-rebase-1.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/basic-rebase-3.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/interactive-1.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/interactive-2.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/interactive-3.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/interactive-4.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/git-rebase/interactive-5.png">
+<meta property="article:published_time" content="2019-12-04T02:19:36.000Z">
+<meta property="article:modified_time" content="2019-12-04T02:19:36.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/git-rebase/merge.webp">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2019/12/04/git-rebase/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2019/12/04/git-rebase/","path":"2019/12/04/git-rebase/","title":"git的rebase"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>git的rebase | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E5%9F%BA%E4%B8%8E%E5%90%88%E5%B9%B6%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">变基与合并区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E5%9F%BA%E5%8E%9F%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text">变基原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84rebase"><span class="nav-number">3.</span> <span class="nav-text">最简单的rebase</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E5%BC%8Frebase"><span class="nav-number">4.</span> <span class="nav-text">交互式rebase</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E6%8F%90%E4%BA%A4%E9%A1%BA%E5%BA%8F%E3%80%81%E4%BF%AE%E6%94%B9%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF"><span class="nav-number">4.1.</span> <span class="nav-text">调整提交顺序、修改提交信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E6%8F%90%E4%BA%A4%E5%90%88%E5%B9%B6%E6%88%90%E4%B8%80%E4%B8%AA"><span class="nav-number">4.2.</span> <span class="nav-text">多个提交合并成一个</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%9F%90%E6%AC%A1%E6%8F%90%E4%BA%A4"><span class="nav-number">4.3.</span> <span class="nav-text">修改某次提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%8F%90%E4%BA%A4%E6%8B%86%E6%95%A3%E6%88%90%E5%A4%9A%E4%B8%AA"><span class="nav-number">4.4.</span> <span class="nav-text">一个提交拆散成多个</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%8F%96%E6%B6%88%E5%8F%98%E5%9F%BA"><span class="nav-number">5.</span> <span class="nav-text">怎么取消变基</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">6.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2019/12/04/git-rebase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="git的rebase | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git的rebase<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/git-rebase.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019年12月4日 10:19:36" itemprop="dateCreated datePublished" datetime="2019-12-04T10:19:36+08:00">2019年12月4日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>对rebase(变基)文档翻译、并转载部份博客，同时加入自己的理解。</p>
+<span id="more"></span>
+<h2 id="变基与合并区别"><a href="#变基与合并区别" class="headerlink" title="变基与合并区别"></a>变基与合并区别</h2><p>merge合并，将两个分支合并成一个，从提交图上可以看见分叉的提交历史<strong>有分叉、又重新汇合</strong>成一个分支。（如下动图）</p>
+<p><img src="/images/git-rebase/merge.webp"></p>
+<p>merge就以结果来看，就像两条公路最后会聚成一条公路。</p>
+<p>rebase，又叫变基、衍合。实际上就是重新定义参考基准。从提交图上看见提交历史<strong>不会有分叉与汇合</strong>（如下动图）</p>
+<p><img src="/images/git-rebase/rebase.webp"></p>
+<p>rebase就以结果来看，像是「把feature分支剪下来，然后贴在master分支上」，与园艺插花时「嫁接」的操作一致。</p>
+<p>其实选用merge还是rebase取决于你到底是以什么意图来避免合并冲突，当然本文侧重rebase。</p>
+<h2 id="变基原则"><a href="#变基原则" class="headerlink" title="变基原则"></a>变基原则</h2><p>一般我们使用rebase的目的，是想要得到一个能在远程分支上干净应用的补丁（Fast-forward patch）。</p>
+<p>比如某些项目你不是维护者，但想帮点忙的话，最好用rebase：先在自己的一个分支里进行开发，当准备向主项目提交补丁的时候，根据最新的 origin&#x2F;master 进行一次rebase然后再提交，这样维护者就不需要做任何整合（merge）工作，合并后就是fast forward</p>
+<p>实际上是把解决分支补丁同最新主干代码之间冲突的责任，化转为由提交补丁的人来解决。要rebase就必须要遵守一条准则：</p>
+<p>一旦分支中的改动发布到公共主线，就千万不要对该分支进行rebase操作。</p>
+<p>如果你遵循这条准则，就不会出错。否则，广大人民群众会仇恨你，你的朋友和家人也会嘲笑你，唾弃你。因为rebase抛弃了一些现存的提交对象而创造了一些<strong>类似但不同的新的提交对象</strong>，它们的SHA-1值和原来的提交不一样。。如果你把原来分支中的提交对象发布出去，并且其他人更新下载后在其基础上开展工作，而稍后你又用rebase抛弃这些提交对象，把新的重演后的提交对象发布出去的话，你的同事就不得不重新合并他们的工作，这样当你再次从他们那里获取内容时，<strong>提交历史就会变得一团糟，交叉乱象险生。</strong></p>
+<h2 id="最简单的rebase"><a href="#最简单的rebase" class="headerlink" title="最简单的rebase"></a>最简单的rebase</h2><p>当前提交历史图如下</p>
+<p><img src="/images/git-rebase/basic-rebase-1.png"></p>
+<p>操作意图：切换到experiment分支，然后变基到master分支，得到一个基于master分支的fast-forward分支。</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>git checkout experiment</span><br><span class="line"><span class="variable">$ </span>git rebase master</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/git-rebase/basic-rebase-3.png"></p>
+<p>变基后的experiment分支可以直接发起pull request给master分支的维护者进行fast-forward合并。</p>
+<h2 id="交互式rebase"><a href="#交互式rebase" class="headerlink" title="交互式rebase"></a>交互式rebase</h2><p>假如当前的提交历史是这样</p>
+<p><img src="/images/git-rebase/interactive-1.png"></p>
+<p>操作意图：原本想切换到style分支，然后变基到list分支。但list分支并不希望style分支的这么做，因为list分支提交太乱了，提交历史有如下的问题：</p>
+<ul>
+<li>&quot;wrap the form with div&quot; 排得太靠后了，想移动到前面</li>
+<li>&quot;fix typo of age field name&quot; 跟 &quot;add student id and age...&quot; 可以合并成一次提交</li>
+<li>&quot;add student id and age ...&quot; 改动内容太多，应拆分成两次提交</li>
+<li>&quot;form to add more studetns&quot; 提交信息有错别字 “studetns”</li>
+<li>&quot;add gender select box&quot; 里面的代码有typo（如int a&#x3D;100应该为int a&#x3D;1000）</li>
+</ul>
+<p>利用rebase的Interactive Mode。连commit的內容都可以改，只需加入<code>-i</code>参数运行即可。以上面例子，list分支是based on 0580eab8 (fill in gender column）：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">git</span> checkout list</span><br><span class="line"><span class="attribute">git</span> rebase -i <span class="number">0580</span>eab8</span><br></pre></td></tr></table></figure>
+
+<p>此时git会打开文件<code>.git/rebase-merge/git-rebase-todo</code>让你指示rebase应该怎么做。</p>
+<p>此时的git-rebase-todo文件内容显示了0580eab8后所有的提交记录，最旧的排上方，最新的排下方</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pick <span class="number">2</span>c97b26 form <span class="built_in">to</span> <span class="built_in">add</span> more studetns</span><br><span class="line">pick fd19f8e <span class="built_in">add</span> student id <span class="keyword">and</span> age field <span class="keyword">into</span> <span class="keyword">the</span> form</span><br><span class="line">pick <span class="number">02849</span>bf fix typo <span class="keyword">of</span> age field name</span><br><span class="line">pick bd73d4d <span class="keyword">wrap</span> <span class="keyword">the</span> form <span class="keyword">with</span> <span class="keyword">div</span></span><br><span class="line">pick <span class="number">74</span>d8a3d <span class="built_in">add</span> gender select box</span><br><span class="line"></span><br><span class="line"><span class="comment"># Rebase 0580eab..74d8a3d onto 0580eab</span></span><br><span class="line"><span class="comment"># ...[chunked]</span></span><br></pre></td></tr></table></figure>
+
+<p>每一行开头动作几种常用操作：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pick</td>
+<td>保留这次commit，无改动</td>
+</tr>
+<tr>
+<td>reword</td>
+<td>保留这次commit，要改commit message</td>
+</tr>
+<tr>
+<td>edit</td>
+<td>保留这次commit，暂停在本commit后的状态，然后可以自由修改，git会自动增加一个amend操作</td>
+</tr>
+<tr>
+<td>break</td>
+<td>保留这次commit，暂停在本commit后的状态</td>
+</tr>
+<tr>
+<td>squash</td>
+<td>保留这次commit，要跟前一次提交合并，并保留commit message</td>
+</tr>
+<tr>
+<td>fixup</td>
+<td>保留这次commit，要跟前一次提交合并</td>
+</tr>
+</tbody></table>
+<p>编辑这个文件，保存后就会自动触发rebase。遇到reword会弹出vi编辑提交信息。</p>
+<h3 id="调整提交顺序、修改提交信息"><a href="#调整提交顺序、修改提交信息" class="headerlink" title="调整提交顺序、修改提交信息"></a>调整提交顺序、修改提交信息</h3><p>操作意图：</p>
+<ul>
+<li>把 &quot;wrap the form with div&quot; 移到 &quot;form to add more studetns&quot; 后面</li>
+<li>提交 &quot;form to add more studetns&quot; 要改 commit message ，修复students</li>
+</ul>
+<p>对应的git-rebase-todo文件内容改成</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">reword <span class="number">2</span>c97b26 form <span class="built_in">to</span> <span class="built_in">add</span> more studetns</span><br><span class="line">pick bd73d4d <span class="keyword">wrap</span> <span class="keyword">the</span> form <span class="keyword">with</span> <span class="keyword">div</span></span><br><span class="line">pick fd19f8e <span class="built_in">add</span> student id <span class="keyword">and</span> age field <span class="keyword">into</span> <span class="keyword">the</span> form</span><br><span class="line">pick <span class="number">02849</span>bf fix typo <span class="keyword">of</span> age field name</span><br><span class="line">pick <span class="number">74</span>d8a3d <span class="built_in">add</span> gender select box</span><br></pre></td></tr></table></figure>
+
+<p>保存并关闭vi编辑器，自动执行rebase，遇到reword则弹出让你修改。完成后提示</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Successfully rebased and updated refs<span class="regexp">/heads/</span>list.</span><br></pre></td></tr></table></figure>
+
+<p>此时的提交历史图如下，list分支依旧是based on 0580eab8，而0580eab8后rebase过的commit全部更换了commit SHA ID</p>
+<p><img src="/images/git-rebase/interactive-2.png"></p>
+<h3 id="多个提交合并成一个"><a href="#多个提交合并成一个" class="headerlink" title="多个提交合并成一个"></a>多个提交合并成一个</h3><p>操作意图：</p>
+<ul>
+<li>&quot;fix typo of age field name&quot; 跟 &quot;add student id and age...&quot; 可以合并成一次提交</li>
+</ul>
+<p>同样使用<code>git rebase -i 0580eab8</code>命令，对应的git-rebase-todo文件内容改成</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pick c3cff8a form <span class="built_in">to</span> <span class="built_in">add</span> more students</span><br><span class="line">pick <span class="number">7e128</span>b4 <span class="keyword">wrap</span> <span class="keyword">the</span> form <span class="keyword">with</span> <span class="keyword">div</span></span><br><span class="line">pick <span class="number">0</span>d450ea <span class="built_in">add</span> student id <span class="keyword">and</span> age field <span class="keyword">into</span> <span class="keyword">the</span> form</span><br><span class="line">fixup <span class="number">8</span>f5899e fix typo <span class="keyword">of</span> age field name</span><br><span class="line">pick e323dbc <span class="built_in">add</span> gender select box</span><br></pre></td></tr></table></figure>
+
+<p>变基后，提交历史如下，那两次提交，已经成功合并成一次提交<code>53616deb6f</code></p>
+<p><img src="/images/git-rebase/interactive-3.png"></p>
+<h3 id="修改某次提交"><a href="#修改某次提交" class="headerlink" title="修改某次提交"></a>修改某次提交</h3><p>操作意图：</p>
+<ul>
+<li>&quot;add gender select box&quot; 里面的代码有typo（如int a&#x3D;100应该为int a&#x3D;1000）</li>
+</ul>
+<p>同样使用<code>git rebase -i 0580eab8</code>命令，对应的git-rebase-todo文件内容改成</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pick c3cff8a form <span class="built_in">to</span> <span class="built_in">add</span> more students</span><br><span class="line">pick <span class="number">7e128</span>b4 <span class="keyword">wrap</span> <span class="keyword">the</span> form <span class="keyword">with</span> <span class="keyword">div</span></span><br><span class="line">pick <span class="number">53616</span>de <span class="built_in">add</span> student id <span class="keyword">and</span> age field <span class="keyword">into</span> <span class="keyword">the</span> form</span><br><span class="line">edit c5b9ad8 <span class="built_in">add</span> gender select box</span><br></pre></td></tr></table></figure>
+
+<p>保存关闭vi后，此刻工作区状态是停在刚commit 完 &quot;add gender select box&quot; 那一刻，所以现在可以偷改你想修改的源代码，用 git add 将改动存入暂存区staging area然后继续rebase</p>
+<p>修改源码<code>src/index.js</code>中<code>a=1000;</code>保存文件，然后</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">add</span> src/<span class="keyword">index</span>.js</span><br><span class="line">git rebase --<span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+<p>git会将暂存区与&quot;add gender select box&quot;通过命令<code>commit --amend</code>一起重新 commit</p>
+<h3 id="一个提交拆散成多个"><a href="#一个提交拆散成多个" class="headerlink" title="一个提交拆散成多个"></a>一个提交拆散成多个</h3><p>操作意图：</p>
+<ul>
+<li>&quot;add student id and age field into the form&quot; 改动内容太多，应拆分成两次提交</li>
+</ul>
+<p>同样使用<code>git rebase -i 0580eab8</code>命令，对应的git-rebase-todo文件内容改成</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pick c3cff8a form <span class="built_in">to</span> <span class="built_in">add</span> more students</span><br><span class="line">pick <span class="number">7e128</span>b4 <span class="keyword">wrap</span> <span class="keyword">the</span> form <span class="keyword">with</span> <span class="keyword">div</span></span><br><span class="line">pick <span class="number">53616</span>de <span class="built_in">add</span> student id <span class="keyword">and</span> age field <span class="keyword">into</span> <span class="keyword">the</span> form</span><br><span class="line">edit <span class="number">4</span>dbcf49 <span class="built_in">add</span> gender select box</span><br></pre></td></tr></table></figure>
+
+<p>保存关闭vi后，此刻工作区状态是停在刚commit 完 &quot;add gender select box&quot; 那一刻，此刻可以移动HEAD指针到前一次提交（soft-reset）</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">reset</span> HEAD^</span><br></pre></td></tr></table></figure>
+
+<p>此时工作区为dirty状态，可以通过<code>git status</code>查看。这样就能把提交&quot;add student id and age field into the form&quot;的改动倒出来了，此时可以选择哪些文件需要提交，哪些文件需要拆分了。</p>
+<p>现在就可以逐一逐一改动地commit了。原本是 add student id and age field ，想拆分成两次提交：</p>
+<ul>
+<li>add student id field</li>
+<li>add age field</li>
+</ul>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">add</span><span class="language-bash"> src/student.js</span></span><br><span class="line">git commit -m <span class="string">&quot;add student id field&quot;</span></span><br><span class="line"></span><br><span class="line">git <span class="keyword">add</span><span class="language-bash"> src/age.js</span></span><br><span class="line">git commit -m <span class="string">&quot;add age field&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>两次commit完成后，继续变基</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase --<span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/git-rebase/interactive-4.png"></p>
+<p>此时list分支的程序员已经折腾完毕，可以放心地告诉style分支：你看我瞎倒腾一天，终于可以让你rebase了！！！</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">git checkout style</span></span><br><span class="line"><span class="attribute">git rebase list</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/git-rebase/interactive-5.png"></p>
+<h2 id="怎么取消变基"><a href="#怎么取消变基" class="headerlink" title="怎么取消变基"></a>怎么取消变基</h2><p>新手可能在没搞懂rebase概念时误操作，想还原变基前的操作，可以使用reflog命令，找到变基前的提交SHA值，直接reset hard到那一次即可。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">ref</span>log           </span><br><span class="line"><span class="number">718</span>d8a7 (HEAD -&gt; b34) <span class="symbol">HEAD@</span>&#123;<span class="number">0</span>&#125;: rebase -i (finish): returning to <span class="built_in">ref</span>s/heads/b34</span><br><span class="line"><span class="number">718</span>d8a7 (HEAD -&gt; b34) <span class="symbol">HEAD@</span>&#123;<span class="number">1</span>&#125;: rebase -i (<span class="keyword">continue</span>): yy2</span><br><span class="line"><span class="number">3962665</span> (b12) <span class="symbol">HEAD@</span>&#123;<span class="number">2</span>&#125;: rebase -i (start): checkout b12</span><br><span class="line"><span class="number">2</span>d4340a <span class="symbol">HEAD@</span>&#123;<span class="number">3</span>&#125;: commit: yy2</span><br><span class="line">d5451a4 (master) <span class="symbol">HEAD@</span>&#123;<span class="number">4</span>&#125;: checkout: moving <span class="keyword">from</span> master to b34</span><br><span class="line">d5451a4 (master) <span class="symbol">HEAD@</span>&#123;<span class="number">5</span>&#125;: checkout: moving <span class="keyword">from</span> b12 to master</span><br><span class="line"><span class="number">3962665</span> (b12) <span class="symbol">HEAD@</span>&#123;<span class="number">6</span>&#125;: commit: xx2</span><br><span class="line">d5451a4 (master) <span class="symbol">HEAD@</span>&#123;<span class="number">7</span>&#125;: checkout: moving <span class="keyword">from</span> master to b12</span><br><span class="line">d5451a4 (master) <span class="symbol">HEAD@</span>&#123;<span class="number">8</span>&#125;: commit: v2</span><br><span class="line">ae51330 <span class="symbol">HEAD@</span>&#123;<span class="number">9</span>&#125;: commit (initial): ini</span><br></pre></td></tr></table></figure>
+
+<p>如上面，rebase操作前的一次提交是2d4340a，直接<code>git reset --hard 2d4340a</code>即可。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a target="_blank" rel="noopener" href="https://git-scm.com/book/en/v2/Git-Branching-Rebasing">git rebase ref</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.yorkxin.org/2011/07/29/git-rebase">Git-rebase 小筆記</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29682134">知乎:为什么你应该停止使用rebase</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/11/09/orthographic-projection/" rel="prev" title="三维坐标正交投影到二维平面">
+                  <i class="fa fa-chevron-left"></i> 三维坐标正交投影到二维平面
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/18/proxy-behind-nginx/" rel="next" title="nginx反代MTProxy和v2ray-plugin">
+                  nginx反代MTProxy和v2ray-plugin <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

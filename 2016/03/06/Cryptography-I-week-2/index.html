@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这道题目很简单，目的就是让同学们熟悉一下块加密的API。 题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Use Block Ciphers">
+<meta property="og:url" content="http://lixingcong.github.io/2016/03/06/Cryptography-I-week-2/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="这道题目很简单，目的就是让同学们熟悉一下块加密的API。 题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-06T13:04:55.000Z">
+<meta property="article:modified_time" content="2016-03-06T13:04:55.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/03/06/Cryptography-I-week-2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/03/06/Cryptography-I-week-2/","path":"2016/03/06/Cryptography-I-week-2/","title":"Cryptography解题报告：Use Block Ciphers"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cryptography解题报告：Use Block Ciphers | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AES-128-CBC"><span class="nav-number">1.</span> <span class="nav-text">AES-128-CBC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AES-128-CTR"><span class="nav-number">2.</span> <span class="nav-text">AES-128-CTR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cryptography%E7%AD%94%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">Cryptography答案</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/03/06/Cryptography-I-week-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cryptography解题报告：Use Block Ciphers | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cryptography解题报告：Use Block Ciphers<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/Cryptography-I-week-2.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年3月6日 21:04:55" itemprop="dateCreated datePublished" datetime="2016-03-06T21:04:55+08:00">2016年3月6日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>这道题目很简单，目的就是让同学们熟悉一下块加密的API。</p>
+<p>题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。</p>
+<span id="more"></span>
+
+<p>自己写了2份代码，给大家参考。在文章最后，给出解题答案</p>
+<p>心得：</p>
+<ul>
+<li>在CBC模式才需要使用padding填充末尾数据，Dan Boneh教授已经在视频中的习题说的很清楚了。</li>
+<li>数据的互相转换很是头疼：hex-&gt;dec和encode-&gt;decode一大堆我花了不少时间学习。</li>
+<li>在初始化CTR模式的Counter时候，网上出现的版本有lambda作为参数的，我试了一下还是不行，于是只能乖乖的使用库自带的Counter类实现IV自增。</li>
+</ul>
+<h3 id="AES-128-CBC"><a href="#AES-128-CBC" class="headerlink" title="AES-128-CBC"></a>AES-128-CBC</h3><pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from Crypto.Cipher import AES
+from Crypto import Random
+
+PT=&#39;你好，使用pycrypto库，可以调用各种加密算法&#39;
+CT=&#39;&#39;
+key_to_aes = Random.new().read(AES.block_size)
+iv_to_aes = Random.new().read(AES.block_size)
+
+def AES_enc(key,msg,iv):
+    print &quot;\n加密开始&quot;
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    # 检查是否是16字节的整数倍
+    x = len(msg) % 16
+    print &#39;plaintext长度是： &#39;, len(msg)
+    print &#39;The num to padded is : &#39;, 16-x
+    # 不是整数倍 进行padding操作
+    msg_pad = msg + chr(16-x) * (16 - x) # shoud be 16-x not 
+    print &#39;After padding, the plaintext is:\n%r&#39;%msg_pad
+    # 返回的是IV+CT
+    pt = iv + cipher.encrypt(msg_pad)
+    return pt
+
+def AES_dec(key,ct):
+    print &quot;\n解密开始&quot;
+    iv_1=ct[:16]
+    decipher= AES.new(key_to_aes, AES.MODE_CBC,iv_1)
+    temp=decipher.decrypt(CT[16:])
+    pad_len=(temp[-1:]) # 获得pad长
+    pad_len_int=ord(pad_len) # 转成int，不能直接调用Int()函数
+    return temp[:-pad_len_int] # 截取padding，获得明文
+
+if __name__ == &#39;__main__&#39;:
+    # 加密
+    print &quot;plaintext is:\n%s&quot;%PT
+    CT = AES_enc(key_to_aes,PT,iv_to_aes)
+    # 解密
+    print AES_dec(key_to_aes,CT)
+</code></pre>
+<h3 id="AES-128-CTR"><a href="#AES-128-CTR" class="headerlink" title="AES-128-CTR"></a>AES-128-CTR</h3><pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
+from Crypto import Random
+
+PT=&#39;今天我过得很愉快。&#39;
+CT=&#39;&#39;
+key_to_aes = Random.new().read(AES.block_size)
+iv_to_aes = Random.new().read(AES.block_size)
+
+def AES_enc(key,msg,iv):
+    print &quot;\n加密开始&quot;
+    print &quot;提示：CTR模式不需要padding。&quot;
+    # 注意counter初始值的要先【字节码to字符串】，再转成整数。
+    IV=Counter.new(128,initial_value=int(iv.encode(&#39;hex&#39;),16))
+    cipher = AES.new(key, AES.MODE_CTR,counter= IV)
+    return iv+cipher.encrypt(msg)
+
+def AES_dec(key,ct):
+    print &quot;\n解密开始&quot;
+    iv=ct[:16]
+    ct_=ct[16:]
+    IV=Counter.new(128,initial_value=int(iv.encode(&#39;hex&#39;),16))
+    decipher = AES.new(key_to_aes, AES.MODE_CTR, counter=IV)
+    return decipher.decrypt(ct_)
+
+if __name__ == &#39;__main__&#39;:
+    print &quot;plaintext is:\n%s&quot;%PT
+    CT=AES_enc(key_to_aes,PT,iv_to_aes)
+    print AES_dec(key_to_aes,CT)
+</code></pre>
+<h3 id="Cryptography答案"><a href="#Cryptography答案" class="headerlink" title="Cryptography答案"></a>Cryptography答案</h3><pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Time-stamp: &lt; 4.py 2016年03月06日 21:03:30 &gt;
+&quot;&quot;&quot;
+先安装库pycrypto，在github下载源码编译安装即可
+&quot;&quot;&quot; 
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
+
+CT_cbc=[&#39;4ca00ff4c898d61e1edbf1800618fb2828a226d160dad07883d04e008a7897ee2e4b7465d5290d0c0e6c6822236e1daafb94ffe0c5da05d9476be028ad7c1d81&#39;,&#39;5b68629feb8606f9a6667670b75b38a5b4832d0f26e1ab7da33249de7d4afc48e713ac646ace36e872ad5fb8a512428a6e21364b0c374df45503473c5242a253&#39;]
+
+CT_ctr=[&#39;69dda8455c7dd4254bf353b773304eec0ec7702330098ce7f7520d1cbbb20fc388d1b0adb5054dbd7370849dbf0b88d393f252e764f1f5f7ad97ef79d59ce29f5f51eeca32eabedd9afa9329&#39;,&#39;770b80259ec33beb2561358a9f2dc617e46218c0a53cbeca695ae45faa8952aa0e311bde9d4e01726d3184c34451&#39;]
+
+key_cbc = &#39;140b41b22a29beb4061bda66b6747e14&#39;.decode(&#39;hex&#39;)
+key_ctr = &#39;36f18357be4dbd77f050515c73fcf9f2&#39;.decode(&#39;hex&#39;) # Same Key
+
+for CT in CT_cbc:
+    print &#39;- &#39;*10
+    ct=CT.decode(&#39;hex&#39;)
+    IV=ct[:16]
+    decipher= AES.new(key_cbc, AES.MODE_CBC,IV)
+    temp=decipher.decrypt(ct[16:])
+    pad_len=(temp[-1:]) # 获得pad长度
+    pad_len_int=ord(pad_len) # 单个字符转成int，不需要调用int()函数
+    print temp[:-pad_len_int] # 截取末尾的padding，获得明文
+
+for CT in CT_ctr:
+    print &#39;- &#39;*10
+    ct=CT[32:].decode(&#39;hex&#39;)
+    IV=Counter.new(128,initial_value=int(CT[:32],16)) #注意上面的CT尚未进行decode to hex，因此截取32个作为初始值
+    decrypto = AES.new(key_ctr, AES.MODE_CTR, counter=IV)
+    print decrypto.decrypt(ct)
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/03/06/convert-data-in-python/" rel="prev" title="python整数、字符串、字节串相互转换">
+                  <i class="fa fa-chevron-left"></i> python整数、字符串、字节串相互转换
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/03/11/Cryptography-I-week-3/" rel="next" title="Cryptography解题报告：Message Integrity">
+                  Cryptography解题报告：Message Integrity <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

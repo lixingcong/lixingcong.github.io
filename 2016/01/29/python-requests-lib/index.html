@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="requests库适合我这种懒人。为什么要用requests而不用urllib2呢？官方文档中是这样说的：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python的requests库">
+<meta property="og:url" content="http://lixingcong.github.io/2016/01/29/python-requests-lib/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="requests库适合我这种懒人。为什么要用requests而不用urllib2呢？官方文档中是这样说的：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-29T15:10:43.000Z">
+<meta property="article:modified_time" content="2016-01-29T15:10:43.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/01/29/python-requests-lib/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/01/29/python-requests-lib/","path":"2016/01/29/python-requests-lib/","title":"python的requests库"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>python的requests库 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81HTTP%E8%AF%B7%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">发送HTTP请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">传递参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96response"><span class="nav-number">3.</span> <span class="nav-text">获取response</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%BD%91%E9%A1%B5%E7%BC%96%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">获取网页编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%BD%91%E9%A1%B5%E7%8A%B6%E6%80%81%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">获取网页状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%A4%B4%E5%86%85%E5%AE%B9"><span class="nav-number">6.</span> <span class="nav-text">请求头内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%93%8D%E5%BA%94%E5%A4%B4%E5%86%85%E5%AE%B9"><span class="nav-number">7.</span> <span class="nav-text">获取响应头内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%B6%85%E6%97%B6"><span class="nav-number">8.</span> <span class="nav-text">设置超时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E8%AE%BF%E9%97%AE"><span class="nav-number">9.</span> <span class="nav-text">代理访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%93%E5%8F%96HTTPS%E7%BD%91%E9%A1%B5"><span class="nav-number">10.</span> <span class="nav-text">抓取HTTPS网页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90json"><span class="nav-number">11.</span> <span class="nav-text">解析json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">12.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/01/29/python-requests-lib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="python的requests库 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python的requests库<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/python-requests-lib.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年1月29日 23:10:43" itemprop="dateCreated datePublished" datetime="2016-01-29T23:10:43+08:00">2016年1月29日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>requests库适合我这种懒人。<br>为什么要用requests而不用urllib2呢？<br>官方文档中是这样说的：</p>
+<span id="more"></span>
+
+<blockquote>
+<p>python的标准库urllib2提供了大部分需要的HTTP功能，但是API太逆天了，一个简单的功能就需要一大堆代码。</p>
+</blockquote>
+<h3 id="发送HTTP请求"><a href="#发送HTTP请求" class="headerlink" title="发送HTTP请求"></a>发送HTTP请求</h3><pre><code>r = requests.get(&#39;http://www.qq.com&#39;)
+r = requests.get(&#39;https://twitter.com&#39;)
+</code></pre>
+<p>HTTP请求还有很多类型，比如POST,PUT,DELETE,HEAD,OPTIONS。</p>
+<pre><code>r = requests.post(&quot;http://httpbin.org/post&quot;)
+r = requests.put(&quot;http://httpbin.org/put&quot;)
+r = requests.delete(&quot;http://httpbin.org/delete&quot;)
+r = requests.head(&quot;http://httpbin.org/get&quot;)
+r = requests.options(&quot;http://httpbin.org/get&quot;)
+</code></pre>
+<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h3><p>比如在采集百度搜索结果时，我们wd参数（搜索词）和rn参数（搜素结果数量），你可以手工组成URL:</p>
+<pre><code>payload = &#123;&#39;wd&#39;: &#39;张亚楠&#39;, &#39;rn&#39;: &#39;100&#39;&#125;
+r = requests.get(&quot;http://www.baidu.com/s&quot;, params=payload)
+print r.url
+</code></pre>
+<h3 id="获取response"><a href="#获取response" class="headerlink" title="获取response"></a>获取response</h3><pre><code>print r.text
+print r.content
+</code></pre>
+<p>r.content是以字节的方式去显示,在输出结果中以b开头。但我在cygwin中用起来并没有，下载网页正好。所以就替代了urllib2的urllib2.urlopen(url).read()功能。</p>
+<h3 id="获取网页编码"><a href="#获取网页编码" class="headerlink" title="获取网页编码"></a>获取网页编码</h3><pre><code>print r.encoding
+</code></pre>
+<p>当你发送请求时，requests会根据HTTP头部来猜测网页编码，当你使用r.text时，requests就会使用这个编码。当然你还可以修改requests的编码形式。</p>
+<pre><code> r = requests.get(&#39;http://www.zhidaow.com&#39;)
+ r.encoding = &#39;ISO-8859-1&#39;
+ # 对encoding修改后就直接会用修改后的编码去获取网页内容。
+ 
+</code></pre>
+<h3 id="获取网页状态码"><a href="#获取网页状态码" class="headerlink" title="获取网页状态码"></a>获取网页状态码</h3><pre><code>print r.status_code
+</code></pre>
+<p>遇到跳转的页面，例如访问<a target="_blank" rel="noopener" href="http://github.com是302跳转到https/">http://github.com是302跳转到https</a><br>r.status_code会显示最终的状态码，若查看跳转前的状态码：</p>
+<pre><code>print r.history
+# 结果：
+# (&lt;Response [302]&gt;,)
+</code></pre>
+<p>禁止跳转：</p>
+<pre><code>r = requests.get(&#39;http://github.com&#39;, allow_redirects = False)
+</code></pre>
+<h3 id="请求头内容"><a href="#请求头内容" class="headerlink" title="请求头内容"></a>请求头内容</h3><pre><code>print r.request.headers
+</code></pre>
+<p>自定义headers:</p>
+<pre><code>headers = &#123;&#39;User-Agent&#39;: &#39;alexkh&#39;&#125;
+r = requests.get(&#39;http://www.zhidaow.com&#39;, headers = headers)
+</code></pre>
+<h3 id="获取响应头内容"><a href="#获取响应头内容" class="headerlink" title="获取响应头内容"></a>获取响应头内容</h3><pre><code>print r.headers
+</code></pre>
+<p>以字典的形式返回了全部内容，我们也可以访问部分内容。</p>
+<pre><code>print r.headers[&#39;Content-Type&#39;]
+# 结果：
+# &#39;text/html; charset=utf-8&#39;
+</code></pre>
+<h3 id="设置超时"><a href="#设置超时" class="headerlink" title="设置超时"></a>设置超时</h3><p>一旦超过这个时间还没获得响应内容，抛出timeout异常。</p>
+<pre><code>r = requests.get(&#39;http://github.com&#39;, timeout=0.001)
+</code></pre>
+<h3 id="代理访问"><a href="#代理访问" class="headerlink" title="代理访问"></a>代理访问</h3><pre><code>proxies = &#123;
+  &quot;http&quot;: &quot;http://10.10.1.10:3128&quot;,
+  &quot;https&quot;: &quot;http://10.10.1.10:1080&quot;,
+&#125;
+
+r = requests.get(&quot;http://www.zhidaow.com&quot;, proxies=proxies)
+</code></pre>
+<h3 id="抓取HTTPS网页"><a href="#抓取HTTPS网页" class="headerlink" title="抓取HTTPS网页"></a>抓取HTTPS网页</h3><p>当使用requests.get(url)抓取HTTPS网页时，会遇到requests.exceptions.SSLError错误<br>解决方法：禁用验证</p>
+<pre><code>r = requests.get(&#39;https://github.com&#39;, verify=False)
+</code></pre>
+<h3 id="解析json"><a href="#解析json" class="headerlink" title="解析json"></a>解析json</h3><p>像urllib和urllib2，如果用到json，就要引入新模块，如json和simplejson<br>但在requests中已经有了内置的函数，r.json()。就拿查询IP的API来说：</p>
+<pre><code>r = requests.get(&#39;http://ip.taobao.com/service/getIpInfo.php?ip=122.88.60.28&#39;)
+print r.json()[&#39;data&#39;][&#39;country&#39;]
+</code></pre>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a target="_blank" rel="noopener" href="http://docs.python-requests.org/en/latest/user/quickstart">requests的官方指南文档</a><br><a target="_blank" rel="noopener" href="http://docs.python-requests.org/en/latest/user/advanced/#advanced">requests的高级指南文档</a><br><a target="_blank" rel="noopener" href="http://cn.python-requests.org/en/latest">requests的中文文档</a></p>
+<p>尤其是上面第二个《高级指南》，不错。</p>
+<p>原文地址：<a target="_blank" rel="noopener" href="http://www.zhidaow.com/post/python-requests-install-and-brief-introduction">http://www.zhidaow.com</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/01/22/shell-commands-files-processes/" rel="prev" title="shell命令：文件与进程">
+                  <i class="fa fa-chevron-left"></i> shell命令：文件与进程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/31/Cryptography-I-week-1/" rel="next" title="Cryptography解题报告：Two time pad">
+                  Cryptography解题报告：Two time pad <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

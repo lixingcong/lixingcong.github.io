@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="goproxy是两款同名的代理 Shell.Xu.版本项目地址：https:&#x2F;&#x2F;github.com&#x2F;shell909090&#x2F;goproxy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="goproxy部署方案">
+<meta property="og:url" content="http://lixingcong.github.io/2015/10/21/goproxy/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="goproxy是两款同名的代理 Shell.Xu.版本项目地址：https:&#x2F;&#x2F;github.com&#x2F;shell909090&#x2F;goproxy">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-10-21T14:38:18.000Z">
+<meta property="article:modified_time" content="2015-10-21T14:38:18.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/10/21/goproxy/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/10/21/goproxy/","path":"2015/10/21/goproxy/","title":"goproxy部署方案"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>goproxy部署方案 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shell-Xu-%E7%89%88%E6%9C%AC"><span class="nav-number">1.</span> <span class="nav-text">Shell.Xu.版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.1.</span> <span class="nav-text">服务端设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">客户端设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phuslu%E7%89%88%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">phuslu版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF-openshift"><span class="nav-number">2.1.</span> <span class="nav-text">服务端(openshift)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">2.2.</span> <span class="nav-text">客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C"><span class="nav-number">3.</span> <span class="nav-text">使用体验</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/10/21/goproxy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="goproxy部署方案 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          goproxy部署方案<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/goproxy.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年10月21日 22:38:18" itemprop="dateCreated datePublished" datetime="2015-10-21T22:38:18+08:00">2015年10月21日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>goproxy是两款同名的代理</p>
+<h2 id="Shell-Xu-版本"><a href="#Shell-Xu-版本" class="headerlink" title="Shell.Xu.版本"></a>Shell.Xu.版本</h2><p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/shell909090/goproxy">https://github.com/shell909090/goproxy</a></p>
+<span id="more"></span>
+<h3 id="服务端设置"><a href="#服务端设置" class="headerlink" title="服务端设置"></a>服务端设置</h3><p>先安装Go 1.5版本</p>
+<pre><code>wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
+tar xf go1.5.linux-amd64.tar.gz -C /usr/local
+</code></pre>
+<p>设置环境变量 其中GOROOT为安装go的目录，GOPATH为一般工程目录，操作步骤：<em>把以下内容，追加到&#x2F;etc&#x2F;profile文件末尾：</em></p>
+<pre><code>export GOROOT=/usr/local/go
+export GOPATH=/root/go_path
+export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+</code></pre>
+<p>重启reboot以使生效</p>
+<p>编译并安装：</p>
+<pre><code>mkdir go_path
+go get github.com/shell909090/goproxy/goproxy
+go build github.com/shell909090/goproxy/goproxy
+</code></pre>
+<p>生成一个key，服务器和客户端都用到这个</p>
+<pre><code>head -c 16 /dev/random | base64
+</code></pre>
+<p>设置服务端config</p>
+<pre><code>cd go_path/src/bin
+vi config.json
+</code></pre>
+<p>输入，表示监听本机8888端口</p>
+<pre><code>&#123;
+    &quot;mode&quot;: &quot;server&quot;,
+    &quot;listen&quot;: &quot;:8888&quot;,
+    &quot;logfile&quot;: &quot;my.log&quot;,
+    &quot;loglevel&quot;: &quot;WARNING&quot;,
+    &quot;adminiface&quot;: &quot;127.0.0.1:5234&quot;,
+    &quot;cipher&quot;: &quot;aes&quot;,
+    &quot;key&quot;: &quot;[your key]&quot;,
+    &quot;passwd&quot;: &#123;
+        &quot;username&quot;: &quot;password&quot;
+    &#125;
+&#125;
+</code></pre>
+<p>保存，执行</p>
+<pre><code>./goproxy -config ./config.json
+</code></pre>
+<p>或者使用screen后台运行</p>
+<pre><code>screen -dmS goproxy ./goproxy -config ./config.json
+</code></pre>
+<h3 id="客户端设置"><a href="#客户端设置" class="headerlink" title="客户端设置"></a>客户端设置</h3><p>在vps上面进行交叉编译:<br>参考文章: <a target="_blank" rel="noopener" href="http://www.dwhd.org/20150829_125826.html">编译教程</a></p>
+<p>32bit</p>
+<pre><code>GOOS=linux  GOARCH=386 go build -o /tmp/goproxy_linux_i386 github.com/shell909090/goproxy/goproxy
+GOOS=darwin  GOARCH=386 go build -o /tmp/goproxy_darwin_i386 github.com/shell909090/goproxy/goproxy
+GOOS=freebsd  GOARCH=386 go build -o /tmp/goproxy_freebsd_i386 github.com/shell909090/goproxy/goproxy
+GOOS=windows  GOARCH=386 go build -o /tmp/goproxy_windows_i386.exe github.com/shell909090/goproxy/goproxy
+</code></pre>
+<p>64bit</p>
+<pre><code>GOOS=linux  GOARCH=amd64 go build -o /tmp/goproxy_linux_amd64 github.com/shell909090/goproxy/goproxy
+GOOS=darwin  GOARCH=amd64 go build -o /tmp/goproxy_darwin_amd64 github.com/shell909090/goproxy/goproxy
+GOOS=freebsd  GOARCH=amd64 go build -o /tmp/goproxy_freebsd_amd64 github.com/shell909090/goproxy/goproxy
+GOOS=windows  GOARCH=amd64 go build -o /tmp/goproxy_windows_amd64.exe github.com/shell909090/goproxy/goproxy
+</code></pre>
+<p>ARM</p>
+<pre><code>GOOS=linux  GOARCH=arm go build -o /tmp/goproxy_arm github.com/shell909090/goproxy/goproxy
+GOOS=linux  GOARCH=arm64 go build -o /tmp/goproxy_arm64 github.com/shell909090/goproxy/goproxy
+</code></pre>
+<p>配置文件config.json，表示监听本地8889端口</p>
+<pre><code>&#123;
+    &quot;mode&quot;: &quot;http&quot;,
+    &quot;listen&quot;: &quot;:8889&quot;,
+    &quot;server&quot;: &quot;SERVER_IP:82&quot;,
+    &quot;logfile&quot;: &quot;&quot;,
+    &quot;loglevel&quot;: &quot;WARNING&quot;,
+    &quot;adminiface&quot;: &quot;127.0.0.1:5234&quot;
+    &quot;dnsnet&quot;: &quot;internal&quot;,
+    &quot;cipher&quot;: &quot;aes&quot;,
+    &quot;key&quot;: &quot;[your key]&quot;,
+    // Windows client you should move route.list.gz to the dir of goproxy.exe
+    // Add change to &quot;./routes.list.gz&quot;
+    &quot;blackfile&quot;: &quot;/usr/share/goproxy/routes.list.gz&quot;,
+    &quot;username&quot;: &quot;username&quot;,
+    &quot;password&quot;: &quot;password&quot;
+&#125;
+</code></pre>
+<h2 id="phuslu版本"><a href="#phuslu版本" class="headerlink" title="phuslu版本"></a>phuslu版本</h2><p>项目地址 <a target="_blank" rel="noopener" href="https://github.com/phuslu/goproxy">https://github.com/phuslu/goproxy</a></p>
+<p>友情提示：该项目已被移除。可以寻找fork仓库审阅代码。</p>
+<h3 id="服务端-openshift"><a href="#服务端-openshift" class="headerlink" title="服务端(openshift)"></a>服务端(openshift)</h3><pre><code>https://github.com/phuslu/fetchserver/tree/golang
+</code></pre>
+<p>点击大图标openshift即可部署</p>
+<p>其中密码可以修改 index.go ，默认为123456</p>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>去 <a target="_blank" rel="noopener" href="https://github.com/phuslu/goproxy/releases">https://github.com/phuslu/goproxy/releases</a> 下载一个版本<br>解压，修改 php.json：</p>
+<pre><code>&quot;url&quot;: &quot;https://xxxx-xxxx.rhcloud.com&quot;,
+            &quot;password&quot;: &quot;123456&quot;,
+            &quot;sslverify&quot;: true
+        
+</code></pre>
+<p>默认监听8000端口，可以在main.json修改</p>
+<p>提示：客户端r169版本以下：需要新建chrome快捷方式（否则提示证书不安全），附加命令<br>--ignore-certificate-errors</p>
+<p>运行goagent.exe，在浏览器使用http代理127.0.0.1:8000即可<br>提示：<em>openshift不适宜长期使用，容易被封，容易被停机。</em></p>
+<h2 id="使用体验"><a href="#使用体验" class="headerlink" title="使用体验"></a>使用体验</h2><p>Shell909090的版本<strong>把所有流量封装成一个tcp流</strong>，以此逃避GFW检测。<br>带来的效果是看视频很流畅，但是刷推特不流畅，毕竟连续的流量才比较快。<br>整个代理是建立在tcp协议上的。<br>总体上部署shell909090，有一定难度，不适合大多数人使用。</p>
+<p>phuslu版本是经典的goagent升级版，其实很好用<br>确缺点是在vps上无法部署，老是被reset重置。<br><strong>免费的app空间有诸多限制</strong><br>作者phuslu貌似不再维护了，以免跨省追捕。（项目有1000+的关注量）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/10/06/python-with-as/" rel="prev" title="Python的with...as的用法">
+                  <i class="fa fa-chevron-left"></i> Python的with...as的用法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/10/22/python_re_usage/" rel="next" title="Python re库 正则表达式">
+                  Python re库 正则表达式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

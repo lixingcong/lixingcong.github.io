@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="实验目的：尝试编译ShadowVPN，使其在路由器上面运行。配合Chinadns达到分流操作平台: ubuntu 14.04 x64 (RAM 128M)若用国内的主机编译的话，网速太蛋疼，下载东西老是超时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从Openwrt SDK编译出ShadowVPN包">
+<meta property="og:url" content="http://lixingcong.github.io/2016/01/02/compile_shadowvpn_for_openwrt/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="实验目的：尝试编译ShadowVPN，使其在路由器上面运行。配合Chinadns达到分流操作平台: ubuntu 14.04 x64 (RAM 128M)若用国内的主机编译的话，网速太蛋疼，下载东西老是超时">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-02T05:03:38.000Z">
+<meta property="article:modified_time" content="2016-01-02T05:03:38.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/01/02/compile_shadowvpn_for_openwrt/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/01/02/compile_shadowvpn_for_openwrt/","path":"2016/01/02/compile_shadowvpn_for_openwrt/","title":"从Openwrt SDK编译出ShadowVPN包"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>从Openwrt SDK编译出ShadowVPN包 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%88%8F"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%89%80%E9%9C%80%E5%B7%A5%E5%85%B7"><span class="nav-number">1.1.</span> <span class="nav-text">安装所需工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96openwrt%E7%9B%AE%E5%BD%95%E6%A0%91"><span class="nav-number">1.2.</span> <span class="nav-text">获取openwrt目录树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86shadowvpn%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">处理shadowvpn源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%BA%90%E7%A0%81"><span class="nav-number">2.1.</span> <span class="nav-text">获取源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E6%89%93%E5%8C%85"><span class="nav-number">2.2.</span> <span class="nav-text">二次打包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89patch"><span class="nav-number">2.3.</span> <span class="nav-text">创建自定义patch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96shadowvpn-openwrt%E6%BA%90%E7%A0%81"><span class="nav-number">2.4.</span> <span class="nav-text">获取shadowvpn-openwrt源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">3.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-number">3.1.</span> <span class="nav-text">获取工具链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%9B%AE%E6%A0%87"><span class="nav-number">3.2.</span> <span class="nav-text">配置目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E4%B8%80%E6%AD%A5"><span class="nav-number">3.3.</span> <span class="nav-text">最后一步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">4.</span> <span class="nav-text">其他</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/01/02/compile_shadowvpn_for_openwrt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="从Openwrt SDK编译出ShadowVPN包 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从Openwrt SDK编译出ShadowVPN包<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/compile_shadowvpn_for_openwrt.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年1月2日 13:03:38" itemprop="dateCreated datePublished" datetime="2016-01-02T13:03:38+08:00">2016年1月2日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>实验目的：尝试编译ShadowVPN，使其在路由器上面运行。配合Chinadns达到分流<br>操作平台: ubuntu 14.04 x64 (RAM 128M)<br><del>若用国内的主机编译的话，网速太蛋疼，下载东西老是超时</del></p>
+<span id="more"></span>
+<p>当然，大多数人不需要折腾了，有<a target="_blank" rel="noopener" href="https://github.com/aa65535/openwrt-shadowvpn">预编译版本</a>可以直接下载，我的目的是学习一下基本的SDK编译过程</p>
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><h3 id="安装所需工具"><a href="#安装所需工具" class="headerlink" title="安装所需工具"></a>安装所需工具</h3><p>在root用户下</p>
+<pre><code>apt-get update
+apt-get install git build-essential libssl-dev libncurses5-dev unzip subversion mercurial gawk
+</code></pre>
+<p>新建一个非root用户。openwrt官方文档也是这么说的。</p>
+<pre><code>adduser test
+</code></pre>
+<p>注销，登陆至test用户</p>
+<h3 id="获取openwrt目录树"><a href="#获取openwrt目录树" class="headerlink" title="获取openwrt目录树"></a>获取openwrt目录树</h3><p>建议使用15.05或以上版本。其他发行版分支可以在<a target="_blank" rel="noopener" href="http://git.openwrt.org/">openwrt源码</a>查看。</p>
+<p>克隆源码</p>
+<pre><code>cd ~
+git clone http://git.openwrt.org/15.05/openwrt.git
+</code></pre>
+<p>更新、安装feed</p>
+<pre><code>cd openwrt
+./scripts/feeds update -a
+./scripts/feeds install -a
+</code></pre>
+<p>检查包依赖</p>
+<pre><code>make defconfig
+make prereq
+</code></pre>
+<h2 id="处理shadowvpn源码"><a href="#处理shadowvpn源码" class="headerlink" title="处理shadowvpn源码"></a>处理shadowvpn源码</h2><h3 id="获取源码"><a href="#获取源码" class="headerlink" title="获取源码"></a>获取源码</h3><p>参考这篇文章<a href="/2015/12/17/shadowvpn-conf-lixingcongv2">《ShadowVPN配置记录》</a>，讲述如何处理ShadowVPN源码。</p>
+<p>假设已经完成Shadowvpn下载，libsodium更新，并放在&#x2F;tmp&#x2F;ShadowVPN。并且能编译出linux服务端无误。</p>
+<p>先清除一下</p>
+<pre><code>cd /tmp/ShadowVPN
+make clean
+</code></pre>
+<h3 id="二次打包"><a href="#二次打包" class="headerlink" title="二次打包"></a>二次打包</h3><p>打包为tar.gz文件。目的是集成libsodium进tar文件。</p>
+<pre><code>tar -cvzf /tmp/ShadowVPN-0.2.0.tar.gz /tmp/ShadowVPN
+</code></pre>
+<h3 id="创建自定义patch"><a href="#创建自定义patch" class="headerlink" title="创建自定义patch"></a>创建自定义patch</h3><p>创建diff快照，用于产生patch补丁文件。</p>
+<pre><code>cd /tmp/ShadowVPN
+git init
+git config --global user.name &quot;xx&quot;
+git config --global user.email &quot;xx@xx.com&quot;
+git add .
+git commit -m &quot;Before patched&quot;
+</code></pre>
+<p>按照<a target="_blank" rel="noopener" href="https://github.com/aa65535/openwrt-shadowvpn/blob/master/patches/000-fix-autoconf.patch">openwrt-shadowvpn项目</a>中的patch文件，修改&#x2F;tmp&#x2F;ShadowVPN&#x2F;下面对应的四个文件：</p>
+<p>vi Makefile.am</p>
+<pre><code>找到EXTRA_DIST = \
+删掉README.md和COPYING
+找到SUBDIRS
+删掉samples
+</code></pre>
+<p>vi configure.ac</p>
+<pre><code>找到AC_CONFIG_FILES([Makefile src/Makefile samples/Makefile])
+把后面的samples/Makefile删掉
+</code></pre>
+<p>vi libsodium&#x2F;Makefile.am</p>
+<pre><code>找到EXTRA_DIST = \
+删掉其下的内容，只保留autogen.sh
+找到SUBDIRS = \
+删掉其下的内容，只保留src
+</code></pre>
+<p>vi libsodium&#x2F;configure.ac</p>
+<pre><code>找到AC_CONFIG_FILES([Makefile
+删掉这些行：
+dist-build/Makefile
+libsodium-uninstalled.pc
+msvc-scripts/Makefile
+test/default/Makefile
+test/Makefile
+</code></pre>
+<p>只需根据patch删掉对应行就可以了<br>提交更改</p>
+<pre><code>git add .
+git commit -am &quot;patched!&quot;
+</code></pre>
+<p>查看SHA散列值：记下patch前后的散列值前七位</p>
+<pre><code>git log
+git diff BEFORE_ID AFTER_ID &gt; /tmp/modify.patch
+</code></pre>
+<p>生成的patch文件暂时放在&#x2F;tmp下面</p>
+<h3 id="获取shadowvpn-openwrt源码"><a href="#获取shadowvpn-openwrt源码" class="headerlink" title="获取shadowvpn-openwrt源码"></a>获取shadowvpn-openwrt源码</h3><p>其实并不是源码，只是借openwrt-shadowvpn这个工程（包含了很多适配脚本和init脚本）来编译含有patch后的op软件包</p>
+<p>移动源码至dl目录。目的是制造假象：已经下载源码</p>
+<pre><code>cp /tmp/ShadowVPN-0.2.0.gz /home/test/openwrt/dl/
+</code></pre>
+<p>克隆<a target="_blank" rel="noopener" href="https://github.com/aa65535">@aa65535</a>的工程</p>
+<pre><code>cd ~/openwrt
+git clone https://github.com/aa65535/openwrt-shadowvpn.git package/shadowvpn
+cd package/shadowvpn
+</code></pre>
+<p>覆盖@aa65535的patch文件</p>
+<pre><code>cp /tmp/modify.patch patches/000-fix-autoconf.patch
+</code></pre>
+<p>修改Makefile使其指向当前主机的源代码</p>
+<pre><code>PKG_SOURCE_URL:=/home/test/openwrt/dl/$&#123;PKG_VERSION&#125;
+</code></pre>
+<p>注释PKG_MD5SUM校验，防止出错。</p>
+<p>这样效果就是不需要每次从openwrt-shadowvpn的release页面下载源码了。可以编译自定义的源码</p>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>编译过程大同小异，对所有软件（包括shadowsocks-libev,chinadns)都是类似的。</p>
+<h3 id="获取工具链"><a href="#获取工具链" class="headerlink" title="获取工具链"></a>获取工具链</h3><p>不同平台对应不同的工具链，我的路由器是WR703n，对应AR71xx平台，如果你的路由器是MT7620或者其他的，请到<a target="_blank" rel="noopener" href="http://downloads.openwrt.org/">openwrt官网下载</a>对应的toolchain-gcc。</p>
+<p>请带上你脑袋，根据实际路径和路由机型更改，不要抄袭我，跟我一样的配置！</p>
+<p>下面所有命令以ar71xx为例。</p>
+<pre><code>cd ~
+wget http://downloads.openwrt.org/chaos_calmer/15.05/ar71xx/generic/OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2
+tar xjf OpenWrt-SDK-15.05-ar71xx-generic*.bz2
+cd OpenWrt-SDK-15.05-ar71xx-generic*
+cp -R staging_dir ~/openwrt
+</code></pre>
+<p>设置系统变量</p>
+<pre><code>export STAGING_DIR=/home/test/openwrt/staging_dir/toolchain-mips_34kc_gcc-4.8-linaro_uClibc-0.9.33.2
+export PATH=$PATH:$STAGING_DIR/bin
+</code></pre>
+<p>测试AR71xx的gcc是否有效：</p>
+<pre><code>mips-openwrt-linux-gcc
+</code></pre>
+<p>如果command not found需要重新检查设置变量<br>提示fatal error: no input files即为正确结果，可以进行下一步（配置目标）</p>
+<p>注意：如果你的路由器是MT7620，那么</p>
+<pre><code>toolchain目录是 toolchain-mipsel_24kec+dsp_gcc..
+检查MTK gcc是否生效的命令是 mipsel-openwrt-linux-gcc
+</code></pre>
+<h3 id="配置目标"><a href="#配置目标" class="headerlink" title="配置目标"></a>配置目标</h3><pre><code>cd ~/openwrt
+make menuconfig
+</code></pre>
+<p>出来蓝色窗口，由于我的是ar71xx的工具链，所以Target选ar7xxx</p>
+<pre><code>＃ Target System: Atheros AR7xxx/AR9XXX  
+＃ Subtarget: Generic/Default
+＃ Target Profile: (因我们只是编译包，这步可以不选)
+＃ Network-&gt;ShadowVPN：按m设置为编译独立ipk安装包
+</code></pre>
+<p>连按esc两次，再按esc两次，然后退出保存config文件，默认回车即可</p>
+<p>注意：MT7620的Target System是&quot;Ralink RT288x&#x2F;RT3xxx&quot;再选subtarget MT7620</p>
+<h3 id="最后一步"><a href="#最后一步" class="headerlink" title="最后一步"></a>最后一步</h3><p>编译指定的包</p>
+<pre><code>make package/shadowvpn/compile V=99
+</code></pre>
+<p>大约一分钟，在指定的目录下找到ipk文件</p>
+<pre><code>cd bin/ar71xx/packages/base
+ls | grep ShadowVPN
+</code></pre>
+<p>拷贝到路由器安装即可。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>总结思路：</p>
+<p>在openwrt-shadowvpn目录下的Makefile中的URL改为本机目录&#x2F;home&#x2F;test&#x2F;openwrt&#x2F;dl&#x2F;。<br>作者aa65535的思路是：每次编译都是从自己的github-releases页面下载源码。因此想要自己修改代码，必须替换下载URL，指向本机，达到自定义代码的效果。</p>
+<p>在工程openwrt-shadowvpn中的Makefile是自动调用下载源码的命令。想把源代码直接放进去build_dir是不可能的，每次进行make都是自动下载源码会将build_dir清空。同理，将Shadowvpn源代码放进去package目录或者dl目录也是不行的。只能打包后放dl文件夹内。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/12/17/shadowvpn-conf-lixingcongv2/" rel="prev" title="我的ShadowVPN配置记录v2">
+                  <i class="fa fa-chevron-left"></i> 我的ShadowVPN配置记录v2
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/01/03/makefile-notes/" rel="next" title="Makefile读书笔记">
+                  Makefile读书笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="记录一下Archlinux的安装过程，减少以后折腾耗时。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="硬盘安装Archlinux">
+<meta property="og:url" content="http://lixingcong.github.io/2018/06/12/archlinux-install/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="记录一下Archlinux的安装过程，减少以后折腾耗时。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/archlinux-install/grub-ls-uuid.png">
+<meta property="article:published_time" content="2018-06-12T02:26:27.000Z">
+<meta property="article:modified_time" content="2018-06-12T02:26:27.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="archlinux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/archlinux-install/grub-ls-uuid.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2018/06/12/archlinux-install/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2018/06/12/archlinux-install/","path":"2018/06/12/archlinux-install/","title":"硬盘安装Archlinux"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>硬盘安装Archlinux | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prepare"><span class="nav-number">1.</span> <span class="nav-text">Prepare</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%8C%BA"><span class="nav-number">1.1.</span> <span class="nav-text">分区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AF%BCiso"><span class="nav-number">1.2.</span> <span class="nav-text">引导iso</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">2.</span> <span class="nav-text">Install</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%8E%E6%8C%82%E8%BD%BD"><span class="nav-number">2.1.</span> <span class="nav-text">分区格式化与挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%94%E7%BD%91%E5%AE%89%E8%A3%85"><span class="nav-number">2.2.</span> <span class="nav-text">联网安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85GRUB2%E5%BC%95%E5%AF%BC%E5%99%A8"><span class="nav-number">2.3.</span> <span class="nav-text">安装GRUB2引导器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%88%B0GRUB2%E5%BC%95%E5%AF%BC%E9%A1%B9"><span class="nav-number">2.4.</span> <span class="nav-text">添加到GRUB2引导项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8C%E6%88%90%E5%AE%89%E8%A3%85"><span class="nav-number">2.5.</span> <span class="nav-text">完成安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Notes"><span class="nav-number">3.</span> <span class="nav-text">Notes</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2018/06/12/archlinux-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="硬盘安装Archlinux | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          硬盘安装Archlinux<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/archlinux-install.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018年6月12日 10:26:27" itemprop="dateCreated datePublished" datetime="2018-06-12T10:26:27+08:00">2018年6月12日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>记录一下Archlinux的安装过程，减少以后折腾耗时。</p>
+<span id="more"></span>
+
+<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><h3 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h3><p>不建议在Linux下直接分区。因为我太菜，经常把分区表弄乱，导致数据丢失。直接使用DiskGenius软件分出一个20G大小的新分区供Archlinux使用。</p>
+<p>注意，该新分区是Archlinux的安装根分区，而不是下文iso文件存放的位置。</p>
+<h3 id="引导iso"><a href="#引导iso" class="headerlink" title="引导iso"></a>引导iso</h3><p>首先准备能启动到GRUB2的环境，若没有的话可以利用闲置的U盘或者bcd引导，写入一个<a target="_blank" rel="noopener" href="https://www.supergrubdisk.org/super-grub2-disk/">SuperGRUB2</a>镜像（大小约20M），下面将利用GRUB2引导Archlinux的ISO镜像进行硬盘安装。</p>
+<p>去<a target="_blank" rel="noopener" href="https://www.archlinux.org/download/">Archlinux官网</a>下载iso镜像，比如我的是<code>archlinux-2018.05.01-x86_64.iso</code>。将iso文件扔到一个磁盘根目录下。</p>
+<p>在该分区上新建一个grub_iso.cfg文件，用于引导Archlinux ISO文件</p>
+<pre><code>menuentry &quot;Boot ArchLinux ISO&quot; &#123;
+    set root=(hd0,xxx)
+    set isofile=/archlinux-2018.05.01-x86_64.iso
+
+    # ls -l /dev/disk/by-uuid
+    set uuid=xxxx
+
+    loopback loop $isofile
+    probe -l $root -s label
+    linux (loop)/arch/boot/x86_64/vmlinuz img_dev=/dev/disk/by-uuid/$uuid img_loop=$isofile
+    initrd (loop)/arch/boot/x86_64/archiso.img
+&#125;
+</code></pre>
+<p>root分区后面的(hd0,msdos1)需要根据实际做修改，不要照抄我的，有的人是(hd0,msdos5)或者(hd0,gpt4)，要根据你的磁盘的分区表类型。</p>
+<p>UUID的获取方法？Linux下用<code>ls -l /dev/disk/by-uuid</code>命令，或者在GRUB2终端界面直接按<code>ls -l</code>即可看到。</p>
+<p>grub_iso.cfg不确定的部分，可以不做修改，稍后在GRUB2终端界面中修改为正确的值。</p>
+<p>使用U盘或者其它方式进入GRUB2</p>
+<p>按c进入GRUB2的终端界面，使用<code>configfile (hd0,xxxx)/grub_iso.cfg</code>命令加载上述用于引导Archlinux ISO文件的配置文件。其中xxxx内容可以按TAB键自动补全。</p>
+<p>使用<code>ls -l</code>命令，记下正确的root分区号和UUID，如我的是(hd1,msdos7)和0000678400004823</p>
+<p><img src="/images/archlinux-install/grub-ls-uuid.png"></p>
+<p>按e修改<code>Boot ArchLinux ISO</code>启动项的命令，修改root和uuid为正确值。按F10直接启动进入Archlinux安装界面。</p>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><p>根据<a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/installation_guide">官方安装说明</a>整理出基本的安装步骤。</p>
+<h3 id="分区格式化与挂载"><a href="#分区格式化与挂载" class="headerlink" title="分区格式化与挂载"></a>分区格式化与挂载</h3><p>格式化刚刚创建的根分区：</p>
+<pre><code>mkfs.ext4 /dev/sdxY （请将的sdxY替换为刚创建的分区）
+</code></pre>
+<p>挂载</p>
+<pre><code>mount /dev/sdxY /mnt （请将的sdxY替换为刚创建的分区）
+</code></pre>
+<h3 id="联网安装"><a href="#联网安装" class="headerlink" title="联网安装"></a>联网安装</h3><p>有线使用<code>dhcpcd</code>命令，无线使用<code>wifi-menu</code>命令。使用<code>ping qq.com</code>测试网络连通性。</p>
+<p>安装基本包</p>
+<pre><code>pacstrap /mnt base
+</code></pre>
+<p>生成fstab</p>
+<pre><code>genfstab -U /mnt &gt;&gt; /mnt/etc/fstab
+</code></pre>
+<p>改变根分区到新分区上</p>
+<pre><code>arch-chroot /mnt
+</code></pre>
+<p>时区</p>
+<pre><code>ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+hwclock --systohc
+</code></pre>
+<p>安装其他软件包</p>
+<pre><code>pacman -S net-tools vim dialog wpa_supplicant ntfs-3g networkmanager
+pacman -S openssh （不需要ssh可以不装）
+pacman -S bash-completion （自动补全插件）
+pacman -S intel-ucode （英特尔CPU才需要安装）
+</code></pre>
+<p>设置语言</p>
+<pre><code>vi /etc/locale.gen
+# 取消注释 zh_CN.UTF-8 UTF-8
+</code></pre>
+<p>创建并修改&#x2F;etc&#x2F;locale.conf</p>
+<pre><code>vi /etc/locale.conf
+# 插入一行
+LANG=zh_CN.UTF-8
+</code></pre>
+<p>生成locale</p>
+<pre><code>locale-gen
+</code></pre>
+<p>主机名</p>
+<pre><code>echo &quot;Archlinux&quot; &gt; /etc/hostname
+</code></pre>
+<p>设置root密码</p>
+<pre><code>passwd
+</code></pre>
+<h3 id="安装GRUB2引导器"><a href="#安装GRUB2引导器" class="headerlink" title="安装GRUB2引导器"></a>安装GRUB2引导器</h3><p>如果你本机已经安装了GRUB2引导器，可以跳过这一小节，无需重复重复安装GRUB2</p>
+<p>安装软件包</p>
+<pre><code>pacman -S grub
+</code></pre>
+<p>确定自己使用的是EFI还是BIOS引导，如果是EFI引导，下面命令会有结果输出，否则是BIOS引导</p>
+<pre><code>ls /sys/firmware/efi/efivars
+</code></pre>
+<p>若确认自己使用的是EFI引导，需要另外挂载EFI分区到某个目录（如&#x2F;tmp&#x2F;efi）才能安装grub2</p>
+<pre><code>mkdir -p /tmp/efi
+mount /dev/sdxY /tmp/efi （请将的sdxY替换为EFI分区）
+
+pacman -S efibootmgr
+
+grub-install --efi-directory=/tmp/efi --bootloader-id=grub
+
+umount /tmp/efi
+</code></pre>
+<p>若是自己使用的是BIOS引导</p>
+<pre><code>grub-install /dev/sdx （将sdx换成你安装的硬盘，注意是硬盘，不是sdaxY分区）
+</code></pre>
+<h3 id="添加到GRUB2引导项"><a href="#添加到GRUB2引导项" class="headerlink" title="添加到GRUB2引导项"></a>添加到GRUB2引导项</h3><p>安装系统探测器，便于添加已有的EFI系统引导项。</p>
+<pre><code>pacman -S os-prober
+</code></pre>
+<p>若按照了上一节的说明《安装GRUB2引导器》自行安装了GRUB2，则可以直接将Archlinux添加到grub.cfg中</p>
+<pre><code>grub-mkconfig -o /boot/grub/grub.cfg
+</code></pre>
+<p>否则，若系统本身就有GRUB2（即已存在其它Linux系统，如Ubuntu等），可以挂载ubuntu所在分区，并将Archlinux添加到grub.cfg中。</p>
+<pre><code>mkdir -p /tmp/ubuntu-root
+mount /dev/sdxY /tmp/ubuntu-root/tmp/ubuntu-root （请将的sdxY替换为其它Linux的根分区）
+grub-mkconfig -o /tmp/ubuntu-root/boot/grub/grub.cfg
+</code></pre>
+<h3 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h3><p>重启</p>
+<pre><code>exit
+reboot
+</code></pre>
+<p>重启后遇到EFI Shell或者无法进入GRUB2，可以尝试在EFI Shell手动添加引导项。</p>
+<p>参考文章<a href="/2018/06/12/uefi-shell/">UEFI Shell</a></p>
+<h2 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h2><p>本文只是安装了基本的系统，不含有X桌面。要使用X桌面，请参考其他文章。</p>
+<p>参考博客：<a target="_blank" rel="noopener" href="https://www.viseator.com/2017/05/17/arch_install/">以官方Wiki的方式安装ArchLinux</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/archlinux/" rel="tag"># archlinux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/06/11/ss-redir-ipset/" rel="prev" title="ss-redir配合ipset转发TCP+UDP">
+                  <i class="fa fa-chevron-left"></i> ss-redir配合ipset转发TCP+UDP
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/06/12/uefi-shell/" rel="next" title="UEFI Shell常用命令">
+                  UEFI Shell常用命令 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="A fast, safe VPN based on libsodiumhttps:&#x2F;&#x2F;shadowvpn.org&#x2F;License: GPL-3.0Language: CCreated: September 13, 2014 15:40Last updated: August 20, 2015 03:07">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ShadowVPN项目简介">
+<meta property="og:url" content="http://lixingcong.github.io/2015/09/06/info-of-shadowvpn/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="A fast, safe VPN based on libsodiumhttps:&#x2F;&#x2F;shadowvpn.org&#x2F;License: GPL-3.0Language: CCreated: September 13, 2014 15:40Last updated: August 20, 2015 03:07">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-09-06T08:26:07.000Z">
+<meta property="article:modified_time" content="2015-09-06T08:26:07.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="shadowsocks">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/09/06/info-of-shadowvpn/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/09/06/info-of-shadowvpn/","path":"2015/09/06/info-of-shadowvpn/","title":"ShadowVPN项目简介"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ShadowVPN项目简介 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-fast-safe-VPN-based-on-libsodium"><span class="nav-number">1.</span> <span class="nav-text">A fast, safe VPN based on libsodium</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install"><span class="nav-number">2.1.</span> <span class="nav-text">Install</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Debian-amp-Ubuntu"><span class="nav-number">2.1.1.</span> <span class="nav-text">Debian &amp; Ubuntu</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Unix"><span class="nav-number">2.1.2.</span> <span class="nav-text">Unix</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OpenWRT"><span class="nav-number">2.1.3.</span> <span class="nav-text">OpenWRT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#iOS"><span class="nav-number">2.1.4.</span> <span class="nav-text">iOS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Android"><span class="nav-number">2.1.5.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows"><span class="nav-number">2.1.6.</span> <span class="nav-text">Windows</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuration"><span class="nav-number">2.2.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Usage"><span class="nav-number">2.3.</span> <span class="nav-text">Usage</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Server"><span class="nav-number">2.3.1.</span> <span class="nav-text">Server:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Client"><span class="nav-number">2.3.2.</span> <span class="nav-text">Client:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Client-OpenWRT"><span class="nav-number">2.3.3.</span> <span class="nav-text">Client(OpenWRT):</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/09/06/info-of-shadowvpn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ShadowVPN项目简介 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ShadowVPN项目简介<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/info-of-shadowvpn.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年9月6日 16:26:07" itemprop="dateCreated datePublished" datetime="2015-09-06T16:26:07+08:00">2015年9月6日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="A-fast-safe-VPN-based-on-libsodium"><a href="#A-fast-safe-VPN-based-on-libsodium" class="headerlink" title="A fast, safe VPN based on libsodium"></a>A fast, safe VPN based on libsodium</h2><p><a target="_blank" rel="noopener" href="https://shadowvpn.org/">https://shadowvpn.org/</a><br>License: GPL-3.0<br>Language: C<br>Created: September 13, 2014 15:40<br>Last updated: August 20, 2015 03:07</p>
+<span id="more"></span>
+<p>Last pushed: August 19, 2015 10:06<br>Size: 6.43 MB<br>Stars: 985<br>Forks: 122<br>Watchers: 136<br>Open issues: 26</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>ShadowVPN is a fast, safe VPN based on libsodium. Designed for low end devices, i.e. OpenWRT routers.</p>
+<p>ShadowVPN is currently beta and have much work to do. If you want a stable version, please come by here a few months later.</p>
+<p>目前shadowvpn已经被项目所有者移除</p>
+<h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><h4 id="Debian-amp-Ubuntu"><a href="#Debian-amp-Ubuntu" class="headerlink" title="Debian &amp; Ubuntu"></a>Debian &amp; Ubuntu</h4><p>For Debian 7 and Ubuntu 12+, add the following line to &#x2F;etc&#x2F;apt&#x2F;sources.list</p>
+<pre><code>deb http://shadowvpn.org/debian wheezy main
+</code></pre>
+<p>Then</p>
+<pre><code>apt-get update &amp;&amp; apt-get install shadowvpn
+service shadowvpn restart
+</code></pre>
+<h4 id="Unix"><a href="#Unix" class="headerlink" title="Unix"></a>Unix</h4><p>Currently Linux, FreeBSD and OS X are supported. Download a release and build. Do not clone the repo, since it&#39;s not stable. Make sure to set --sysconfdir&#x3D;&#x2F;etc. You&#39;ll find conf files under &#x2F;etc.</p>
+<p>For Debian-based Linux</p>
+<pre><code>sudo apt-get update
+sudo apt-get install build-essential automake libtool git -y
+./configure --enable-static --sysconfdir=/etc
+make &amp;&amp; sudo make install
+</code></pre>
+<h4 id="OpenWRT"><a href="#OpenWRT" class="headerlink" title="OpenWRT"></a>OpenWRT</h4><p>Download bundled <a target="_blank" rel="noopener" href="https://github.com/aa65535/openwrt-shadowvpn">ShadowVPN with LuCI</a>, or just download ShadowVPN itself,</p>
+<p>Or build ShadowVPN yourself: cd into <a target="_blank" rel="noopener" href="http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk">SDK</a> root, then</p>
+<pre><code>pushd package
+git clone https://github.com/clowwindy/ShadowVPN.git
+popd
+make menuconfig # select Network/ShadowVPN
+make V=s
+scp bin/xxx/ShadowVPN-xxx-xxx.ipk root@192.168.1.1
+# then log in your box and use opkg to install that ipk file
+</code></pre>
+<h4 id="iOS"><a href="#iOS" class="headerlink" title="iOS"></a>iOS</h4><p>See iOS</p>
+<h4 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h4><p>See Android</p>
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><p>See Build for Windows.</p>
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><ol>
+<li><p>You can find all the conf files under &#x2F;etc&#x2F;shadowvpn.</p>
+</li>
+<li><p>For the client, edit client.conf.</p>
+</li>
+<li><p>For the server, edit server.conf.</p>
+</li>
+<li><p>Update server and password in those files.</p>
+</li>
+<li><p>The script file specified by up will be executed after VPN is up.</p>
+</li>
+<li><p>The script file specified by down will be executed after VPN is down.</p>
+</li>
+<li><p>If you need to specify routing rules, modify those scripts. You&#39;ll see a placeholder at the end of those scripts.</p>
+</li>
+<li><p>If you are using Windows, the IP address of TUN&#x2F;TAP device tunip is required to be specified in the conf file.</p>
+</li>
+<li><p>You can configure multiple users(详见下一篇博客)</p>
+<pre><code> 多服务端配置很简单，更改端口，tun序号，内网ip即可。
+ 新建server.conf  server_down.sh  server_up.sh
+</code></pre>
+</li>
+</ol>
+<h3 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h3><h4 id="Server"><a href="#Server" class="headerlink" title="Server:"></a>Server:</h4><pre><code>sudo shadowvpn -c /etc/shadowvpn/server.conf -s start
+sudo shadowvpn -c /etc/shadowvpn/server.conf -s stop
+</code></pre>
+<p>If you installed using apt-get, you can use sudo service shadowvpn start instead.</p>
+<h4 id="Client"><a href="#Client" class="headerlink" title="Client:"></a>Client:</h4><pre><code>sudo shadowvpn -c /etc/shadowvpn/client.conf -s start
+sudo shadowvpn -c /etc/shadowvpn/client.conf -s stop
+</code></pre>
+<h4 id="Client-OpenWRT"><a href="#Client-OpenWRT" class="headerlink" title="Client(OpenWRT):"></a>Client(OpenWRT):</h4><pre><code>/etc/init.d/shadowvpn start
+/etc/init.d/shadowvpn stop
+</code></pre>
+<p>You can also read LuCI Configuration.</p>
+<p>Wiki<br>You can find all the documentation in the wiki:</p>
+<pre><code>https://github.com/clowwindy/ShadowVPN/wiki
+</code></pre>
+<p>License<br>Copyright (C) 2015 clowwindy</p>
+<p>This program is free software: you can redistribute it and&#x2F;or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with this program. If not, see <a target="_blank" rel="noopener" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/09/06/shadowvpn-conf-EN/" rel="prev" title="Configuring the ShadowVPN Server/Client">
+                  <i class="fa fa-chevron-left"></i> Configuring the ShadowVPN Server/Client
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/10/06/python-with-as/" rel="next" title="Python的with...as的用法">
+                  Python的with...as的用法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

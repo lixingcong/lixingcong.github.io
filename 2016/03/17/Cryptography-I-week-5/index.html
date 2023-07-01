@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Compute Discrete Log">
+<meta property="og:url" content="http://lixingcong.github.io/2016/03/17/Cryptography-I-week-5/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/crypro_coursera_I/week5.png">
+<meta property="article:published_time" content="2016-03-17T07:57:32.000Z">
+<meta property="article:modified_time" content="2016-03-17T07:57:32.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/crypro_coursera_I/week5.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/03/17/Cryptography-I-week-5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/03/17/Cryptography-I-week-5/","path":"2016/03/17/Cryptography-I-week-5/","title":"Cryptography解题报告：Compute Discrete Log"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cryptography解题报告：Compute Discrete Log | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91"><span class="nav-number">2.</span> <span class="nav-text">遇到的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">运行结果</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/03/17/Cryptography-I-week-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cryptography解题报告：Compute Discrete Log | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cryptography解题报告：Compute Discrete Log<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/Cryptography-I-week-5.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年3月17日 15:57:32" itemprop="dateCreated datePublished" datetime="2016-03-17T15:57:32+08:00">2016年3月17日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！</p>
+<span id="more"></span>
+<p>题目就是让你在2^20复杂度下计算出一个大素数p的Zp*集合中一个元素x：</p>
+<pre><code>h = g^x in p
+</code></pre>
+<p>视频<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=EeV_gd8dSQI">10-5 Intractable problems</a>定位到9:45,教授说道，计算DLOG比较困难，但是对某些数字位数比较小的key，可以两端夹击（Meet in The Middle）破解。本次作业就是模拟这个过程。思路很简单，就是用c++实现太麻烦了！看看人家Java写的代码不超过80行。python更是50行代码就搞定了。。。</p>
+<p>这个公式就是算法核心：<br><img src="/images/crypro_coursera_I/week5.png"></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>教授给出的思路如下：</p>
+<ol>
+<li>令B&#x3D;2^20</li>
+<li>for x1 in [0,B]: 计算出左侧公式的值记为a</li>
+<li>将每一个hash(a)的值存入哈希表</li>
+<li>for x0 in [0,B]: 计算出右侧公式的值记为b，计算hash(b)看看是否在哈希表中</li>
+<li>输出x0 x1，计算最后的结果 x &#x3D; x0*B + x1</li>
+</ol>
+<h2 id="遇到的坑"><a href="#遇到的坑" class="headerlink" title="遇到的坑"></a>遇到的坑</h2><ol>
+<li>python语言中的encode(hex)和decode(hex)方法实现过程中，对unsigned char和char数据类型不了解，导致将u8的哈希值转成s8字符串出错。还有在函数参数进行强制类型转换时，注意u8可以转成s8类型，反过来不可以。编译器提示丢失精度指的是丢失正负号。</li>
+<li>使用第三方的库还是第一次，在编译链接时候耗费太多时间调试Makefile，教训：先一句一句地进行终端的G++编译通过了，再写进Makefile，最后才是对Makefile进行优化：什么隐式推倒自动化变量之类的。</li>
+<li>使用libsodium遇到SHA-256对两个msg（msg1!&#x3D;msg2)生成两个摘要时，发现总是hash(msg1)&#x3D;hash(msg2)，最后折腾一番才发现是MSG_LEN没有指定，正确做法：strlen(msg)</li>
+<li>第三条中，strlen(msg)又是一个坑，当msg为unsigned char数组时，无法正确获得长度，所以传入str_to_hex参数中我将strlen(hash_raw_result)替换成常量crypto_hash_sha256_BYTES，成功将unsigned char 转成hex编码的字符串。</li>
+<li>又是那个可恶的unsigned char：不能使用strlen就够了，连strcmp和strcpy都不能用！最后只能使用memcpy和memcmp进行比较字符串大小和赋值字符串。</li>
+<li>因为好久没有接触c++了（至少一年半吧），对new动态分配内存不了解，以后记得对于无法预测数据统统使用new来动态分配内存，这次算是学到不少内存管理的经验。</li>
+<li>set容器要指定一个排序的方法，因为使用的红黑树，插入即完成排序。还有在排序时候不能使用等号（&gt;&#x3D; 和 &lt;&#x3D;），否则有元素重复！</li>
+<li>进行内存回收，防止内存泄露，这是最基本的，记得free或者delete。</li>
+</ol>
+<p>自己按照要求实现了一下，第一次是失败了，输出了错误的x1和x0，后来参考了一下<a target="_blank" rel="noopener" href="http://groglogs.blogspot.com/2013/12/java-compute-discrete-logarithm.html">他的java代码</a>，通过不停打印和对比中间结果，我发现自己思维上走了歪路。最后重构耗时一天半结果出来了。运行时间还能接受，我C++跑了24秒，而他的java代码跑了两分钟。。。可以看出两种语言的性能差异。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>使用<a target="_blank" rel="noopener" href="https://github.com/jedisct1/libsodium">libsodium</a>和<a target="_blank" rel="noopener" href="https://gmplib.org/">libgmp</a>这两个库，前者是大多数梯子的crypto库首选，后者是流行的GNU高精度运算库。<br>C++源码：</p>
+<pre><code>#include &lt;iostream&gt;
+#include &lt;gmp.h&gt;
+#include &lt;cstring&gt;
+#include &lt;time.h&gt;
+#include &lt;sodium.h&gt;
+#include &lt;set&gt;
+
+using namespace std;
+static unsigned char ByteMap[] = &#123; &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;,&#39;9&#39;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39; &#125;;
+static char p_str[] =
+        &quot;13407807929942597099574024998205846127479365820592393377723561443721764030073546976801874298166903427690031858186486050853753882811946569946433649006084171&quot;;
+static char g_str[] =
+        &quot;11717829880366207009516117596335367088558084999998952205599979459063929499736583746670572176471460312928594829675428279466566527115212748467589894601965568&quot;;
+static char h_str[] =
+        &quot;3239475104050450443565264378728065788649097520952449527834792452971981976143292558073856937958553180532878928001494706097394108577585732452307673444020333&quot;;
+
+static unsigned long int pow_2_over_20 = 1048576; // 常量2^20
+void str_encode(unsigned char *src, unsigned char *dest, int len_of_src) &#123;
+    // python的str.encode(&#39;hex&#39;)方法实现
+    // 使用注意：dest_len &gt;= 2*len_src +1，最后一位是存放&#39;\0&#39;。
+    int t1;
+    for (int i = 0; i &lt; len_of_src; ++i) &#123;
+        t1 = (int) src[i];
+        dest[2 * i] = ByteMap[t1 / 16];
+        dest[2 * i + 1] = ByteMap[t1 % 16];
+    &#125;
+    dest[2 * len_of_src] = 0; //必须填充最后一个为&#39;\0&#39;
+&#125;
+
+// 含hash 和 序号x1 的结构体，插入到set容器
+struct my_pair &#123;
+    unsigned char hash[65];
+    unsigned long int number;
+&#125;;
+
+// “仿函数&quot;。重载运算符&#39;&lt;&#39;指定排序规则
+class my_pair_sort &#123;
+public:
+    bool operator()(const my_pair &amp;a, const my_pair &amp;b) const &#123;
+        /*unsigned类型数组不能使用strcmp函数*/
+        if (memcmp(a.hash, b.hash, sizeof(a.hash)) &lt; 0) // 刚开始写了&quot;&lt;=&quot;，后果是插进去的元素有重复
+            return true;
+        else return false;
+    &#125;
+&#125;;
+
+void show_the_answer(unsigned long int x0, unsigned long int x1,const mpz_t p) &#123;
+    mpz_t x0_, x1_;
+    char result[190];
+    mpz_init(x0_);
+    mpz_init(x1_);
+    mpz_set_ui(x0_, x0);
+    mpz_mul_ui(x1_, x0_, pow_2_over_20); // 求x0*(2^20),存入x1_
+    mpz_add_ui(x0_, x1_, x1);		 // 求x1+x0*(2^20)，存入x0_
+    mpz_mod(x1_, x0_, p);		 // 求x1+x0*(2^20)对P的模，存入x1_
+    mpz_get_str(result, 10, x1_);	 // 转成字符串
+    cout &lt;&lt; result &lt;&lt; endl;
+    mpz_clear(x0_);
+    mpz_clear(x1_);
+&#125;
+
+int main() &#123;
+    time_t start_time, end_time;
+    time(&amp;start_time);			// 计时开始
+    if (sodium_init() == -1) return 1; // 加载crypto库
+    unsigned char hash_raw_out[crypto_hash_sha256_BYTES], hash_encoded[40]; // 存放哈希有关的数据
+    char str_a[220], str_b[220];										// 临时字符串
+    mpz_t mpz_t_g, mpz_t_h, mpz_t_p, mpz_t_temp, mpz_t_g_pow_B, mpz_t_inv;// 大数变量
+    mpz_init_set_str(mpz_t_g, g_str, 10);
+    mpz_init_set_str(mpz_t_p, p_str, 10);
+    mpz_init_set_str(mpz_t_h, h_str, 10);
+    mpz_init(mpz_t_temp);
+    mpz_init(mpz_t_inv);
+
+    set&lt;my_pair, my_pair_sort&gt; my_pair_set; // 红黑树set存放所有哈希结果
+
+    for (unsigned long int x1 = 0; x1 &lt;= pow_2_over_20; x1++) &#123;
+        mpz_powm_ui(mpz_t_temp, mpz_t_g, x1, mpz_t_p); // 求((g^x1) mod p)存入mpz_t_temp
+        mpz_invert(mpz_t_inv, mpz_t_temp, mpz_t_p);	// 求inverse(g^x1)存入mpt_t_inv
+        mpz_mul(mpz_t_temp, mpz_t_inv, mpz_t_h);// 求(h * inv(g^x1))存入mpz_t_temp
+        mpz_mod(mpz_t_inv, mpz_t_temp, mpz_t_p);		  // 求模p，存入mpt_t_inv
+
+        mpz_get_str(str_b, 10, mpz_t_inv); // 结果送字符串b
+        crypto_hash_sha256(hash_raw_out, (unsigned char*) str_b, strlen(str_b)); // hash
+        str_encode(hash_raw_out, hash_encoded, crypto_hash_sha256_BYTES); // 因为hash_raw是unsigned表示数字，而不是字符，所以hash_raw最后1byte不是&#39;\0&#39;，不能使用strlen函数求出hash_raw_out长度
+
+        my_pair *good_pair = new (my_pair); // 动态内存分配，如果使用静态内存分配很蛋疼。
+        memcpy(good_pair-&gt;hash, hash_encoded, 2 * crypto_hash_sha256_BYTES + 1); // 不能使用strcpy，因为是unsigned数据类型，遇到负值很变态。
+        good_pair-&gt;number = x1;
+        my_pair_set.insert(*good_pair); // 插入到set，因为规定了排序规则，插进去就是完成排序了
+        delete good_pair;
+    &#125;
+    cout &lt;&lt; &quot;build x1 hash table done.\n&quot;;
+
+    mpz_init(mpz_t_g_pow_B);
+    mpz_powm_ui(mpz_t_g_pow_B, mpz_t_g, pow_2_over_20, mpz_t_p); // 计算出g^B这个常量
+
+    my_pair *hash_find_target = new (my_pair);
+    set&lt;my_pair, my_pair_sort&gt;::iterator iter;
+
+    bool is_found = false;
+    unsigned long int x0_good = 0, x1_good = 0;
+    for (unsigned long int x0 = 0; x0 &lt;= pow_2_over_20; x0++) &#123; // 开始搜索 x0
+        mpz_powm_ui(mpz_t_temp, mpz_t_g_pow_B, x0, mpz_t_p); // 求出(pow(g^B,x0) mod p)存入mpz_t_temp
+        mpz_get_str(str_a, 10, mpz_t_temp); // pow(g^B,x0)存入字符串a
+        crypto_hash_sha256(hash_raw_out, (unsigned char*) str_a, strlen(str_a)); // 计算hash
+        str_encode(hash_raw_out, hash_encoded, crypto_hash_sha256_BYTES);
+
+        memcpy(hash_find_target-&gt;hash, hash_encoded,
+                2 * crypto_hash_sha256_BYTES + 1);
+        iter = my_pair_set.find(*hash_find_target);		// 搜索
+        if (iter != my_pair_set.end()) &#123;
+            x0_good = x0;
+            x1_good = (*iter).number;
+            is_found = true;
+            break;
+        &#125;
+    &#125;
+    cout &lt;&lt; &quot;search table done.\n&quot;;
+
+    mpz_clear(mpz_t_g_pow_B);
+    mpz_clear(mpz_t_inv);
+    mpz_clear(mpz_t_g);
+    mpz_clear(mpz_t_h);
+    mpz_clear(mpz_t_temp);
+    my_pair_set.clear();
+
+    if (is_found) &#123;
+        cout &lt;&lt; &quot;bingo!\n&quot;;
+        cout &lt;&lt; &quot;x1= &quot; &lt;&lt; x1_good &lt;&lt; endl;
+        cout &lt;&lt; &quot;x0= &quot; &lt;&lt; x0_good &lt;&lt; endl;
+        show_the_answer(x0_good, x1_good, mpz_t_p);
+    &#125; else
+        cout &lt;&lt; &quot;Not found.\n&quot;;
+
+    mpz_clear(mpz_t_p);
+    time(&amp;end_time);
+    double dif = difftime(end_time, start_time);
+    cout &lt;&lt; &quot;Cost time: &quot; &lt;&lt; dif &lt;&lt; &quot; seconds&quot; &lt;&lt; endl;
+    return 0;
+&#125;
+</code></pre>
+<p>还有这个配套的Makefile：</p>
+<pre><code>CC=g++
+# link static lib: gmp
+LIBS=-lgmp -lsodium
+SRC=main.cpp
+OBJS=main.o 
+all:$(OBJS)
+    $(CC) $^ $(LIBS) -o main
+$(OBJS):$(SRC)
+    $(CC) -c $(LIBS) $^ -o $@
+.PHONY:clean
+clean:
+    rm *.o
+    rm main
+</code></pre>
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><pre><code>li@ubuntu:~/tmp$ make &amp;&amp; ./main
+build x1 hash table done.
+search table done.
+bingo!
+x1 = 787046
+x0 = 357984
+375374217830
+Cost time: 25 seconds
+</code></pre>
+<p>可见答案是375374217830</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/03/14/eclipse-configure-notes/" rel="prev" title="我的eclipse配置">
+                  <i class="fa fa-chevron-left"></i> 我的eclipse配置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/03/27/decompile-android-apk/" rel="next" title="反汇编apk">
+                  反汇编apk <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

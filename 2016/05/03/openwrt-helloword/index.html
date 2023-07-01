@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="openwrt开发的第一步就是生成一个package让其在路由器上运行！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openwrt编译出helloword.ipk">
+<meta property="og:url" content="http://lixingcong.github.io/2016/05/03/openwrt-helloword/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="openwrt开发的第一步就是生成一个package让其在路由器上运行！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-05-03T04:47:57.000Z">
+<meta property="article:modified_time" content="2016-05-03T04:47:57.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="openwrt">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/05/03/openwrt-helloword/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/05/03/openwrt-helloword/","path":"2016/05/03/openwrt-helloword/","title":"openwrt编译出helloword.ipk"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>openwrt编译出helloword.ipk | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%88%8F"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96openwrt%E5%86%85%E6%A0%B8%E6%A0%91"><span class="nav-number">1.1.</span> <span class="nav-text">获取openwrt内核树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-number">1.2.</span> <span class="nav-text">获取工具链</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84print"><span class="nav-number">2.</span> <span class="nav-text">简单的print</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E7%9A%84hellowolrd"><span class="nav-number">2.1.</span> <span class="nav-text">本机的hellowolrd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99openwrt%E7%9A%84Makefile"><span class="nav-number">2.2.</span> <span class="nav-text">编写openwrt的Makefile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%B8%A6%E6%9C%89%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84print"><span class="nav-number">3.</span> <span class="nav-text">编译带有第三方库的print</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E7%BC%96%E8%AF%91helloworld"><span class="nav-number">3.1.</span> <span class="nav-text">本机编译helloworld</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99openwrt%E7%9A%84Makefile-1"><span class="nav-number">3.2.</span> <span class="nav-text">编写openwrt的Makefile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83package"><span class="nav-number">4.</span> <span class="nav-text">发布package</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/05/03/openwrt-helloword/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="openwrt编译出helloword.ipk | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          openwrt编译出helloword.ipk<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/openwrt-helloword.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年5月3日 12:47:57" itemprop="dateCreated datePublished" datetime="2016-05-03T12:47:57+08:00">2016年5月3日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>openwrt开发的第一步就是生成一个package让其在路由器上运行！</p>
+<span id="more"></span>
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><h3 id="获取openwrt内核树"><a href="#获取openwrt内核树" class="headerlink" title="获取openwrt内核树"></a>获取openwrt内核树</h3><p>以一个非root用户登陆ubuntu 16.04 x64，这里的用户名叫test。</p>
+<p>新建一个1.sh文件</p>
+<pre><code>#! /bin/bash
+cd ~
+sudo apt-get install git build-essential libssl-dev libncurses5-dev unzip subversion mercurial gawk
+git clone http://git.openwrt.org/15.05/openwrt.git
+cd openwrt &amp;&amp; ./scripts/feeds update -a &amp;&amp; ./scripts/feeds install -a &amp;&amp; make defconfig &amp;&amp; make prereq
+</code></pre>
+<p>运行1.sh，实现了下载openwrt 15.05的源码并自动配置依赖关系</p>
+<h3 id="获取工具链"><a href="#获取工具链" class="headerlink" title="获取工具链"></a>获取工具链</h3><p>以MT7620为例</p>
+<pre><code>wget http://downloads.openwrt.org/chaos_calmer/15.05.1/ramips/mt7620/OpenWrt-SDK-15.05.1-ramips-mt7620_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2
+tar xjf OpenWrt-SDK-15.05-ar71xx-generic*.bz2
+cd OpenWrt-SDK-15.05-ar71xx-generic*
+cp -R staging_dir ~/openwrt
+</code></pre>
+<h2 id="简单的print"><a href="#简单的print" class="headerlink" title="简单的print"></a>简单的print</h2><p>所以记得开发的原则是：先确保在本机运行正常，再尝试移植到openwrt！</p>
+<h3 id="本机的hellowolrd"><a href="#本机的hellowolrd" class="headerlink" title="本机的hellowolrd"></a>本机的hellowolrd</h3><pre><code>cd ~/openwrt/package
+mkdir hello &amp;&amp; mkdir hello/src
+cd hello/src
+</code></pre>
+<p>main.c主程序</p>
+<pre><code>vi main.c
+# ---
+#include &lt;stdio.h&gt;
+int main()&#123;
+    printf(&quot;hello world!\n&quot;);
+    return 0;
+&#125;
+</code></pre>
+<p>Makefile也要写一个。</p>
+<pre><code>vi Makefile
+# ---
+all:hello
+LIBS+=-lsodium
+hello:main.o
+    $(CC) main.o -o hello $(LDFLAGS) $(LIBS) 
+main.o:main.c
+    $(CC) -c main.c $(CFLAGS)	
+clean:
+    rm hello
+    rm -rf *.o
+# install is required for openwrt if you&#39;d like to build *.ipk
+install:
+    cp hello /tmp/
+</code></pre>
+<p>测试一下Make是否成功</p>
+<pre><code>make &amp;&amp; ./hello
+# 结果：hello world!
+make install
+# 结果：成功拷贝/tmp
+make clean
+# 结果：成功清除垃圾啊中间文件
+</code></pre>
+<h3 id="编写openwrt的Makefile"><a href="#编写openwrt的Makefile" class="headerlink" title="编写openwrt的Makefile"></a>编写openwrt的Makefile</h3><p>参考<a target="_blank" rel="noopener" href="https://wiki.openwrt.org/doc/devel/packages">openwrt官方教程</a></p>
+<p>openwrt的package Makefile是移植程序的好帮手，非常容易掌握，格式很固定，我是根据clowwindy的配置修改的</p>
+<pre><code>cd ~/openwrt/package/hello
+vi Makefile
+# ---
+include $(TOPDIR)/rules.mk
+# 包信息
+PKG_NAME:=hello
+PKG_VERSION:=0.1
+PKG_RELEASE:=1
+
+# build目录
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
+
+# 使用install=1生成安装包
+PKG_INSTALL:=1
+PKG_FIXUP:=autoreconf
+PKG_USE_MIPS16:=0
+PKG_BUILD_PARALLEL:=1
+include $(INCLUDE_DIR)/package.mk
+
+# 准备编译前先拷贝源码build_dir
+define Build/Prepare
+    cp -R src/* $(PKG_BUILD_DIR)/
+endef
+
+# 定义包的menuconfig分类目录、包的依赖等
+define Package/hello
+    SECTION:=net
+    CATEGORY:=Network
+    TITLE:=hello world
+    URL:=https://github.com/clowwindy/shadowvpn
+endef
+
+# 定义安装到openwrt的路经，其中$(1)等常量的解释详见官方文档
+define Package/hello/install
+    $(INSTALL_DIR) $(1)/usr/bin
+    $(INSTALL_BIN) /tmp/hello $(1)/usr/bin
+endef
+
+$(eval $(call BuildPackage,hello))
+</code></pre>
+<p>开始配置编译</p>
+<pre><code>cd ~/openwrt
+make menuconfig
+# 选择Network-&gt;hello (这个可以修改，在上面的Makefile)
+# 使用 M 标记为编译单独的package
+make package/hello/compile V=99
+</code></pre>
+<p>确认无误后查看编译的ipk</p>
+<pre><code>find bin | grep hello
+</code></pre>
+<p>拷贝到路由器安装，测试一下！！</p>
+<h2 id="编译带有第三方库的print"><a href="#编译带有第三方库的print" class="headerlink" title="编译带有第三方库的print"></a>编译带有第三方库的print</h2><p>在上面的例子中没有引入第三方的lib，日常开发中不可能自造轮子而不调用api，所以试一下第三方包<a target="_blank" rel="noopener" href="https://github.com/jedisct1/libsodium">libsodium</a>，当然，你的电脑必须先安装libsodium。</p>
+<h3 id="本机编译helloworld"><a href="#本机编译helloworld" class="headerlink" title="本机编译helloworld"></a>本机编译helloworld</h3><p>src&#x2F;main.c内容修改为</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;sodium.h&gt;
+int main()&#123;
+    if (sodium_init() == -1) return 1; 
+    printf(&quot;hello!\n&quot;);
+    return 0;
+&#125;
+</code></pre>
+<p>src&#x2F;Makefile中加入一句</p>
+<pre><code>LIBS += -lsodium
+</code></pre>
+<p>测试一下</p>
+<pre><code>make &amp;&amp; ./hello
+make install
+make clean
+</code></pre>
+<p>没有问题就直接移植吧！</p>
+<h3 id="编写openwrt的Makefile-1"><a href="#编写openwrt的Makefile-1" class="headerlink" title="编写openwrt的Makefile"></a>编写openwrt的Makefile</h3><p>修改Makefile，在 *&#39;define Package&#x2F;hello&#39;*一段中加入依赖</p>
+<pre><code>DEPENDS := +libsodium
+</code></pre>
+<p>我的feed中的Libsodium源码地址有问题，要加上old</p>
+<pre><code>vi package/feeds/packages/libsodium/Makefile
+# 加上/old
+PKG_SOURCE_URL:=https://download.libsodium.org/libsodium/releases/old
+</code></pre>
+<p>开始配置编译，要记得menuconfig一下！</p>
+<pre><code>cd ~/openwrt
+make menuconfig
+make package/hello/compile V=99
+</code></pre>
+<p>编译后同样拷贝ipk测试一下</p>
+<h2 id="发布package"><a href="#发布package" class="headerlink" title="发布package"></a>发布package</h2><p>上面的步骤都是在本地修改源码并编译，确认版本无误后可以选择发布，即让Makefile从指定的URL下载源码编译</p>
+<p>将hello&#x2F;src文件夹打包</p>
+<pre><code>cd ~/openwrt/package/hello
+tar -cvzf /tmp/0.1.tar.gz src/1.c src/Makefile
+</code></pre>
+<p>然后把&#x2F;tmp&#x2F;0.1.tar.gz上传到某网站，例如github release page。这里我随意指定个地址示意</p>
+<pre><code>vi ~/openwrt/hello/Makefile
+# ---
+# 增加几个信息，可以选择加入md5sum校验
+PKG_SOURCE:=$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/$(PKG_VERSION)
+PKG_MD5SUM:=xxxxxxxxxxxxx
+
+# 因为打包的是src目录结构，所以改一下 PKG_BUILD_DIR指向src
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)/src
+
+# 顺便删掉define build/prepare整块，不需要再拷贝源码了
+</code></pre>
+<p>这样就能删掉package&#x2F;hello&#x2F;src整个文件夹。然后打包Makefile发布，给别人编译。</p>
+<pre><code>rm -rf package/hello/src
+tar -cvzf /tmp/hello.tar.gz package/hello
+</code></pre>
+<p>别人拿到你的hello.tar.gz直接在openwrt目录解压，然后他就能编译了</p>
+<pre><code>cd ~/openwrt &amp;&amp; tar -zxf hello.tar.gz
+# 然后就是耳熟能详的make menuconfig 和 make/hello/compile
+</code></pre>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>这篇文章是我参考很多英文材料总结得来的，经过我的实践确认，算是半原创了，参考了aa65535和clowwindy的Makefile，所以码农的一大特点就是：会搜集，会抄会改！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/openwrt/" rel="tag"># openwrt</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/05/01/DNSCrypt-with-dnsmasq/" rel="prev" title="dnsmasq配合dnscrypt解决DNS污染openwrt">
+                  <i class="fa fa-chevron-left"></i> dnsmasq配合dnscrypt解决DNS污染openwrt
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/06/09/openvpn-gen-keys/" rel="next" title="openvpn生成密钥对">
+                  openvpn生成密钥对 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

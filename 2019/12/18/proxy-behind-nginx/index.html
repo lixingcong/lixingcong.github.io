@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="将常用的代理隐藏在nginx背后，使其看起来像是正常的HTTPS流量。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx反代MTProxy和v2ray-plugin">
+<meta property="og:url" content="http://lixingcong.github.io/2019/12/18/proxy-behind-nginx/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="将常用的代理隐藏在nginx背后，使其看起来像是正常的HTTPS流量。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-18T11:03:32.000Z">
+<meta property="article:modified_time" content="2019-12-18T11:03:32.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2019/12/18/proxy-behind-nginx/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2019/12/18/proxy-behind-nginx/","path":"2019/12/18/proxy-behind-nginx/","title":"nginx反代MTProxy和v2ray-plugin"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>nginx反代MTProxy和v2ray-plugin | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">2.</span> <span class="nav-text">Nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MTProxy"><span class="nav-number">3.</span> <span class="nav-text">MTProxy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#V2Ray-plugin"><span class="nav-number">4.</span> <span class="nav-text">V2Ray-plugin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83"><span class="nav-number">5.</span> <span class="nav-text">其它</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2019/12/18/proxy-behind-nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="nginx反代MTProxy和v2ray-plugin | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          nginx反代MTProxy和v2ray-plugin<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/proxy-behind-nginx.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019年12月18日 19:03:32" itemprop="dateCreated datePublished" datetime="2019-12-18T19:03:32+08:00">2019年12月18日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>将常用的代理隐藏在nginx背后，使其看起来像是正常的HTTPS流量。</p>
+<span id="more"></span>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>部署MTProxy和V2Ray-plugin，要求和现有HTTPS网站共存</p>
+<ul>
+<li>共用https端口</li>
+<li>使用Web浏览器打开时为正常的网页，而使用对应的代理客户端功能正常</li>
+</ul>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><p>编译：</p>
+<ul>
+<li>nginx 1.13 以上的版本</li>
+<li>openssl 1.1.1 以上的版本</li>
+</ul>
+<p>nginx主要开启的关键模块：</p>
+<ul>
+<li>http_v2_module</li>
+<li>stream</li>
+<li>stream_ssl_module</li>
+<li>stream_ssl_preread_module</li>
+</ul>
+<p>打印信息</p>
+<pre><code>user@ubuntu:~# nginx -V
+nginx version: nginx/1.17.6
+built by gcc 7.4.0 (Ubuntu 7.4.0-1ubuntu1~18.04.1) 
+built with OpenSSL 1.1.1d  10 Sep 2019
+TLS SNI support enabled
+configure arguments: --with-cc-opt=&#39;-O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security
+-D_FORTIFY_SOURCE=2&#39; --with-ld-opt=&#39;-Wl,-Bsymbolic-functions -Wl,-z,relro&#39; --conf-path=/etc/nginx/nginx.conf --with-debug
+--with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module
+--with-http_addition_module --with-http_dav_module --with-http_geoip_module --with-http_gunzip_module
+--with-http_gzip_static_module --with-http_image_filter_module --with-http_v2_module --with-http_sub_module
+--with-http_xslt_module --with-stream --with-stream_ssl_module --with-threads --without-mail_pop3_module
+--without-mail_imap_module --without-mail_smtp_module --with-stream_ssl_preread_module --with-openssl=../openssl-1.1.1d
+</code></pre>
+<h2 id="MTProxy"><a href="#MTProxy" class="headerlink" title="MTProxy"></a>MTProxy</h2><p>用python3写第三方的服务端<a target="_blank" rel="noopener" href="https://github.com/alexbers/mtprotoproxy">mtprotoproxy</a>可以满足需求，能作为一个stream服务器隐藏在nginx背后。</p>
+<p>官方的<a target="_blank" rel="noopener" href="https://github.com/TelegramMessenger/MTProxy">MTPorxy</a>和第三方<a target="_blank" rel="noopener" href="https://github.com/9seconds/mtg">mtg</a>暂时未能满足需求。因为MTP需要知道客户端的ip和端口，如果没有实现HAProxy的proxy_protocol，则无法获IP和端口。。。proxy_protocol就是传达端口信息的。</p>
+<p>安装并测试</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https:<span class="regexp">//gi</span>thub.com<span class="regexp">/alexbers/m</span>tprotoproxy</span><br><span class="line">cd mtprotoproxy</span><br></pre></td></tr></table></figure>
+
+<p>修改config.py内容如下</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">PORT</span> = <span class="number">3000</span></span><br><span class="line"><span class="attr">USERS</span> = &#123; <span class="string">&quot;tg&quot;</span>:  <span class="string">&quot;xxxxxx&quot;</span> &#125;</span><br><span class="line"><span class="attr">MODES</span> = &#123; <span class="string">&quot;classic&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;secure&quot;</span>: <span class="literal">False</span>, <span class="string">&quot;tls&quot;</span>: <span class="literal">True</span> &#125;</span><br><span class="line"><span class="attr">TLS_DOMAIN</span> = <span class="string">&quot;www.cloudflare.com&quot;</span></span><br><span class="line"><span class="attr">PROXY_PROTOCOL</span> = <span class="literal">False</span></span><br><span class="line"><span class="attr">REPLAY_CHECK_LEN</span> = <span class="number">655350</span></span><br><span class="line"><span class="attr">TO_CLT_BUFSIZE</span> = <span class="number">262144</span></span><br><span class="line"><span class="attr">TO_TG_BUFSIZE</span> = <span class="number">262144</span></span><br></pre></td></tr></table></figure>
+
+<p>参数解读：</p>
+<ul>
+<li>PORT指定默认监听端口，程序默认绑定0.0.0.0固定值，要监听localhost则需要改源码</li>
+<li>USER内的xxxxx值为secret，可以用命令<code>head -c 16 /dev/urandom | xxd -ps</code>生成</li>
+<li>TLS_DOMAIN不能随意填，详见<a target="_blank" rel="noopener" href="https://github.com/alexbers/mtprotoproxy/issues/165#issuecomment-558648069">这篇讨论</a>，要填入支持TLS1.3的网站域名，而且要合适的证书长度，不合适的证书长度有<code>several TLS records</code>之类的错误。<strong>同时不建议填入自己申请的域名</strong></li>
+<li>PROXY_PROTOCOL默认为False，表示不使用nginx作为反向代理。若使用nginx反向代理必须设置为True，详见<a target="_blank" rel="noopener" href="https://github.com/alexbers/mtprotoproxy/pull/119">这篇讨论</a></li>
+</ul>
+<p>运行py，根据屏幕上面弹出<code>tg://t.me/xxxxxxx</code>之类的链接，直接设置到TG内作为MTPROTO代理。</p>
+<pre><code>python3 ./mtprotoproxy.py
+</code></pre>
+<p>确认TG可以通过该代理联机后，再进行下一步。此时可以通过wireshark抓包看到与代理连接是TLS1.3方式，且host为cloudflare，是真正的HTTPS&#x2F;SSL流量。</p>
+<p>为了开启下文的nginx反向代理，需要修改config.py中的<code>PROXY_PROTOCOL = True</code>，然后重新开启监听3000端口。</p>
+<p>修改nginx.conf，在最外层加入</p>
+<pre><code>stream &#123;
+    map $ssl_preread_server_name $name &#123;
+        www.cloudflare.com MT; # 映射域名到合适的后端
+        default LocalBackEnd;
+    &#125;
+    upstream MT &#123;
+        server 127.0.0.1:3000; # 这里是mtproxy监听端口
+    &#125;
+    upstream LocalBackEnd &#123;
+        server localhost:1024; # 临时的服务器
+    &#125;
+    upstream RealBackEnd &#123;
+        server localhost:1025; # 真正的服务器，见下文用1025端口
+    &#125;
+    server &#123;
+        listen 443 reuseport; # 对外的443端口
+        proxy_pass $name;
+        proxy_protocol on; # 关键的一步，支持HAProxy的proxy_protocol
+        ssl_preread on; # 预读SNI主机名
+    &#125;
+    server &#123;
+        listen localhost:1024 reuseport proxy_protocol;
+        proxy_pass RealBackEnd;
+    &#125;
+&#125;
+</code></pre>
+<p>使用<code>nginx -t</code>测试配置文件是否正确。然后直接运行nginx。在TG客户端上将端口改成443。</p>
+<p>这样你的代理就真正隐藏在443端口背后了。而且使用curl测试这个域名也能正常伪装成cloudflare。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># xx.xx.xx.xx为运行nginx的IP地址，下面将解析cloudflare到特定的地址</span></span><br><span class="line">curl -v -s https:<span class="regexp">//</span>www.cloudflare.com --resolve <span class="string">&#x27;www.cloudflare.com:443:xx.xx.xx.xx&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>因为是Python写的，故有优化的余地，可以提高性能，详见<a target="_blank" rel="noopener" href="https://github.com/alexbers/mtprotoproxy/wiki/Optimization-and-Fine-Tuning">官方WIKI</a></p>
+<h2 id="V2Ray-plugin"><a href="#V2Ray-plugin" class="headerlink" title="V2Ray-plugin"></a>V2Ray-plugin</h2><p>关键点：</p>
+<ul>
+<li>v2ray插件需要运行在HTTP WebSocket模式，因为Nginx与客户端通讯已经完成了TLS握手和加密，Nginx与ss通讯是HTTP明文。详见<a target="_blank" rel="noopener" href="https://github.com/shadowsocks/v2ray-plugin/issues/150#issuecomment-552345749">这篇讨论</a></li>
+<li>nginx的SSL证书需要指定fullchain，不能仅仅指定cert。否则会出现“电脑能用，而安卓机不能用”的情况。详见<a target="_blank" rel="noopener" href="https://github.com/shadowsocks/v2ray-plugin/issues/118#issuecomment-530111876">这篇讨论</a>，至于怎么获取fullchain，可以简单认为fullchain由cert和chain合并而成。</li>
+<li>v2ray的path参数要与nginx的location一致。默认为<code>/</code>，可以修改为其它值</li>
+<li>域名和证书要自己申请，下文以abc.example.com为例</li>
+</ul>
+<p>运行带插件的libev服务端，监听是HTTP端口，配置文件可参考<a target="_blank" rel="noopener" href="https://github.com/shadowsocks/shadowsocks-libev/blob/master/tests/aes.json">config.json</a>样例</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ss-server -c config<span class="selector-class">.json</span> -<span class="selector-tag">p</span> <span class="number">3001</span> <span class="attr">--plugin</span> v2ray-plugin <span class="attr">--plugin-opts</span> <span class="string">&quot;server&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>修改nginx.conf，在http层加入一个服务器，监听1025端口，与上文的RealBackEnd对应。</p>
+<pre><code>server &#123;
+    listen                      localhost:1025 ssl http2 reuseport;
+    server_name                 abc.example.com;
+    ssl_certificate             &quot;/path/to/fullchain.crt&quot;;
+    ssl_certificate_key         &quot;/path/to/domain.key&quot;;
+    ssl_ciphers                 HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers   on;
+    ssl_protocols               TLSv1.1 TLSv1.2 TLSv1.3;
+
+    location / &#123;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &quot;upgrade&quot;;
+        proxy_pass http://127.0.0.1:3001;
+    &#125;
+&#125;
+</code></pre>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><ul>
+<li>nginx的加密套件可以选<code>流加密</code>（如chacha20-poly1305等），这样对安卓机子或者移动设备的CPU性能要求低一点，解密的速度也快一点，毕竟这个系统瓶颈还是得优化的。</li>
+<li>nginx经过stream反向代理后，在<code>/var/log/nginx/access.log</code>日志文件里面，所有的访问者都是localhost，因此无法追踪来源。所以根据实际选择是否要stream共用端口。大体上就是拿stream的443端口作为对外端口。nginx使用<code>ssl_preread</code>模块预先读取SNI域名。如果是cloudflare则反代MTP，否则反代localhost的1025端口，对应V2Ray。</li>
+<li>MTProxy的TLS伪装让DPI检测代价更大，除非将该域名或者IP封锁。</li>
+<li>开启TLS1.3更安全，因为握手包没有暴露任何明文的证书信息</li>
+</ul>
+<p>自从用上了TLS，我们又可以愉快地刷小黄图了！！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/04/git-rebase/" rel="prev" title="git的rebase">
+                  <i class="fa fa-chevron-left"></i> git的rebase
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/12/modbus-frame/" rel="next" title="Modbus协议学习笔记">
+                  Modbus协议学习笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

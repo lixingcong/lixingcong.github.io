@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Linux内核自带的磁盘分区加密，与Android的dm-crypt同样方便。 编程随想曾经介绍过LUKS和VeraCrypt，博主把两者都测试了一下，写下LUKS的使用方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux下分区加密LUKS">
+<meta property="og:url" content="http://lixingcong.github.io/2019/07/09/linux-luks/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="Linux内核自带的磁盘分区加密，与Android的dm-crypt同样方便。 编程随想曾经介绍过LUKS和VeraCrypt，博主把两者都测试了一下，写下LUKS的使用方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-09T08:38:44.000Z">
+<meta property="article:modified_time" content="2019-07-09T08:38:44.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="加密">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2019/07/09/linux-luks/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2019/07/09/linux-luks/","path":"2019/07/09/linux-luks/","title":"Linux下分区加密LUKS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux下分区加密LUKS | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">创建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%AF%86%E7%A0%81%E5%88%9B%E5%BB%BA"><span class="nav-number">1.1.</span> <span class="nav-text">使用密码创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8key-file%E5%88%9B%E5%BB%BA"><span class="nav-number">1.2.</span> <span class="nav-text">使用key-file创建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E3%80%81%E5%8D%B8%E8%BD%BD%E5%88%86%E5%8C%BA"><span class="nav-number">2.</span> <span class="nav-text">挂载、卸载分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E3%80%81%E5%88%A0%E9%99%A4%E3%80%81%E4%BF%AE%E6%94%B9slot"><span class="nav-number">3.</span> <span class="nav-text">增加、删除、修改slot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%87%E4%BB%BD%E3%80%81%E6%81%A2%E5%A4%8D%E3%80%81%E6%93%A6%E9%99%A4Header"><span class="nav-number">4.</span> <span class="nav-text">备份、恢复、擦除Header</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%87%E4%BB%BDheader"><span class="nav-number">4.1.</span> <span class="nav-text">备份header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%81%A2%E5%A4%8Dheader"><span class="nav-number">4.2.</span> <span class="nav-text">恢复header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%A6%E9%99%A4header"><span class="nav-number">4.3.</span> <span class="nav-text">擦除header</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%87%E4%BB%BDMasterKey"><span class="nav-number">5.</span> <span class="nav-text">备份MasterKey</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2019/07/09/linux-luks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux下分区加密LUKS | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux下分区加密LUKS<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/linux-luks.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019年7月9日 16:38:44" itemprop="dateCreated datePublished" datetime="2019-07-09T16:38:44+08:00">2019年7月9日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Linux内核自带的磁盘分区加密，与Android的dm-crypt同样方便。</p>
+<p>编程随想曾经介绍过LUKS和VeraCrypt，博主把两者都测试了一下，写下LUKS的使用方法。</p>
+<span id="more"></span>
+<h2 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h2><p>假设要在&#x2F;dev&#x2F;sda2上进行创建，创建过程会格式化该分区。验证密码的方式常用有两种：密码和key-file</p>
+<h3 id="使用密码创建"><a href="#使用密码创建" class="headerlink" title="使用密码创建"></a>使用密码创建</h3><pre><code>sudo cryptsetup luksFormat /dev/sda2
+</code></pre>
+<p>创建过程输入大写YES确认格式化分区，然后输入密码。</p>
+<h3 id="使用key-file创建"><a href="#使用key-file创建" class="headerlink" title="使用key-file创建"></a>使用key-file创建</h3><p>生成一个随机数二进制文件（熵较大的随机数适合做key-file，普通文本熵较小,因此比纯密码要安全）</p>
+<p>以生成一个64K的文件（&#x2F;tmp&#x2F;MyKey.bin）为例，为安全起见不要小于1KB。妥善保管，丢后无法打开加密分区。</p>
+<pre><code>dd if=/dev/urandom of=/tmp/MyKey.bin bs=1k count=64
+</code></pre>
+<p>创建LUKS分区，此时指定Key-file</p>
+<pre><code>sudo cryptsetup --key-file /tmp/MyKey.bin luksFormat /dev/sda2
+</code></pre>
+<h2 id="挂载、卸载分区"><a href="#挂载、卸载分区" class="headerlink" title="挂载、卸载分区"></a>挂载、卸载分区</h2><p>创建后，挂载加密分区</p>
+<pre><code># 密码
+sudo cryptsetup luksOpen /dev/sda2 xxx
+
+# key-file
+sudo cryptsetup luksOpen /dev/sda2 --key-file /tmp/MyKey.bin xxx
+</code></pre>
+<p>xxx为&#x2F;dev&#x2F;mapper下将要创建的文件名，可以随意设置。当解密成功后可以直接操作&#x2F;dev&#x2F;mapper&#x2F;xxx这个块设备，而不是操作&#x2F;dev&#x2F;sda2。</p>
+<p>实际上系统会自动创建软链接到&#x2F;dev&#x2F;dm-yyy（yyy是数字），指向&#x2F;dev&#x2F;mapper&#x2F;xxx这个块设备（。</p>
+<p>若第一次挂载前，需要格式化这个分区，设置卷标（可选操作）</p>
+<pre><code>sudo mkfs.ext4 /dev/mapper/xxx
+sudo e2label /dev/mapper/xxx &quot;my-private&quot;
+</code></pre>
+<p>挂载该分区</p>
+<pre><code>mkdir /tmp/my-priavte
+sudo mount /dev/mapper/xxx /tmp/my-priavte
+</code></pre>
+<p>若第一次挂载，记得设置恰当的访问权限，否则没权限读写啊</p>
+<pre><code>sudo chown username:username -R /tmp/my-priavte
+</code></pre>
+<p>使用完毕后，卸载分区</p>
+<pre><code>sudo umount /tmp/my-priavte
+sudo cryptsetup luksClose /dev/mapper/xxx
+</code></pre>
+<p>实测Kubuntu 18.04支持直接从资源管理器输入密码挂载加密分区。</p>
+<p>也可以自己指定在&#x2F;etc&#x2F;fstab挂载已解密的分区，不过要指定noauto方式，最终还是得手动挂载</p>
+<pre><code># 记下/dev/mapper/xxx的 UUID
+sudo blkid
+/dev/mapper/luks-0dee9fef-33c4-423e-9d4b-d39c8bd5adac: LABEL=&quot;hello&quot; UUID=&quot;7455aa01-e36f-4771-9f9b-723d786416ec&quot; TYPE=&quot;ext4&quot;
+
+# vi /etc/fstab增加一行
+UUID=7455aa01-e36f-4771-9f9b-723d786416ec /tmp/hello ext4 defaults,noauto 0 2
+</code></pre>
+<h2 id="增加、删除、修改slot"><a href="#增加、删除、修改slot" class="headerlink" title="增加、删除、修改slot"></a>增加、删除、修改slot</h2><p>LUKS具备8个slot，每个slot可以设置密码或者key-file验证。这8个slot目的就是加密master-key。</p>
+<p>格式化后的分区只有一个slot。</p>
+<p>每个“Key Slot”好比是一个独立的钥匙：都可以用来打开这个加密盘。</p>
+<p>查看当前的slot状态 显示Disabled就是尚未使用的slot</p>
+<pre><code>sudo cryptsetup luksDump /dev/sda2
+</code></pre>
+<p>增加slot：密码或者key-file，增加时候需要验证已有的slot</p>
+<pre><code># 密码方式
+sudo cryptsetup luksAddKey
+
+# key-file方式，创建一个新keyfile
+dd if=/dev/urandom of=/tmp/MyAnotherKey.bin bs=1k count=64
+# 法1: 验证原有的keyfile，再添加另一个keyfile
+sudo cryptsetup luksAddKey /tmp/MyAnotherKey.bin --key-file /tmp/MyKey.bin
+# 法2: 验证原有密码，再添加另一个keyfile
+sudo cryptsetup luksAddKey /tmp/MyAnotherKey.bin
+</code></pre>
+<p>删除slot的方法一：通过slot号码删除</p>
+<pre><code># 先记下slot的号码(0~7)，比如1
+sudo cryptsetup luksKillSlot /dev/sda2 1
+</code></pre>
+<p>删除slot的方法二：通过输入一个有效的slot验证删除</p>
+<pre><code># 输入有效密码
+sudo cryptsetup luksRemoveKey /dev/sda2
+
+# 删除一个key-file对应的slot
+sudo cryptsetup luksRemoveKey /dev/sda2 --key-file /tmp/MyAnotherKey.bin
+</code></pre>
+<p>若要删除所有slots（不需要验证密码，不可逆的毁灭性操作，只能通过恢复已备份的header来拯救）</p>
+<pre><code>sudo cryptsetup luksErase
+</code></pre>
+<p>修改slot，以下方法都可以</p>
+<pre><code># 验证原有密码，修改密码
+sudo cryptsetup luksChangeKey /dev/sda2
+#  验证原有密码，修改成另一个keyfile
+sudo cryptsetup luksChangeKey /dev/sda2 /tmp/MyAnotherKey.bin
+# 验证原有的keyfile，修改成新密码
+sudo cryptsetup luksChangeKey /dev/sda2 --key-file /tmp/MyKey.bin
+# 验证原有的keyfile，修改成另一个keyfile
+sudo cryptsetup luksChangeKey /dev/sda2 /tmp/MyAnotherKey.bin --key-file /tmp/MyKey.bin
+</code></pre>
+<h2 id="备份、恢复、擦除Header"><a href="#备份、恢复、擦除Header" class="headerlink" title="备份、恢复、擦除Header"></a>备份、恢复、擦除Header</h2><p>man手册中有这么一段话</p>
+<blockquote>
+<p>If the header of a LUKS volume gets damaged, all data is permanently lost unless you have a header-backup. If a key-slot is damaged, it can only be restored from a header-backup or if another active key-slot with known passphrase is undamaged. </p>
+</blockquote>
+<p>上面的意思：如果LUKS的Header被破坏了，数据将永远丢失。如果Slot被破坏了则只能从header备份恢复。要么使用一个没有被破坏的slot。</p>
+<h3 id="备份header"><a href="#备份header" class="headerlink" title="备份header"></a>备份header</h3><pre><code>sudo cryptsetup luksHeaderBackup /dev/sda2 --header-backup-file /tmp/header.bin
+</code></pre>
+<p>header属于机密信息，确保不让别人发现你的header。如果你擦除了header，而别人使用你的header恢复了header，那么你的擦除将是徒劳。</p>
+<h3 id="恢复header"><a href="#恢复header" class="headerlink" title="恢复header"></a>恢复header</h3><pre><code>sudo cryptsetup luksHeaderRestore /dev/sda2 --header-backup-file /tmp/header.bin
+</code></pre>
+<p>恢复后，所有slot将被重置为&#x2F;tmp&#x2F;header.bin的内容</p>
+<h3 id="擦除header"><a href="#擦除header" class="headerlink" title="擦除header"></a>擦除header</h3><blockquote>
+<p>Damaging the LUKS header is something people manage to do with surprising frequency. This risk is the result of a trade-off between security and safety, as LUKS is designed for fast and secure wiping by just overwriting header and key-slot area.</p>
+</blockquote>
+<p>上面的意思：有些人会将header毁灭，用于将数据无法恢复，LUKS则出于性能和简单的设计，毁灭的操作是直接覆盖header数据。</p>
+<p>擦除前，从header可以判断这是一个Luks分区</p>
+<pre><code>sudo cryptsetup -v isLuks /dev/sdb2 # Command successful.
+</code></pre>
+<p>擦除头部1052672个字节（默认的header大小，仅包含1个slot，实际情况是slot越多，header尺寸越大）</p>
+<pre><code>head -c 1052672 /dev/zero &gt; /dev/sda2
+sync
+</code></pre>
+<p>那么除了头部1052672字节，后面都是原来加密的数据，只是这个header被我们手工破坏了。再次验证这个分区是否为有效的LUKS分区</p>
+<pre><code>sudo cryptsetup -v isLuks /dev/sdb2 # Command successful. # is not a valid LUKS device
+</code></pre>
+<h2 id="备份MasterKey"><a href="#备份MasterKey" class="headerlink" title="备份MasterKey"></a>备份MasterKey</h2><p>设计8个slot的目的只有一个：解密master-key，因此master-key才是最重要的。一旦master-key泄漏，什么slot验证都是虚设，能直接被解密数据。</p>
+<blockquote>
+<p>Beware that the master key cannot be changed without reencryption and can be used to decrypt the data stored in the LUKS container without a passphrase and even without the LUKS header. This means that if the master key is compromised, the whole device has to be erased to prevent further access. Use this option carefully.</p>
+</blockquote>
+<p>上面这段话凸显了MasterKey比Header更重要，因为直接绕过了slot验证。一旦masterKey落入他人手中，你只能擦除整个分区来避免他读取机密数据。</p>
+<p>下面这个命令可以导出MasterKey，输入大写YES确定。</p>
+<pre><code># 密码验证
+sudo cryptsetup luksDump --dump-master-key /dev/sda2
+
+# key-file验证
+sudo cryptsetup luksDump --dump-master-key /dev/sda2 --key-file /tmp/MyKey.bin
+</code></pre>
+<p>dump的时候，无论是通过哪个slot验证，输出的master key都是同一个。</p>
+<p>将MK dump内容字节串：复制好</p>
+<pre><code>89 53 d5 3e a0 4a 80 ea a3 ec 69 fc f0 6d ff 22 
+1f 3e df 2b 1a c2 05 6e bf 2d f1 61 39 dd 77 5e
+</code></pre>
+<p>创建为一个dumpInput.txt纯文本，粘贴字节串，然后xxd命令转成master-key二进制文件</p>
+<pre><code>xxd -r -p dumpInput.txt /tmp/master-key.bin
+</code></pre>
+<p>使用master-key直接打开加密盘，无需验证slot：</p>
+<pre><code>sudo cryptsetup luksOpen --master-key-file /tmp/master-key.bin
+</code></pre>
+<p>知道这玩意的可怕了吗？Master Key更需要妥善保管！！</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://program-think.blogspot.com/2015/10/dm-crypt-cryptsetup.html">编程随想：扫盲 dm-crypt——多功能 Linux 磁盘加密工具</a><br><a target="_blank" rel="noopener" href="https://www.thegeekstuff.com/2016/03/cryptsetup-lukskey/">10 Linux cryptsetup Examples for LUKS Key Management</a><br><a target="_blank" rel="noopener" href="https://www.lisenet.com/2013/luks-add-keys-backup-and-restore-volume-header/">LUKS: Add a Backup Key, Backup, Restore and Delete LUKS Volume Header</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag"># 加密</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/05/11/qt-tr/" rel="prev" title="Qt使用tr()函数中包裹中文">
+                  <i class="fa fa-chevron-left"></i> Qt使用tr()函数中包裹中文
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/14/grub-rescue/" rel="next" title="GRUB2的rescue模式">
+                  GRUB2的rescue模式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本文摘录有关python数据类型的内容 列表:可变列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python列表,元组,字典,数组,set,struct">
+<meta property="og:url" content="http://lixingcong.github.io/2015/09/01/python-list-and-triple/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="本文摘录有关python数据类型的内容 列表:可变列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lixingcong.github.io/images/python_struct/struct_api1.png">
+<meta property="og:image" content="http://lixingcong.github.io/images/python_struct/struct_api2.png">
+<meta property="article:published_time" content="2015-09-01T09:12:32.000Z">
+<meta property="article:modified_time" content="2015-09-01T09:12:32.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lixingcong.github.io/images/python_struct/struct_api1.png">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2015/09/01/python-list-and-triple/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2015/09/01/python-list-and-triple/","path":"2015/09/01/python-list-and-triple/","title":"Python列表,元组,字典,数组,set,struct"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Python列表,元组,字典,数组,set,struct | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8-%E5%8F%AF%E5%8F%98"><span class="nav-number">1.</span> <span class="nav-text">列表:可变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">列表简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list-%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">list 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E5%88%97%E8%A1%A8%EF%BC%9A%E5%85%83%E7%B4%A0%E8%B5%8B%E5%80%BC"><span class="nav-number">1.3.</span> <span class="nav-text">改变列表：元素赋值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="nav-number">1.4.</span> <span class="nav-text">删除元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%89%87%E8%B5%8B%E5%80%BC"><span class="nav-number">1.5.</span> <span class="nav-text">分片赋值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.6.</span> <span class="nav-text">列表方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#append"><span class="nav-number">1.6.1.</span> <span class="nav-text">append</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#count"><span class="nav-number">1.6.2.</span> <span class="nav-text">count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extend"><span class="nav-number">1.6.3.</span> <span class="nav-text">extend</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#index"><span class="nav-number">1.6.4.</span> <span class="nav-text">index</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#insert"><span class="nav-number">1.6.5.</span> <span class="nav-text">insert</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pop"><span class="nav-number">1.6.6.</span> <span class="nav-text">pop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#remove"><span class="nav-number">1.6.7.</span> <span class="nav-text">remove</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reverse"><span class="nav-number">1.6.8.</span> <span class="nav-text">reverse</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sort"><span class="nav-number">1.6.9.</span> <span class="nav-text">sort</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%BB%84%EF%BC%9A%E4%B8%8D%E5%8F%AF%E5%8F%98%E5%BA%8F%E5%88%97"><span class="nav-number">2.</span> <span class="nav-text">元组：不可变序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E5%85%B8%EF%BC%9A%E5%8F%AF%E5%8F%98"><span class="nav-number">3.</span> <span class="nav-text">字典：可变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AD%97%E5%85%B8"><span class="nav-number">3.1.</span> <span class="nav-text">创建字典</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E5%AD%97%E5%85%B8%E9%87%8C%E7%9A%84%E5%80%BC"><span class="nav-number">3.2.</span> <span class="nav-text">访问字典里的值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%AD%97%E5%85%B8"><span class="nav-number">3.3.</span> <span class="nav-text">修改字典</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%AD%97%E5%85%B8%E5%85%83%E7%B4%A0"><span class="nav-number">3.4.</span> <span class="nav-text">删除字典元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E5%85%B8%E9%94%AE%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-number">3.5.</span> <span class="nav-text">字典键的特性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Array%E6%95%B0%E7%BB%84-%E5%9B%BA%E5%AE%9A%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">Array数组:固定类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">4.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E6%95%B0%E7%BB%84"><span class="nav-number">4.2.</span> <span class="nav-text">处理数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E5%92%8C%E6%96%87%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">数组和文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%99%E9%80%89%E5%AD%97%E8%8A%82%E9%A1%BA%E5%BA%8F"><span class="nav-number">4.4.</span> <span class="nav-text">候选字节顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set%EF%BC%9A%E9%9B%86%E5%90%88"><span class="nav-number">5.</span> <span class="nav-text">Set：集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%9A%84%E6%93%8D%E4%BD%9C%EF%BC%9A"><span class="nav-number">5.1.</span> <span class="nav-text">基本的操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">判断元素：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%BA%94%E7%94%A8%EF%BC%9A"><span class="nav-number">5.3.</span> <span class="nav-text">简单应用：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-%E6%89%93%E5%8C%85%E4%B8%BAc%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-number">6.</span> <span class="nav-text">struct:打包为c结构体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E9%87%8D%E5%BE%AA%E7%8E%AF"><span class="nav-number">7.</span> <span class="nav-text">多重循环</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2015/09/01/python-list-and-triple/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Python列表,元组,字典,数组,set,struct | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python列表,元组,字典,数组,set,struct<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/python-list-and-triple.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015年9月1日 17:12:32" itemprop="dateCreated datePublished" datetime="2015-09-01T17:12:32+08:00">2015年9月1日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本文摘录有关python数据类型的内容</p>
+<h2 id="列表-可变"><a href="#列表-可变" class="headerlink" title="列表:可变"></a>列表:可变</h2><p>列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。</p>
+<span id="more"></span>
+<h3 id="列表简介"><a href="#列表简介" class="headerlink" title="列表简介"></a>列表简介</h3><p>列表（list）是Python以及其他语言中最常用到的数据结构之一。Python使用使用中括号 [ ] 来解析列表。列表是可变的（mutable）——可以改变列表的内容。</p>
+<h3 id="list-函数"><a href="#list-函数" class="headerlink" title="list 函数"></a>list 函数</h3><p>通过 list(seq) 函数把一个序列类型转换成一个列表。<br>    &gt;&gt;&gt; list(&#39;hello&#39;)<br>    [&#39;h&#39;, &#39;e&#39;, &#39;l&#39;, &#39;l&#39;, &#39;o&#39;]]<br>list 函数使用于所有类型的序列，而不只是字符串。</p>
+<h3 id="改变列表：元素赋值"><a href="#改变列表：元素赋值" class="headerlink" title="改变列表：元素赋值"></a>改变列表：元素赋值</h3><p>使用索引标记来为某个特定的、位置明确的元素赋值。<br>    &gt;&gt;&gt; x &#x3D; [1, 1, 1]<br>    &gt;&gt;&gt; x[1] &#x3D; 2<br>    &gt;&gt;&gt; x<br>    [1, 2, 1]<br>不能为一个位置不存在的元素进行赋值。</p>
+<h3 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h3><pre><code>&gt;&gt;&gt; names = [&#39;Alice&#39;, &#39;Beth&#39;, &#39;Cecil&#39;, &#39;Dee-Dee&#39;, &#39;Earl&#39;]
+&gt;&gt;&gt; del names[2]
+&gt;&gt;&gt; names
+[&#39;Alice&#39;, &#39;Beth&#39;, &#39;Dee-Dee&#39;, &#39;Earl&#39;]
+</code></pre>
+<p>除了删除列表中的元素，del 语句还能用于删除其他元素。</p>
+<h3 id="分片赋值"><a href="#分片赋值" class="headerlink" title="分片赋值"></a>分片赋值</h3><pre><code>&gt;&gt;&gt; name = list(&#39;Perl&#39;)
+&gt;&gt;&gt; name
+[&#39;P&#39;, &#39;e&#39;, &#39;r&#39;, &#39;l&#39;]
+&gt;&gt;&gt; name[2:] = list(&#39;ar&#39;)
+&gt;&gt;&gt; name
+[&#39;P&#39;, &#39;e&#39;, &#39;a&#39;, &#39;r&#39;]
+</code></pre>
+<p>在使用分片赋值时，可以使用与原序列不等长的序列将分片替换：<br>    &gt;&gt;&gt; name &#x3D; list(&#39;Perl&#39;)<br>    &gt;&gt;&gt; name[1:] &#x3D; list(&#39;ython&#39;)<br>    &gt;&gt;&gt; name<br>    [&#39;P&#39;, &#39;y&#39;, &#39;t&#39;, &#39;h&#39;, &#39;o&#39;, &#39;n&#39;]<br>分片赋值语句可以在不需要替换任何原有元素的情况下插入新的元素。<br>    &gt;&gt;&gt; numbers &#x3D; [1, 5]<br>    &gt;&gt;&gt; numbers[1:1] &#x3D; [2, 3, 4]<br>    &gt;&gt;&gt; numbers<br>    [1, 2, 3, 4, 5]<br>通过分片赋值来删除元素也是可行的。<br>    &gt;&gt;&gt; numbers<br>    [1, 2, 3, 4, 5]<br>    &gt;&gt;&gt; numbers[1:4] &#x3D; []<br>    &gt;&gt;&gt; numbers<br>    [1, 5]</p>
+<h3 id="列表方法"><a href="#列表方法" class="headerlink" title="列表方法"></a>列表方法</h3><p>方法是一个与某些对象有紧密联系的函数。一般，方法可以这样进行调用：<br>对象.方法(参数)<br>除了对象被放置到方法名之前，并且两者之间用一个点号隔开。</p>
+<h4 id="append"><a href="#append" class="headerlink" title="append"></a>append</h4><p>append方法用于在列表末尾追加新的对象：</p>
+<pre><code>&gt;&gt;&gt; lst = [1, 2, 3]  
+&gt;&gt;&gt; lst.append(4)  
+&gt;&gt;&gt; lst  
+[1, 2, 3, 4]  
+</code></pre>
+<p>append方法和其他一些方法类似，只是在恰当位置修改原来的列表。这意味着，它不是简单地返回一个修改过的新列表——而是直接修改原来的列表。</p>
+<h4 id="count"><a href="#count" class="headerlink" title="count"></a>count</h4><p>count 方法统计某个元素在列表中出现的次数：<br>    &gt;&gt;&gt; [&#39;to&#39;, &#39;be&#39;, &#39;or&#39;, &#39;not&#39;, &#39;to&#39;, &#39;be&#39;].count(&#39;to&#39;)<br>    2<br>    &gt;&gt;&gt; x &#x3D; [[1,2], 1, 1, [2, 1, [1, 2]]]<br>    &gt;&gt;&gt; x.count(1)<br>    2<br>    &gt;&gt;&gt; x.count([1,2])<br>    1</p>
+<h4 id="extend"><a href="#extend" class="headerlink" title="extend"></a>extend</h4><p>extend 方法可以在列表的末尾一次性追加另一个序列中的多个值。</p>
+<pre><code>&gt;&gt;&gt; a = [1, 2, 3]  
+&gt;&gt;&gt; b = [4, 5, 6]  
+&gt;&gt;&gt; a.extend(b)  
+&gt;&gt;&gt; a  
+[1, 2, 3, 4, 5, 6]  
+</code></pre>
+<p>extend 方法修改了被扩展的列表，而原始的连接操作（+）则不然，它会返回一个全新的列表。</p>
+<pre><code>&gt;&gt;&gt; a = [1, 2, 3]  
+&gt;&gt;&gt; b = [4, 5, 6]  
+&gt;&gt;&gt; a.extend(b)  
+&gt;&gt;&gt; a  
+[1, 2, 3, 4, 5, 6]  
+&gt;&gt;&gt;  
+&gt;&gt;&gt; a + b  
+[1, 2, 3, 4, 5, 6, 4, 5, 6]  
+&gt;&gt;&gt; a  
+[1, 2, 3, 4, 5, 6]  
+</code></pre>
+<h4 id="index"><a href="#index" class="headerlink" title="index"></a>index</h4><p>index 方法用于从列表中找出某个值第一个匹配项的索引位置：<br>    &gt;&gt;&gt; knights &#x3D; [&#39;We&#39;, &#39;are&#39;, &#39;the&#39;, &#39;knights&#39;, &#39;who&#39;, &#39;say&#39;, &#39;ni&#39;]<br>    &gt;&gt;&gt; knights.index(&#39;who&#39;)<br>    4<br>当搜索不存在的值时，就会引发一个异常。</p>
+<h4 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h4><p>insert 方法用于将对象插入到列表中：</p>
+<pre><code>&gt;&gt;&gt; numbers = [1, 2, 3, 5, 6, 7]  
+&gt;&gt;&gt; numbers.insert(3, &#39;four&#39;)  
+&gt;&gt;&gt; numbers  
+[1, 2, 3, &#39;four&#39;, 5, 6, 7]  
+</code></pre>
+<h4 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h4><p>pop 方法会移除列表中的一个元素（默认是最后一个），并且返回该元素的值：</p>
+<pre><code>&gt;&gt;&gt; x = [1, 2, 3]  
+&gt;&gt;&gt; x.pop()  
+3  
+&gt;&gt;&gt; x  
+[1, 2]  
+&gt;&gt;&gt; x.pop(0)  
+1  
+&gt;&gt;&gt; x  
+[2]  
+</code></pre>
+<p>pop方法是唯一一个即能修改列表又返回元素值（除了None）的列表方法。</p>
+<h4 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h4><p>remove 方法用于移除列表中某个值的第一个匹配项：</p>
+<pre><code>&gt;&gt;&gt; x = [&#39;to&#39;, &#39;be&#39;, &#39;or&#39;, &#39;not&#39;, &#39;to&#39;, &#39;be&#39;]  
+&gt;&gt;&gt; x.remove(&#39;be&#39;)  
+&gt;&gt;&gt; x  
+[&#39;to&#39;, &#39;or&#39;, &#39;not&#39;, &#39;to&#39;, &#39;be&#39;]  
+&gt;&gt;&gt; x.remove(&#39;bee&#39;)  
+Traceback (most recent call last):  
+  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;  
+ValueError: list.remove(x): x not in list  
+</code></pre>
+<p>只有第一次出现的值被移除，而不存在与列表中的值是不会移除的。<br>remove 是一个没有返回值的原位置改变方法。它修改了列表却没有返回值。</p>
+<h4 id="reverse"><a href="#reverse" class="headerlink" title="reverse"></a>reverse</h4><p>reverse 方法将列表中的元素反向存放。</p>
+<pre><code>&gt;&gt;&gt; x = [1, 2, 3]  
+&gt;&gt;&gt; x.reverse()  
+&gt;&gt;&gt; x  
+[3, 2, 1]  
+</code></pre>
+<p>该方法改变了列表但不返回值。</p>
+<h4 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h4><p>sort 方法用于在原位置对列表进行排序。 </p>
+<pre><code>&gt;&gt;&gt; x = [4, 6, 2, 1, 7, 9]  
+&gt;&gt;&gt; x.sort()  
+&gt;&gt;&gt; x  
+[1, 2, 4, 6, 7, 9]  
+</code></pre>
+<p>sort 方法修改了 x 却返回了空值。</p>
+<h2 id="元组：不可变序列"><a href="#元组：不可变序列" class="headerlink" title="元组：不可变序列"></a>元组：不可变序列</h2><p>创建元组的语法很简单：如果你用逗号分隔了一些值，那么你就自动创建了元组。</p>
+<pre><code>&gt;&gt;&gt; 1, 2, 3  
+(1, 2, 3)  
+</code></pre>
+<p>元组也是（大部分时候是）通过圆括号括起来的：</p>
+<pre><code>&gt;&gt;&gt; (1,2,3)  
+(1, 2, 3)  
+</code></pre>
+<p>实现包括一个值的元组有些奇特——必须加个逗号：</p>
+<pre><code>&gt;&gt;&gt; 42,  
+(42,)  
+&gt;&gt;&gt; (42,)  
+(42,)  
+</code></pre>
+<p> tuple函数的功能与list函数基本上是一样的：以一个序列作为参数并把它转化为元组。</p>
+<pre><code>&gt;&gt;&gt; tuple([1, 2, 3])  
+(1, 2, 3)  
+</code></pre>
+<ul>
+<li>除了创建元组和访问元组元组之外，也没有太多其他操作，可以参考其他类型的序列来实现。<br>元组的意义：元组可以在映射（和集合的成员）中当作键使用——而列表则不行；元组作为很多内建函数和方法的返回值存在。*</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/bolike/article/details/19996667">参考资料：tuple&#x2F;list原文地址</a></p>
+<h2 id="字典：可变"><a href="#字典：可变" class="headerlink" title="字典：可变"></a>字典：可变</h2><p>可存储任意类型对象，如字符串、数字、元组等其他容器模型。</p>
+<h3 id="创建字典"><a href="#创建字典" class="headerlink" title="创建字典"></a>创建字典</h3><p>字典由键和对应值成对组成。字典也被称作关联数组或哈希表。基本语法如下：</p>
+<pre><code>dict = &#123;&#39;Alice&#39;: &#39;2341&#39;, &#39;Beth&#39;: &#39;9102&#39;, &#39;Cecil&#39;: &#39;3258&#39;&#125;
+</code></pre>
+<p>也可如此创建字典：</p>
+<pre><code>dict1 = &#123; &#39;abc&#39;: 456 &#125;;
+dict2 = &#123; &#39;abc&#39;: 123, 98.6: 37 &#125;;
+</code></pre>
+<p>每个键与值用冒号隔开（:），每对用逗号，每对用逗号分割，整体放在花括号中（{}）。<br>键必须独一无二，但值则不必。<br>值可以取任何数据类型，但必须是不可变的，如字符串，数或元组。</p>
+<h3 id="访问字典里的值"><a href="#访问字典里的值" class="headerlink" title="访问字典里的值"></a>访问字典里的值</h3><pre><code>dict = &#123;&#39;Name&#39;: &#39;Zara&#39;, &#39;Age&#39;: 7, &#39;Class&#39;: &#39;First&#39;&#125;;
+
+print &quot;dict[&#39;Name&#39;]: &quot;, dict[&#39;Name&#39;];
+print &quot;dict[&#39;Age&#39;]: &quot;, dict[&#39;Age&#39;];
+</code></pre>
+<p>以上实例输出结果：<br>dict[&#39;Name&#39;]:  Zara<br>dict[&#39;Age&#39;]:  7<br>如果用字典里没有的键访问数据，会输出错误KeyError: &#39;Alice&#39;[&#x2F;code]</p>
+<h3 id="修改字典"><a href="#修改字典" class="headerlink" title="修改字典"></a>修改字典</h3><p>向字典添加新内容的方法是增加新的键&#x2F;值对，修改或删除已有键&#x2F;值对如下实例:</p>
+<pre><code>dict = &#123;&#39;Name&#39;: &#39;Zara&#39;, &#39;Age&#39;: 7, &#39;Class&#39;: &#39;First&#39;&#125;;
+
+dict[&#39;Age&#39;] = 8; # update existing entry
+dict[&#39;School&#39;] = &quot;DPS School&quot;; # Add new entry
+
+print &quot;dict[&#39;Age&#39;]: &quot;, dict[&#39;Age&#39;];
+print &quot;dict[&#39;School&#39;]: &quot;, dict[&#39;School&#39;];
+</code></pre>
+<p>以上实例输出结果：<br>dict[&#39;Age&#39;]:  8<br>dict[&#39;School&#39;]:  DPS School</p>
+<h3 id="删除字典元素"><a href="#删除字典元素" class="headerlink" title="删除字典元素"></a>删除字典元素</h3><p>能删单一的元素也能清空字典，清空只需一项操作。<br>显示删除一个字典用del命令，如下实例：</p>
+<pre><code>dict = &#123;&#39;Name&#39;: &#39;Zara&#39;, &#39;Age&#39;: 7, &#39;Class&#39;: &#39;First&#39;&#125;;
+
+del dict[&#39;Name&#39;]; # 删除键是&#39;Name&#39;的条目
+dict.clear();     # 清空词典所有条目
+del dict ;        # 删除词典
+
+print &quot;dict[&#39;Age&#39;]: &quot;, dict[&#39;Age&#39;];
+print &quot;dict[&#39;School&#39;]: &quot;, dict[&#39;School&#39;];
+</code></pre>
+<p>但这会引发一个异常，因为用del后字典不再存在：dict[&#39;Age&#39;]:</p>
+<p>#Traceback (most recent call last):<br>#  File &quot;test.py&quot;, line 8, in <module><br>#    print &quot;dict[&#39;Age&#39;]: &quot;, dict[&#39;Age&#39;];<br>#TypeError: &#39;type&#39; object is unsubscriptable</p>
+<h3 id="字典键的特性"><a href="#字典键的特性" class="headerlink" title="字典键的特性"></a>字典键的特性</h3><p>字典值可以没有限制地取任何python对象，既可以是标准的对象，也可以是用户定义的，但键不行。<br>两个重要的点需要记住：</p>
+<ul>
+<li><p>不允许同一个键出现两次。创建时如果同一个键被赋值两次，后一个值会被记住，如下实例：</p>
+<pre><code>  dict = &#123;&#39;Name&#39;: &#39;Zara&#39;, &#39;Age&#39;: 7, &#39;Name&#39;: &#39;Manni&#39;&#125;;
+  print &quot;dict[&#39;Name&#39;]: &quot;, dict[&#39;Name&#39;];
+  #输出结果：
+  #dict[&#39;Name&#39;]:  Manni
+  
+</code></pre>
+</li>
+<li><p>键必须不可变，所以可以用数，字符串或元组充当，所以用列表就不行，如下实例：</p>
+<pre><code>  dict = &#123;[&#39;Name&#39;]: &#39;Zara&#39;, &#39;Age&#39;: 7&#125;;
+
+  print &quot;dict[&#39;Name&#39;]: &quot;, dict[&#39;Name&#39;];
+  #输出结果：
+  #Traceback (most recent call last):
+  #  File &quot;test.py&quot;, line 3, in &lt;module&gt;
+  #    dict = &#123;[&#39;Name&#39;]: &#39;Zara&#39;, &#39;Age&#39;: 7&#125;;
+  #TypeError: list objects are unhashable
+</code></pre>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="http://www.jb51.net/article/47990.htm">参考资料：dict原文链接</a></p>
+<h2 id="Array数组-固定类型"><a href="#Array数组-固定类型" class="headerlink" title="Array数组:固定类型"></a>Array数组:固定类型</h2><p>array模块定义了一种序列数据结构，看起来和list很相似，但是所有成员必须是相同基本类型。<br><em>array作用是高效管理固定类型数值数据的序列。</em></p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>array实例化可以提供一个参数来描述允许那种数据类型，还可以有一个初始的数据序列存储在数组中。</p>
+<pre><code>import array
+import binascii
+s = &#39;This is the array.&#39;
+a = array.array(&#39;c&#39;, s)
+print &#39;As string:&#39;, s
+print &#39;As array :&#39;, a
+print &#39;As hex   :&#39;, binascii.hexlify(a)
+</code></pre>
+<p>输出结果：<br>As string: This is the array.<br>As array : array(&#39;c&#39;, &#39;This is the array.&#39;)<br>As hex   : 54686973206973207468652061727261792e</p>
+<h3 id="处理数组"><a href="#处理数组" class="headerlink" title="处理数组"></a>处理数组</h3><p>类似于其他python序列，可以采用同样方式扩展和处理array。</p>
+<pre><code>import array
+import pprint
+a = array.array(&#39;i&#39;, xrange(3))
+print &#39;Initial :&#39;, a
+a.extend(xrange(3))
+print &#39;Extended:&#39;, a
+print &#39;slice:  :&#39;, a[2:5]
+print &#39;Itetator:&#39;
+print list(enumerate(a))
+</code></pre>
+<p>输出结果：<br>Initial : array(&#39;i&#39;, [0, 1, 2])<br>Extended: array(&#39;i&#39;, [0, 1, 2, 0, 1, 2])<br>slice:  : array(&#39;i&#39;, [2, 0, 1])<br>Itetator:<br>[(0, 0), (1, 1), (2, 2), (3, 0), (4, 1), (5, 2)]</p>
+<h3 id="数组和文件"><a href="#数组和文件" class="headerlink" title="数组和文件"></a>数组和文件</h3><p>可以使用高效读&#x2F;写文件的专用内置方法将数组的内容写入文件或从文件读取数组。</p>
+<pre><code>import array
+import binascii
+import tempfile
+
+a = array.array(&#39;i&#39;, xrange(5))
+print &#39;A1: &#39;,a
+output = tempfile.NamedTemporaryFile()
+a.tofile(output.file)
+output.flush
+
+with open(output.name, &#39;rb&#39;) as input:
+    raw_input = input.read()
+    print &#39;Raw Contents:&#39;, binascii.hexlify(raw_data)
+
+    input.seek(0)
+    a2 = array.array(&#39;i&#39;)
+    a2.fromfile(input, len(a))
+    print &#39;A2: &#39;, a2
+    
+</code></pre>
+<h3 id="候选字节顺序"><a href="#候选字节顺序" class="headerlink" title="候选字节顺序"></a>候选字节顺序</h3><p>如果数组中的数据没有采用固有的字节顺序，或者在发送到一个采用不同字节顺序的系统前需要交换顺序，可以在python转换整个数组而无须迭代处理每个元素。</p>
+<pre><code>import array
+import binascii
+
+def to_hex(a):
+    chars_per_item = a.itemsize * 2
+    hex_version = binascii.hexlify(a)
+    num_chunks = len(hex_version) / chars_per_item
+    for i in xrange(num_chunks):
+        start = i * chars_per_item
+        end = start + chars_per_item
+        yield hex_version[start:end]
+
+a1 = array.array(&#39;i&#39;, xrange(5))
+a2 = array.array(&#39;i&#39;, xrange(5))
+a2.byteswap()
+
+fmt = &#39;%10s %10s %10s %10s&#39;
+print fmt % (&#39;A1_hex&#39;, &#39;A1&#39;, &#39;A2_hex&#39;, &#39;A2&#39;)
+print fmt % ((&#39;-&#39; * 10,) * 4)
+for value in zip(to_hex(a1), a1, to_hex(a2), a2):
+    print fmt % value
+</code></pre>
+<p>byteswap()会交换C数组中元素的字节顺序，比在python中循环处理数据高效的多。<br>输出结果：</p>
+<pre><code>    A1_hex         A1     A2_hex         A2
+---------- ---------- ---------- ----------
+  00000000          0   00000000          0
+  01000000          1   00000001   16777216
+  02000000          2   00000002   33554432
+  03000000          3   00000003   50331648
+  04000000          4   00000004   67108864
+</code></pre>
+<p><a target="_blank" rel="noopener" href="http://my.oschina.net/u/1449160/blog/199275">参考资料：array原文链接</a></p>
+<h2 id="Set：集合"><a href="#Set：集合" class="headerlink" title="Set：集合"></a>Set：集合</h2><p>python的set和其他语言类似, 是一个无序不重复元素集, 基本功能包括关系测试和消除重复元素. 集合对象还支持union(联合), intersection(交), difference(差)和sysmmetric difference(对称差集)等数学运算.  </p>
+<p>sets 支持 x in set, len(set),和 for x in set。作为一个无序的集合，sets不记录元素位置或者插入点。因此，sets不支持 indexing, slicing, 或其它类序列（sequence-like）的操作。  </p>
+<h3 id="基本的操作："><a href="#基本的操作：" class="headerlink" title="基本的操作："></a>基本的操作：</h3><pre><code>set.add(&#39;x&#39;) #添加一项
+set.update([10, 3, 32]) # 添加更多项
+set.remove(&#39;x&#39;) #删掉一项
+len(s) #长度
+</code></pre>
+<h3 id="判断元素："><a href="#判断元素：" class="headerlink" title="判断元素："></a>判断元素：</h3><pre><code>x in set #判断是否在里面
+s.issubset(t) #测试是否 s 中的每一个元素都在 t 中 
+s.issuperset(t)  #测试是否 t 中的每一个元素都在 s 中  
+</code></pre>
+<h3 id="简单应用："><a href="#简单应用：" class="headerlink" title="简单应用："></a>简单应用：</h3><pre><code>x = set(&#39;spam&#39;)
+y = set([&#39;h&#39;,&#39;a&#39;,&#39;m&#39;])
+print x,y
+</code></pre>
+<p>运行结果：</p>
+<pre><code>(set([&#39;a&#39;, &#39;p&#39;, &#39;s&#39;, &#39;m&#39;]), set([&#39;a&#39;, &#39;h&#39;, &#39;m&#39;]))  
+</code></pre>
+<p>求交集，并集，差集：</p>
+<pre><code>print x &amp; y
+print x | y
+print x -y
+</code></pre>
+<p>结果就不列出来了。</p>
+<p>使用set去除list里面的重复元素：</p>
+<pre><code>a = [11,22,33,44,11,22]  
+b = set(a)
+print b
+c = [i for i in b]
+print c
+</code></pre>
+<p>运行结果：</p>
+<pre><code>set([33, 11, 44, 22])  
+[33, 11, 44, 22] 
+</code></pre>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/business122/article/details/7541486">参考链接:set</a></p>
+<h2 id="struct-打包为c结构体"><a href="#struct-打包为c结构体" class="headerlink" title="struct:打包为c结构体"></a>struct:打包为c结构体</h2><p>struct结构体在c语言中的作用，它定义了一种结构，里面包含不同类型的数据(int,char,bool等等)，方便对某一结构对象进行处理。</p>
+<p>而在网络通信当中，大多传递的数据是以二进制流（binary data）存在的。当传递字符串时，不必担心太多的问题，而当传递诸如int、char之类的基本数据的时候，就需要有一种机制将某些特定的结构体类型打包成二进制流的字符串然后再网络传输，而接收端也应该可以通过某种机制进行解包还原出原始的结构体数据。</p>
+<p>python中的struct模块就提供了这样的机制，该模块的主要作用就是对python基本类型值与用python字符串格式表示的C struct类型间的转化</p>
+<p>简单例子：</p>
+<pre><code>import struct
+import binascii
+values = (1, &#39;abc&#39;, 2.7)
+s = struct.Struct(&#39;I3sf&#39;)
+packed_data = s.pack(*values)
+unpacked_data = s.unpack(packed_data)
+
+print &#39;Original values:&#39;, values
+print &#39;Format string :&#39;, s.format
+print &#39;Uses :&#39;, s.size, &#39;bytes&#39;
+print &#39;Packed Value :&#39;, binascii.hexlify(packed_data)
+print &#39;Unpacked Type :&#39;, type(unpacked_data), &#39; Value:&#39;, unpacked_data
+</code></pre>
+<p>输出：</p>
+<p>Original values: (1, &#39;abc&#39;, 2.7)<br>Format string : I3sf<br>Uses : 12 bytes<br>Packed Value : 0100000061626300cdcc2c40<br>Unpacked Type : &lt;type &#39;tuple&#39;&gt;  Value: (1, &#39;abc&#39;, 2.700000047683716)</p>
+<p>对应的c结构体：<br><img src="/images/python_struct/struct_api1.png"></p>
+<p>另一方面，打包的后的字节顺序默认上是由操作系统的决定的，当然struct模块也提供了自定义字节顺序的功能，可以指定大端存储、小端存储等特定的字节顺序</p>
+<p>不同的字节顺序和存储方式也会导致字节大小的不同。在format字符串前面加上特定的符号即可以表示不同的字节顺序存储方式，例如采用小端存储：</p>
+<pre><code>s = struct.Struct(‘&lt;I3sf’)
+</code></pre>
+<p><img src="/images/python_struct/struct_api2.png"></p>
+<p>将列表打包为结构体</p>
+<pre><code>import struct
+a=[1,2,3,4]
+len_a=len(a)
+s=struct.pack(&quot;&#123;0&#125;B&quot;.format(len_a),*a)
+print repr(s)
+# &#39;\x1\x2\x3\x4&#39;
+</code></pre>
+<p>这里用到了一个小把戏，string类的format格式化，详见<a target="_blank" rel="noopener" href="https://docs.python.org/2/library/string.html">python参考手册</a>，相当于把pack的第一个形参的d前面替换成4d，非常方便。<br>下列两个是等效的</p>
+<pre><code>&#39;&lt;&#123;0&#125;B&#39;.format(4)
+&#39;&lt;4B&#39;
+</code></pre>
+<p>测试其它</p>
+<pre><code># string 带有*args的格式化
+print &#39;&#123;0&#125;, &#123;1&#125;, &#123;2&#125;&#39;.format(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
+# &#39;a, b, c&#39;
+print &#39;GPS: &#123;latitude&#125;,&#123;longitude&#125;&#39;.format(latitude=&#39;37.24N&#39;,longitude=&#39;-115.81W&#39;)
+# &#39;GPS: 37.24N, -115.81W&#39;
+</code></pre>
+<h2 id="多重循环"><a href="#多重循环" class="headerlink" title="多重循环"></a>多重循环</h2><pre><code>a = [&#39;a1&#39;, &#39;a2&#39;, &#39;a3&#39;]
+b = [&#39;b1&#39;, &#39;b2&#39;]
+
+# will iterate 3 times,
+# the last iteration, b will be None
+print &quot;Map:&quot;
+for x, y in map(None, a, b):
+  print x, y
+
+# will iterate 2 times,
+# the third value of a will not be used
+print &quot;Zip:&quot;
+for x, y in zip(a, b):
+  print x, y
+
+# will iterate 6 times,
+# it will iterate over each b, for each a
+# producing a slightly different outpu
+print &quot;List:&quot;
+for x, y in [(x,y) for x in a for y in b]:
+    print x, y
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/08/31/shadowsocks_is_not_a_vpn/" rel="prev" title="Shadowsocks：一个混淆工具">
+                  <i class="fa fa-chevron-left"></i> Shadowsocks：一个混淆工具
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/09/03/write-fib-in-python/" rel="next" title="用Python实现Fibonacci函数">
+                  用Python实现Fibonacci函数 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

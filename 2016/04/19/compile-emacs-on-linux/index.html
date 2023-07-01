@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"lixingcong.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="由于ubuntu的APT源emacs版本太老，到2016年居然还是24.3的，没法用上最新的功能，例如“Shifit block缩进”，决定自行从官方源码编译一个。操作平台是VPS ubuntu 14.04 x64">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次编译Emacs的过程">
+<meta property="og:url" content="http://lixingcong.github.io/2016/04/19/compile-emacs-on-linux/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="由于ubuntu的APT源emacs版本太老，到2016年居然还是24.3的，没法用上最新的功能，例如“Shifit block缩进”，决定自行从官方源码编译一个。操作平台是VPS ubuntu 14.04 x64">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-04-19T14:56:43.000Z">
+<meta property="article:modified_time" content="2016-04-19T14:56:43.000Z">
+<meta property="article:author" content="Lixingcong">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://lixingcong.github.io/2016/04/19/compile-emacs-on-linux/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://lixingcong.github.io/2016/04/19/compile-emacs-on-linux/","path":"2016/04/19/compile-emacs-on-linux/","title":"记一次编译Emacs的过程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>记一次编译Emacs的过程 | Lixingcong</title>
+  
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-BPT1QS4456","only_pageview":true}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Lixingcong</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">我的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lixingcong</p>
+  <div class="site-description" itemprop="description">推特宅男一枚，失业中</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lixingcong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lixingcong" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bandwagonhost.com/aff.php?aff=17660" title="搬瓦工 → https:&#x2F;&#x2F;bandwagonhost.com&#x2F;aff.php?aff&#x3D;17660" rel="noopener me" target="_blank">搬瓦工</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lixingcong.github.io/2016/04/19/compile-emacs-on-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="推特宅男一枚，失业中">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="记一次编译Emacs的过程 | Lixingcong">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          记一次编译Emacs的过程<a href="https://github.com/lixingcong/my-hexo-blog2/blob/master/source/_posts/compile-emacs-on-linux.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016年4月19日 22:56:43" itemprop="dateCreated datePublished" datetime="2016-04-19T22:56:43+08:00">2016年4月19日</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>由于ubuntu的APT源emacs版本太老，到2016年居然还是24.3的，没法用上最新的功能，例如“Shifit block缩进”，决定自行从官方源码编译一个。操作平台是VPS ubuntu 14.04 x64</p>
+<span id="more"></span>
+<p><a target="_blank" rel="noopener" href="http://blog.chinaunix.net/uid-28977986-id-3852467.html">原文链接</a></p>
+<p><code>2018-06-11</code>友情提示：本文提到的emacs版本较老，可能Emacs最新版不再适用。</p>
+<p>于是自己下载了一个emacs-24.5.tar.gz的压缩包，<a target="_blank" rel="noopener" href="http://ftp.gnu.org/gnu/emacs/">（官方地址）</a>，解压</p>
+<pre><code>tar xf emacs-24.5.tar.xz 
+</code></pre>
+<p>一看，发现里面全是源文件，要自己编译。<br>于是先阅读了一下里面的README文件，得知编译与安装步骤都在INSTALL文件中有。于是我一下的步骤都是参考的INSTALL文件。</p>
+<p>先安装基本的编译库</p>
+<pre><code>apt-get install build-essential
+apt-get install libncurses-dev
+</code></pre>
+<p>终端，cd到刚才解压的目录，运行.&#x2F;configure命令，运行了一阵子，我正感觉良好呢，它却报错了，如下：</p>
+<blockquote>
+<p>You seem to be running X, but no X development libraries were found. You should install the relevant development files for X<br>and for the toolkit you want, such as Gtk+, Lesstif or Motif. Also make sure you have development files for image handling, i.e.<br>tiff, gif, jpeg, png and xpm. If you are sure you want Emacs compiled without X window support, pass --without-x<br>to configure.</p>
+</blockquote>
+<p>看来编译这个并不是那么容易的，上面这段错误提示的大意是没有装GTK+等图形开发库，如果不想在图形界面下使用Emacs，可以使用--without-x选项进行编译（这不废话吗，能用图形界面却不用，难道要回到原始的字符界面？）</p>
+<p>那就装GTK+吧，命令如下（注意是GTK用于开发的开发库）：</p>
+<pre><code>sudo apt-get install libgtk-3-dev texinfo
+</code></pre>
+<p>因为我是在vps上面编译：使用如下命令开启编译gtk3图形界面</p>
+<pre><code>./configure --with-x-toolkit=gtk3
+</code></pre>
+<p>装好后，再运行.&#x2F;configure，没想到又报错了，如下：</p>
+<blockquote>
+<p>configure: error: The following required libraries were not found:<br>libXpm libjpeg libgif&#x2F;libungif libtiff<br>Maybe some development libraries&#x2F;packages are missing?If you don&#39;t want to link<br>with them give--with-xpm&#x3D;no -<br>-with-jpeg&#x3D;no --with-gif&#x3D;no --with-tiff&#x3D;no as options to configure</p>
+</blockquote>
+<p>好吧，几个图像开发库也要装。。<br>注意一个一个命令敲，若一次性全装会产生依赖问题。</p>
+<pre><code>sudo apt-get install libgif-dev libxpm-dev
+sudo apt-get install libtiff4-dev
+</code></pre>
+<p>我需要libxml2，用于markdown-mode</p>
+<pre><code>sudo apt install libxml2-dev
+</code></pre>
+<p>然后再运行.&#x2F;configure，这下终于可以正常地跑到结束了，看输出的信息，该生成的文件都生成了。于是，运行make，耗时15分钟编译完成。(这是搬瓦工的垃圾VPS，我的笔记本5min就编译了)</p>
+<p>我把服务器上面打包回本地：</p>
+<pre><code>tar -cvzf /tmp/emacs_x64.tar.gz emacs_24.5
+</code></pre>
+<p>然后从本地scp拷贝回来</p>
+<pre><code>scp -P 82 username@xxx.xxx.xx.xx:/tmp/emacs_x64.tar.gz /tmp
+# 同样装上libgtk2
+sudo apt-get install libgtk-3-dev
+</code></pre>
+<p>本地解压，再运行sudo make install，但中间报了两个error，Cannot open load file: case-table。在网上查阅资料，说是Emacs源文件不能放在中文目录下。而我的恰好放在中文目录下，改变目录后，因为前面编译过，所以运行make clean，make distclean来清理一下，再重新运行.&#x2F;configure，make，sudo make install，这次是彻底没错误了，貌似中间连一个warning都没看到。</p>
+<p>多线程编译</p>
+<pre><code>make -j 4
+</code></pre>
+<p>新建一个快捷方式emcas.desktop</p>
+<pre><code>#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Name=GNU Emacs 24.5
+GenericName=Text Editor
+Comment=View and edit files
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+Exec=&quot;/usr/local/bin/emacs&quot; %f
+Icon=/usr/local/share/icons/hicolor/scalable/apps/emacs.svg
+Type=Application
+Terminal=false
+Categories=Utility;Development;TextEditor;
+StartupWMClass=Emacs24
+</code></pre>
+<p>保存，设为权限可执行</p>
+<pre><code>chmod a+x emacs.desktop
+</code></pre>
+<p>双击快捷方式，这位编辑器的大神终于露出了他的真容，不容易啊。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/12/beautifulsoul/" rel="prev" title="BeautifulSoul笔记">
+                  <i class="fa fa-chevron-left"></i> BeautifulSoul笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/04/20/ubuntu-for-raspberry-pi2/" rel="next" title="ubuntu 14.04 树莓派2">
+                  ubuntu 14.04 树莓派2 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"lixingcong/lixingcong.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
